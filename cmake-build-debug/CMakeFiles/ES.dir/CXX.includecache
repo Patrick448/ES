@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/cygdrive/c/Users/patri/OneDrive/Desktop/Projects/IC/ES/ESAlgorithm.cpp
+random
+-
+ESAlgorithm.h
+/cygdrive/c/Users/patri/OneDrive/Desktop/Projects/IC/ES/ESAlgorithm.h
+float.h
+-
+
+/cygdrive/c/Users/patri/OneDrive/Desktop/Projects/IC/ES/ESAlgorithm.h
+vector
+-
+Individual.h
+/cygdrive/c/Users/patri/OneDrive/Desktop/Projects/IC/ES/Individual.h
+
+/cygdrive/c/Users/patri/OneDrive/Desktop/Projects/IC/ES/Individual.h
+vector
+-
+
+/cygdrive/c/Users/patri/OneDrive/Desktop/Projects/IC/ES/main.cpp
+iostream
+-
+ESAlgorithm.h
+/cygdrive/c/Users/patri/OneDrive/Desktop/Projects/IC/ES/ESAlgorithm.h
+
