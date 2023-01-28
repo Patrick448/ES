@@ -1,3 +1,0 @@
-/cygdrive/c/Users/patri/OneDrive/Desktop/Projects/IC/ES/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/cygdrive/c/Users/patri/OneDrive/Desktop/Projects/IC/ES/cmake-build-debug/CMakeFiles/edit_cache.dir
-/cygdrive/c/Users/patri/OneDrive/Desktop/Projects/IC/ES/cmake-build-debug/CMakeFiles/ES.dir
