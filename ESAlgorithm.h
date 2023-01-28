@@ -21,6 +21,8 @@ private:
     int numParents;
     int numOffspring;
     int evaluationsCounter;
+    double minSigma;
+    double maxSigma;
 
 public:
     static int UPPER_OPEN;
@@ -45,7 +47,11 @@ public:
     void createPopulation(int seed, int numIndividuals);
     double getBound(int index, int which);
     void setAlgorithmType(int type);
-    
+    void run1Plus1ES(int seed, double initialSigma, double c, int n,  int maxIterations);
+    double getMinSigma();
+    double getMaxSigma();
+    void validate(Individual* ind);
+    string populationToString();
 };
 
 

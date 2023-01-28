@@ -5,6 +5,7 @@
 #ifndef ES_INDIVIDUAL_H
 #define ES_INDIVIDUAL_H
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -22,6 +23,8 @@ public:
     void setEvaluation(double val);
     double getEvaluation();
     void setDimension(int index, double val);
+    double getDimension(int index);
+    string toString();
 
 };
 
