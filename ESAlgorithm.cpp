@@ -235,11 +235,11 @@ void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, in
     vector<int> successHistory;
     successHistory.reserve(maxIterations);
     default_random_engine re(seed);
+    uniform_real_distribution<double> unifSigmaDistribution(this->getMinSigma(),
+                                                            this->getMaxSigma());
 
     for(int i=0; i<numParents; i++){
         Individual* ind = new Individual(this->numDimensions);
-        uniform_real_distribution<double> unifSigmaDistribution(this->getMinSigma(),
-                                                                this->getMaxSigma());
         double newSigma = unifSigmaDistribution(re);
         ind->setGlobalSigma(newSigma);
 
@@ -315,7 +315,6 @@ void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation,
         }
         this->validate(ind);
         this->evaluate(ind);
-        //cout << ind->toString() + "\n";
 
         this->population.push_back(ind);
     }
