@@ -33,5 +33,10 @@ int main(){
     esAlgorithm.setSigmaBounds(0.1, 10);
     esAlgorithm.runPopulationalIsotropicES(1, 0.5, 100, 5, 10);
     cout << esAlgorithm.populationToString() + "\n";
+
+    esAlgorithm.setSigmaBounds(0.1, 10);
+    esAlgorithm.runPopulationalNonIsotropicES(1, 0.5, 100, 5, 10);
+    cout << esAlgorithm.populationToString() + "\n";
+
     cout << "\nFinished\n";
 }

@@ -7,6 +7,7 @@
 
 Individual::Individual(int numDimensions) {
     this->dimensions.resize(numDimensions);
+    this->sigmas.resize(numDimensions);
     this->numDimensions = numDimensions;
 }
 

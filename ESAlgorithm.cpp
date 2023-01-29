@@ -291,6 +291,71 @@ void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, in
 
 }
 
+
+void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation, int maxIterations, int numParents, int numOffspring){
+    this->clear();
+    vector<int> successHistory;
+    successHistory.reserve(maxIterations);
+    default_random_engine re(seed);
+    uniform_real_distribution<double> unifSigmaDistribution(this->getMinSigma(),this->getMaxSigma());
+
+    for(int i=0; i<numParents; i++){
+        Individual* ind = new Individual(this->numDimensions);
+
+        for(int j=0; j<this->numDimensions; j++){
+            uniform_real_distribution<double> unifDimDistribution(this->getBound(j, ESAlgorithm::LOWER),
+                                                                  this->getBound(j, ESAlgorithm::UPPER));
+
+            double newDim = unifDimDistribution(re);
+            double newSigma = unifSigmaDistribution(re);
+
+            ind->setSigma(j, newSigma);
+            ind->setDimension(j, newDim);
+
+        }
+        this->validate(ind);
+        this->evaluate(ind);
+        //cout << ind->toString() + "\n";
+
+        this->population.push_back(ind);
+    }
+
+
+    normal_distribution<double> normal1(0, pow(sigmaVariation, 2.0));
+
+    //algorithm iterations
+    this->population.reserve(this->population.size() + numOffspring);
+    for(int i=0; i < maxIterations; i++){
+
+        //mutate parents and generate offspring
+        for(int j=0; j<numParents; j++){
+            for(int k=0; k< ceil((double)numOffspring/(double)numParents); k++){
+                Individual* newInd = new Individual(this->numDimensions);
+
+                for(int d=0; d<this->numDimensions; d++){
+                    double newSigma = population[j]->getSigma(d) * exp(normal1(re)) * exp(normal1(re));
+                    normal_distribution<double> dimMutationDistribution(0, newSigma);
+
+                    double newDim = population[j]->getDimension(d) + dimMutationDistribution(re);
+
+                    newInd->setSigma(d, newSigma);
+                    newInd->setDimension(d, newDim);
+                }
+
+                this->validate(newInd);
+                this->evaluate(newInd);
+                this->population.push_back(newInd);
+
+            }
+        }
+
+        sort(this->population.begin(), this->population.end(), compareIndividuals);
+        deleteIndividuals(this->population, numParents, this->population.size()-1);
+    }
+
+}
+
+
 string ESAlgorithm::populationToString(){
     string popString = "";
     for(int i=0; i < this->population.size(); i++){
