@@ -26,8 +26,25 @@ void Individual::setDimension(int index, double val){
     this->dimensions[index] = val;
 }
 
+void Individual::setSigma(int index, double val){
+    this->sigmas[index] = val;
+
+}
+
+
 double Individual::getDimension(int index){
     return this->dimensions[index];
+}
+
+double Individual::getSigma(int index){
+    return this->sigmas[index];
+}
+
+void Individual::setGlobalSigma(double val){
+    this->globalSigma = val;
+}
+double Individual::getGlobalSigma(){
+    return this->globalSigma;
 }
 
 string doubleToString(double val, int precision){

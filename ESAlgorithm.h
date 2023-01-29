@@ -52,6 +52,9 @@ public:
     double getMaxSigma();
     void validate(Individual* ind);
     string populationToString();
+    void runPopulationalIsotropicES(int seed, double sigmaVariation, int maxIterations, int numParents, int numOffspring);
+    void clear();
+    double setSigmaBounds(double min, double max);
 };
 
 

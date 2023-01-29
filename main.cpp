@@ -29,5 +29,9 @@ int main(){
    esAlgorithm.setEvaluationFunction(testFunc);
    esAlgorithm.run1Plus1ES(1, 1.0, 0.817, 10, 250);
    cout << esAlgorithm.populationToString() + "\n";
-   cout << "\nFinished\n";
+
+    esAlgorithm.setSigmaBounds(0.1, 10);
+    esAlgorithm.runPopulationalIsotropicES(1, 0.5, 100, 5, 10);
+    cout << esAlgorithm.populationToString() + "\n";
+    cout << "\nFinished\n";
 }

@@ -13,9 +13,10 @@ class Individual {
 
 private:
     vector<double> dimensions;
-    int* sigmas;
+    vector<double> sigmas;
     int numDimensions;
     double evaluation;
+    double globalSigma;
 
 public:
     Individual(int numDimensions);
@@ -23,7 +24,11 @@ public:
     void setEvaluation(double val);
     double getEvaluation();
     void setDimension(int index, double val);
+    void setSigma(int index, double val);
+    void setGlobalSigma(double val);
+    double getGlobalSigma();
     double getDimension(int index);
+    double getSigma(int index);
     string toString();
 
 };

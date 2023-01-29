@@ -6,6 +6,8 @@
 #include "ESAlgorithm.h"
 #include <float.h>
 #include <iostream>
+#include <vector>
+#include <algorithm>
 
 int ESAlgorithm::UPPER_OPEN=0;
 int ESAlgorithm::UPPER_CLOSED=1;
@@ -28,10 +30,17 @@ ESAlgorithm::ESAlgorithm(int numDimensions, int numParents, int numOffspring){
 
 }
 ESAlgorithm::~ESAlgorithm(){
+    this->clear();
+}
+
+void ESAlgorithm::clear() {
+    this->evaluationsCounter=0;
     for(Individual* i: this->population){
         delete i;
     }
+    this->population.clear();
 }
+
 vector<Individual*> ESAlgorithm::getPopulation(){
     return this->population;
 }
@@ -41,6 +50,7 @@ void ESAlgorithm::addIndividual(Individual* individual){
 double ESAlgorithm::evaluate(Individual* ind){
     double eval =this->evaluationFunction(ind);
     ind->setEvaluation(eval);
+    this->evaluationsCounter++;
     return eval;
 }
 void ESAlgorithm::setNumDimensions(int val){
@@ -114,6 +124,12 @@ double ESAlgorithm::getMinSigma() {
 double ESAlgorithm::getMaxSigma() {
     return this->maxSigma;
 }
+
+double ESAlgorithm::setSigmaBounds(double min, double max) {
+    this->minSigma = min;
+    this->maxSigma = max;
+}
+
 
 void ESAlgorithm::validate(Individual* ind){
 
@@ -198,6 +214,79 @@ void ESAlgorithm::run1Plus1ES(int seed, double initialSigma, double c, int n,  i
         }
 
        // cout << "Iter: " + to_string(i) +" | pop: " + to_string(this->population.size())+ "\n";
+    }
+
+}
+
+bool compareIndividuals(Individual* a, Individual* b){
+    return a->getEvaluation() < b->getEvaluation();
+}
+
+/// deletes individuals from start to end (all inclusive)
+void deleteIndividuals(vector<Individual*> &vec, int start, int end){
+    for(int i=start; i<=end; i++){
+        delete vec[i];
+    }
+    vec.erase(vec.begin()+start, vec.begin()+end+1);
+}
+
+void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, int maxIterations, int numParents, int numOffspring){
+    this->clear();
+    vector<int> successHistory;
+    successHistory.reserve(maxIterations);
+    default_random_engine re(seed);
+
+    for(int i=0; i<numParents; i++){
+        Individual* ind = new Individual(this->numDimensions);
+        uniform_real_distribution<double> unifSigmaDistribution(this->getMinSigma(),
+                                                                this->getMaxSigma());
+        double newSigma = unifSigmaDistribution(re);
+        ind->setGlobalSigma(newSigma);
+
+        for(int j=0; j<this->numDimensions; j++){
+            uniform_real_distribution<double> unifDimDistribution(this->getBound(j, ESAlgorithm::LOWER),
+                                                   this->getBound(j, ESAlgorithm::UPPER));
+
+            double newDim = unifDimDistribution(re);
+            ind->setDimension(j, newDim);
+
+        }
+        this->validate(ind);
+        this->evaluate(ind);
+        //cout << ind->toString() + "\n";
+
+        this->population.push_back(ind);
+    }
+
+
+    normal_distribution<double> normal1(0, pow(sigmaVariation, 2.0));
+
+    //algorithm iterations
+    this->population.reserve(this->population.size() + numOffspring);
+    for(int i=0; i < maxIterations; i++){
+
+        //mutate parents and generate offspring
+        for(int j=0; j<numParents; j++){
+            for(int k=0; k< ceil((double)numOffspring/(double)numParents); k++){
+                Individual* newInd = new Individual(this->numDimensions);
+                double newSigma = population[j]->getGlobalSigma() * exp(normal1(re));
+                newInd->setGlobalSigma(newSigma);
+                normal_distribution<double> dimMutationDistribution(0, newSigma);
+
+                for(int d=0; d<this->numDimensions; d++){
+                    double newDim = population[j]->getDimension(d) + dimMutationDistribution(re);
+                    newInd->setDimension(d, newDim);
+                }
+
+                this->validate(newInd);
+                this->evaluate(newInd);
+                this->population.push_back(newInd);
+
+            }
+        }
+
+        sort(this->population.begin(), this->population.end(), compareIndividuals);
+        deleteIndividuals(this->population, numParents, this->population.size()-1);
     }
 
 }
