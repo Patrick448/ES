@@ -153,6 +153,7 @@ void ESAlgorithm::validate(Individual* ind){
 }
 
 void ESAlgorithm::run1Plus1ES(int seed, double initialSigma, double c, int n,  int maxIterations){
+    this->clear();
     double sigma = initialSigma;
     this->evaluationsCounter = 0;
     vector<int> successHistory;
@@ -235,8 +236,7 @@ void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, in
     vector<int> successHistory;
     successHistory.reserve(maxIterations);
     default_random_engine re(seed);
-    uniform_real_distribution<double> unifSigmaDistribution(this->getMinSigma(),
-                                                            this->getMaxSigma());
+    uniform_real_distribution<double> unifSigmaDistribution(this->getMinSigma(),this->getMaxSigma());
 
     for(int i=0; i<numParents; i++){
         Individual* ind = new Individual(this->numDimensions);
@@ -355,10 +355,10 @@ void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation,
 }
 
 
-string ESAlgorithm::populationToString(){
+string ESAlgorithm::populationToCSVString(){
     string popString = "";
     for(int i=0; i < this->population.size(); i++){
-        popString += this->population[i]->toString() + "\n";
+        popString += this->population[i]->toCSVString() + "\n";
     }
     return popString;
 }

@@ -29,7 +29,7 @@ public:
     double getGlobalSigma();
     double getDimension(int index);
     double getSigma(int index);
-    string toString();
+    string toCSVString();
 
 };
 

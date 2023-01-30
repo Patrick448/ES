@@ -62,7 +62,7 @@ string doubleToString(double val, int precision){
     return str;
 }
 
-string Individual::toString(){
+string Individual::toCSVString(){
     string indString = "";
     for(int i=0; i< this->numDimensions; i++){
         indString+= doubleToString(this->dimensions[i], 15) + ",";
