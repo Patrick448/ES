@@ -27,6 +27,8 @@ ESAlgorithm::ESAlgorithm(int numDimensions, int numParents, int numOffspring){
     this->upperBoundTypes.resize(numDimensions);
     this->numParents = numParents;
     this->numOffspring = numOffspring;
+    this->maxSigma = DBL_MAX;
+    this->minSigma = -DBL_MAX;
 
 }
 ESAlgorithm::~ESAlgorithm(){
@@ -152,6 +154,16 @@ void ESAlgorithm::validate(Individual* ind){
     }
 }
 
+double validatedSigma(double actual, double min, double max){
+    if(actual < min){
+        return min;
+    }else if(actual> max){
+        return max;
+    }
+
+    return actual;
+}
+
 void ESAlgorithm::run1Plus1ES(int seed, double initialSigma, double c, int n,  int maxIterations){
     this->clear();
     double sigma = initialSigma;
@@ -209,8 +221,10 @@ void ESAlgorithm::run1Plus1ES(int seed, double initialSigma, double c, int n,  i
 
             if(ps < 1.0/5.0){
                 sigma = sigma*c;
+                sigma = validatedSigma(sigma, minSigma, maxSigma);
             }else if(ps > 1.0/5.0){
                 sigma = sigma/c;
+                sigma = validatedSigma(sigma, minSigma, maxSigma);
             }
         }
 
@@ -270,6 +284,7 @@ void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, in
             for(int k=0; k< ceil((double)numOffspring/(double)numParents); k++){
                 Individual* newInd = new Individual(this->numDimensions);
                 double newSigma = population[j]->getGlobalSigma() * exp(normal1(re));
+                newSigma = validatedSigma(newSigma, minSigma, maxSigma);
                 newInd->setGlobalSigma(newSigma);
                 normal_distribution<double> dimMutationDistribution(0, newSigma);
 
@@ -333,6 +348,7 @@ void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation,
 
                 for(int d=0; d<this->numDimensions; d++){
                     double newSigma = population[j]->getSigma(d) * exp(normal1(re)) * exp(normal1(re));
+                    newSigma = validatedSigma(newSigma, minSigma, maxSigma);
                     normal_distribution<double> dimMutationDistribution(0, newSigma);
 
                     double newDim = population[j]->getDimension(d) + dimMutationDistribution(re);
