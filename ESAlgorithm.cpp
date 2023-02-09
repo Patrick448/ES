@@ -2,12 +2,13 @@
 // Created by patri on 27/01/2023.
 //
 
-#include <random>
-#include "ESAlgorithm.h"
-#include <float.h>
-#include <iostream>
-#include <vector>
-#include <algorithm>
+//#include <random>
+//#include "ESAlgorithm.h"
+//#include <float.h>
+//#include <iostream>
+//#include <vector>
+//#include <algorithm>
+#include "dependencies.h"
 
 int ESAlgorithm::UPPER_OPEN=0;
 int ESAlgorithm::UPPER_CLOSED=1;
