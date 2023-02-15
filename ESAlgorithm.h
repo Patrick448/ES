@@ -16,10 +16,8 @@ private:
     vector<int> upperBoundTypes;
     vector<int> lowerBoundTypes;
     int numDimensions;
-    double (*evaluationFunction)(Individual*);
+    double (*evaluationFunction)(double*);
     int algorithmType;
-    int numParents;
-    int numOffspring;
     int evaluationsCounter;
     double minSigma;
     double maxSigma;
@@ -35,7 +33,7 @@ public:
     static int ISOTROPIC;
     static int NON_ISOTROPIC;
 
-    ESAlgorithm(int numDimensions, int numParents, int numOffspring);
+    ESAlgorithm(int numDimensions);
     ~ESAlgorithm();
     vector<Individual*> getPopulation();
     void addIndividual(Individual* individual);
@@ -43,7 +41,7 @@ public:
     void setNumDimensions(int val);
     void setBounds(int index, double lower, double upper, int lowerBoundType, int upperBoundType);
     int getNumDimensions();
-    void setEvaluationFunction(double (*evaluationFunction)(Individual*));
+    void setEvaluationFunction(double (*evaluationFunction)(double*));
     void createPopulation(int seed, int numIndividuals);
     double getBound(int index, int which);
     void setAlgorithmType(int type);
@@ -56,6 +54,7 @@ public:
     void runPopulationalNonIsotropicES(int seed, double sigmaVariation, int maxIterations, int numParents, int numOffspring);
     void clear();
     double setSigmaBounds(double min, double max);
+
 };
 
 

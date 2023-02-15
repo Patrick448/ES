@@ -6,13 +6,16 @@
 #include <math.h>
 
 Individual::Individual(int numDimensions) {
-    this->dimensions.resize(numDimensions);
-    this->sigmas.resize(numDimensions);
+   // this->dimensions.resize(numDimensions);
+   // this->sigmas.resize(numDimensions);
     this->numDimensions = numDimensions;
+    this->dimensions = new double[numDimensions];
+    this->sigmas = new double[numDimensions];
 }
 
 Individual::~Individual() {
-
+    delete [] this->dimensions;
+    delete [] this->sigmas;
 }
 
 void Individual::setEvaluation(double val) {
@@ -35,6 +38,10 @@ void Individual::setSigma(int index, double val){
 
 double Individual::getDimension(int index){
     return this->dimensions[index];
+}
+
+double* Individual::getDimensions() {
+    return this->dimensions;
 }
 
 double Individual::getSigma(int index){

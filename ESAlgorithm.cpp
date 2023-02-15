@@ -20,14 +20,14 @@ int ESAlgorithm::ONE_PLUS_ONE=6;
 int ESAlgorithm::ISOTROPIC=7;
 int ESAlgorithm::NON_ISOTROPIC=8;
 
-ESAlgorithm::ESAlgorithm(int numDimensions, int numParents, int numOffspring){
+ESAlgorithm::ESAlgorithm(int numDimensions){
     this->numDimensions = numDimensions;
     this->upperBounds.resize(numDimensions);
     this->lowerBounds.resize(numDimensions);
     this->lowerBoundTypes.resize(numDimensions);
     this->upperBoundTypes.resize(numDimensions);
-    this->numParents = numParents;
-    this->numOffspring = numOffspring;
+    //this->numParents = numParents;
+    //this->numOffspring = numOffspring;
     this->maxSigma = DBL_MAX;
     this->minSigma = -DBL_MAX;
 
@@ -51,7 +51,7 @@ void ESAlgorithm::addIndividual(Individual* individual){
     this->population.push_back(individual);
 }
 double ESAlgorithm::evaluate(Individual* ind){
-    double eval =this->evaluationFunction(ind);
+    double eval =this->evaluationFunction(ind->getDimensions());
     ind->setEvaluation(eval);
     this->evaluationsCounter++;
     return eval;
@@ -72,7 +72,7 @@ void ESAlgorithm::setBounds(int index, double lower, double upper, int lowerBoun
     this->upperBoundTypes[index] = upperBoundType;
 }
 
-void ESAlgorithm::setEvaluationFunction(double (*evaluationFunction)(Individual*)){
+void ESAlgorithm::setEvaluationFunction(double (*evaluationFunction)(double*)){
     this->evaluationFunction = evaluationFunction;
 }
 
@@ -134,14 +134,15 @@ double ESAlgorithm::setSigmaBounds(double min, double max) {
 }
 
 
+
 void ESAlgorithm::validate(Individual* ind){
 
     for(int i=0; i< this->numDimensions; i++){
         double uBound = this->getBound(i, ESAlgorithm::UPPER);
         double lBound = this->getBound(i, ESAlgorithm::LOWER);
         double value = ind->getDimension(i);
-        bool uType = this->upperBoundTypes[i];
-        bool lType = this->lowerBoundTypes[i];
+        int uType = this->upperBoundTypes[i];
+        int lType = this->lowerBoundTypes[i];
 
         if(uType == UPPER_CLOSED && value > uBound){
             ind->setDimension(i, uBound);

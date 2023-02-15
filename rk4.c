@@ -13,8 +13,8 @@
 
 /******************************************************************************/
 
-void rk4 ( void dydt ( double t, double u[], double f[] ), double tspan[2],
-           double y0[], int n, int m, double t[], double y[] )
+void rk4 ( void dydt ( double t, double u[], double* coefficients, double f[] ), double tspan[2],
+           double y0[], int n, int m, double t[], double* coefficients, double y[] )
 
 /******************************************************************************/
 /*
@@ -93,28 +93,28 @@ void rk4 ( void dydt ( double t, double u[], double f[] ), double tspan[2],
         {
             u0[i] = y[i+j*m];
         }
-        dydt ( t0, u0, f0 );
+        dydt ( t0, u0, coefficients, f0 );
 
         t1 = t0 + dt / 2.0;
         for ( i = 0; i < m; i++ )
         {
             u1[i] = u0[i] + dt * f0[i] / 2.0;
         }
-        dydt ( t1, u1, f1 );
+        dydt ( t1, u1, coefficients, f1 );
 
         t2 = t0 + dt / 2.0;
         for ( i = 0; i < m; i++ )
         {
             u2[i] = u0[i] + dt * f1[i] / 2.0;
         }
-        dydt ( t2, u2, f2 );
+        dydt ( t2, u2, coefficients, f2 );
 
         t3 = t0 + dt;
         for ( i = 0; i < m; i++ )
         {
             u3[i] = u0[i] + dt * f2[i];
         }
-        dydt ( t3, u3, f3 );
+        dydt ( t3, u3, coefficients, f3 );
 
         t[j+1] = t[j] + dt;
         for ( i = 0; i < m; i++ )

@@ -12,8 +12,8 @@ using namespace std;
 class Individual {
 
 private:
-    vector<double> dimensions;
-    vector<double> sigmas;
+    double* dimensions;
+    double* sigmas;
     int numDimensions;
     double evaluation;
     double globalSigma;
@@ -28,6 +28,7 @@ public:
     void setGlobalSigma(double val);
     double getGlobalSigma();
     double getDimension(int index);
+    double *getDimensions();
     double getSigma(int index);
     string toCSVString();
 
