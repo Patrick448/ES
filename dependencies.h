@@ -19,6 +19,8 @@
 #include "ESAlgorithm.h"
 #include <random>
 #include <float.h>
+#include "rk4.h"
+
 
 
 using namespace std;

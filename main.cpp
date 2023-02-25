@@ -4,8 +4,6 @@
 
 #include <cstring>
 #include "dependencies.h"
-#include "rk4.h"
-
 
 using namespace std;
 int IND_SIZE    = 15;  // Tamanho do indivíduo (quantidade de coeficientes)
@@ -20,7 +18,7 @@ double MAX_STRATEGY = 10; // Maior valor que a estratégia pode assumir
 int TAU_SIZE    = 5;
 int N_SIZE      = 5;
 int K_SIZE      = 5;
-double maxValues[] = {2.96, 1.8768, 1.0653, 1.0101, 1.4608};
+double* maxValues;
 
 int nVariables=5;
 int nSteps = 49;
@@ -370,16 +368,24 @@ void initializeGRN5(){
     TAU_SIZE    = 5;
     N_SIZE      = 5;
     K_SIZE      = 5;
+    maxValues = new double [nVariables];
+
+    maxValues[0] = 2.96;
+    maxValues[1] = 1.8768;
+    maxValues[2] = 1.0653;
+    maxValues[3] = 1.0101;
+    maxValues[4] = 1.4608;
 
     nVariables=5;
     nSteps = 49;
 
     y = new double[(nSteps + 1) * nVariables];
-    vectors = new double*[nVariables + 1];
 
+    vectors = new double*[nVariables + 1];
     for(int i=0; i < nVariables + 1; i++){
         vectors[i] = new double [50];
     }
+
     readFileToVectors("../GRN5.txt", nVariables + 1, vectors);
 
     y_0 = new double [nVariables];
@@ -401,31 +407,91 @@ void clearGRN(){
     //free ( t );
     delete [] y;
     delete [] y_0;
+    delete [] maxValues;
     for(int i=0; i < nVariables; i++){
         delete [] vectors[i];
     }
 }
 
+
+
+void runGRN5ESComparisonExperiment(){
+    initializeGRN5();
+
+    ESAlgorithm esAlgorithm = ESAlgorithm(IND_SIZE);
+    esAlgorithm.setEvaluationFunction(grn5Evaluation);
+    esAlgorithm.setSigmaBounds(MIN_STRATEGY, MAX_STRATEGY);
+
+    int cont = 0;
+    for(int i=0; i< TAU_SIZE; i++) {
+        esAlgorithm.setBounds(i, MIN_TAU, MAX_TAU, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+    for(int i=cont+1; i< TAU_SIZE + K_SIZE; i++) {
+        esAlgorithm.setBounds(i, MIN_K, MAX_K, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+    for(int i=cont+1; i< TAU_SIZE + K_SIZE + N_SIZE+1; i++) {
+        esAlgorithm.setBounds(i, MIN_N, MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+
+    vector<vector<double>> results(3);
+    results[0].resize(30);
+    results[1].resize(30);
+    results[2].resize(30);
+
+    int numRuns = 30;
+
+    for(int i=0; i<numRuns; i++){
+        cout << "Run " << to_string(i) << "\n";
+        esAlgorithm.run1Plus1ES(i, 0.5, 0.817, 10, 20000);
+        results[0][i] = esAlgorithm.getPopulation().back()->getEvaluation();
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 1000, 10, 20);
+        results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 1000, 10, 20);
+        results[2][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+    }
+
+    string csvOutput = "1p1,pi,pni\n";
+    for(int j=0; j<numRuns; j++){
+        csvOutput += to_string(results[0][j]) + ","
+                     + to_string(results[1][j]) + ","
+                     + to_string(results[2][j]) + "\n";
+    }
+
+    outputToFile("../comparison-30runs-20000it.csv", csvOutput, false);
+
+    clearGRN();
+}
+
 int main(){
+
+    runGRN5ESComparisonExperiment();
+    return 0;
 
     //grn_test();
     //return 0;
-    double a = 123456789123400000.5574455458415154484;
+    //double a = 123456789123400000.5574455458415154484;
    // cout << a << endl;
 
 
-   for(int i=0; i < 100; i++){
-       a =a/0.000000000001;
-       cout << a << endl;
-   }
+   //for(int i=0; i < 100; i++){
+   //    a =a/0.000000000001;
+   //    cout << a << endl;
+   //}
 
-   cout << a / (a+10) << "\n";
+   //cout << a / (a+10) << "\n";
     //return 0;
+
 
     initializeGRN5();
 
-    cout << grn5EvaluatioTest() <<"\n";
-    return 0;
+    //cout << grn5EvaluatioTest() <<"\n";
+    //return 0;
 
     ESAlgorithm esAlgorithm = ESAlgorithm(IND_SIZE);
     esAlgorithm.setEvaluationFunction(grn5Evaluation);
@@ -489,4 +555,6 @@ int main(){
 
     cout << "\nFinished\n";*/
 }
+
+
 
