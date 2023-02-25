@@ -188,14 +188,15 @@ void ESAlgorithm::run1Plus1ES(int seed, double initialSigma, double c, int n,  i
 
     this->population.push_back(ind);
 
-    normal_distribution<double> normal(0, 1);
 
     //algorithm iterations
     for(int i=0; i < maxIterations; i++){
-        Individual* newInd = new Individual(this->numDimensions);
+        normal_distribution<double> normal(0, pow(sigma, 2.0));
 
+        Individual* newInd = new Individual(this->numDimensions);
         for(int j=0; j<this->numDimensions; j++){
-            double newDim = ind->getDimension(j) + normal(re)*sigma;
+            double variation = normal(re);
+            double newDim = ind->getDimension(j) + variation;
             newInd->setDimension(j, newDim);
         }
         this->validate(newInd);

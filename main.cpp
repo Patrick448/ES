@@ -45,28 +45,55 @@ void twoBody(double t, double y[], double max[], double tau[], double n[], doubl
 
 }
 
+void printVector(double* vec, int size){
+    for(int i=0; i<size; i++){
+        cout << vec[i] << " ";
+    }
+    cout << "\n";
+}
+
 void twoBody(double t, double y[], double* dim, double yp[]) {
 
     double* tau = &dim[0];
-    double* n = &dim[TAU_SIZE];
-    double* k = &dim[TAU_SIZE+N_SIZE];
+    double* k = &dim[TAU_SIZE];
+    double* n = &dim[TAU_SIZE+N_SIZE];
 
-    yp[0] = ((1 - (pow((y[4] / maxValues[4]), n[0])) / (pow((y[4] / maxValues[0]),  n[0]) + pow(k[0],  n[0]))) - (y[0] / maxValues[0])) / tau[0];
+    yp[0] = ((1 - (pow((y[4] / maxValues[4]), (int)n[0])) / (pow((y[4] / maxValues[4]),  (int)n[0]) + pow(k[0],  (int)n[0]))) - (y[0] / maxValues[0])) / tau[0];
 
     yp[1] = (((pow((y[0] / maxValues[0]), (int)n[1])) / (pow((y[0] / maxValues[0]),  (int)n[1]) + pow(k[1],  (int)n[1]))) - (y[1] / maxValues[1])) / tau[1];
 
-    yp[2] = (((pow((y[1] / maxValues[1]),  n[2])) / (pow((y[1] / maxValues[1]),  (int)n[2]) + pow(k[2],  (int)n[2]))) - (y[2] / maxValues[2])) / tau[2];
+    yp[2] = (((pow((y[1] / maxValues[1]),  (int)n[2])) / (pow((y[1] / maxValues[1]),  (int)n[2]) + pow(k[2],  (int)n[2]))) - (y[2] / maxValues[2])) / tau[2];
 
     yp[3] = (((pow((y[2] / maxValues[2]),  (int)n[3])) / (pow((y[2] / maxValues[2]),  (int)n[3]) + pow(k[3],  (int)n[3]))) - (y[3] / maxValues[3])) / tau[3];
 
     yp[4] = (((pow((y[3] / maxValues[3]),  (int)n[4])) / (pow((y[3] / maxValues[3]),  (int)n[4]) + pow(k[4],  (int)n[4]))) - (y[4] / maxValues[4])) / tau[4];
 
-    double x = yp[0] + yp[1]+yp[2]+yp[3]+yp[4];
+
+    yp[1] = (((pow((y[0] / maxValues[0]), (int)n[1]))
+                / (
+                        pow((y[0] / maxValues[0]),  (int)n[1]) + pow(k[1],  (int)n[1]))) - (y[1] / maxValues[1])) / tau[1];
+
+//    if(isnan(yp[0] + yp[1] + yp[2] + yp[3] + yp[4])){
+//        cout << "NAN -----------"<< "\n";
+//        cout << y[0] / maxValues[0] << "\n";
+//        cout << (pow((y[0] / maxValues[0]), (int)n[1])) << "\n";
+//        cout << ( pow((y[0] / maxValues[0]),  (int)n[1]) + pow(k[1],  (int)n[1])) << "\n";
+//        cout << ((pow((y[0] / maxValues[0]), (int)n[1]))
+//                 / (
+//                         pow((y[0] / maxValues[0]),  (int)n[1]) + pow(k[1],  (int)n[1]))) << "\n";
+//        printVector(y, 5);
+//        printVector(yp, 5);
+//        printVector(dim, 15);
+//
+//    }
+
     return;
 }
 
 
+
 void twoBodyFixed(double t, double y[],  double* dim, double yp[]) {
+    //todo: observar que os n devem ser avaliados como inteiros
     double max[] = {2.96, 1.8768, 1.0653, 1.0101, 1.4608};
     double tau[] = {1.25, 4, 1.02, 1.57, 3.43};
     double n[] = {13, 4, 3, 4, 16};
@@ -85,233 +112,6 @@ void twoBodyFixed(double t, double y[],  double* dim, double yp[]) {
 
 }
 
-void f01 ( double t, double y[], double yp[])
-/*
-  Purpose:
-
-    F01 supplies the right hand side of the ODE for problem 1.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    02 February 2012
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, double T, the time.
-
-    Input, double Y[], the dependent variable.
-
-    Output, double YP[], the value of the derivative.
-*/
-{
-    yp[0] =   y[1];
-    yp[1] = - y[0];
-
-    return;
-}
-
-void test01 ( void )
-/*
-  Purpose:
-
-    TEST01 tests ODE.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    02 February 2012
-
-  Author:
-
-    John Burkardt
-*/
-{
-    double abserr;
-    int i;
-    int iflag;
-    int iwork[5];
-    int neqn = 2;
-    double pi = 3.141592653589793;
-    double relerr;
-    int step_num = 12;
-    double t;
-    double tout;
-    double *work;
-    double *y;
-
-    printf ( "\n" );
-    printf ( "TEST01\n" );
-    printf ( "  ODE solves a system of ordinary differential\n" );
-    printf ( "  equations.\n" );
-    printf ( "\n" );
-    printf ( "      T           Y(1)         Y(2)\n" );
-    printf ( "\n" );
-
-    abserr = 0.00001;
-    relerr = 0.00001;
-
-    iflag = 1;
-
-    t = 0.0;
-    y = ( double * ) malloc ( neqn * sizeof ( double ) );
-    y[0] = 1.0;
-    y[1] = 0.0;
-
-    printf ( "  %8g  %14g  %14g\n", t, y[0], y[1] );
-
-    work = ( double * ) malloc ( ( 100 + 21 * neqn ) * sizeof ( double ) );
-
-    for ( i = 1; i <= step_num; i++ )
-    {
-        tout = ( double ) ( i ) * 2.0 * pi / ( double ) ( step_num );
-
-        ode ( f01, neqn, y, &t, tout, relerr, abserr, &iflag, work, iwork );
-
-        if ( iflag != 2 )
-        {
-            printf ( "\n" );
-            printf ( "TEST01 - Fatal error!\n" );
-            printf ( "  ODE returned IFLAG = %d\n", iflag );
-            break;
-        }
-        printf ( "  %8g  %14g  %14g\n", t, y[0], y[1] );
-    }
-
-    free ( work );
-    free ( y );
-
-    return;
-}
-
-void test02 ( void )
-/*
-  Purpose:
-
-    TEST02 tests ODE by integrating in the NEGATIVE time direction.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    02 February 2012
-
-  Author:
-
-    John Burkardt
-*/
-{
-    double abserr;
-    int i;
-    int iflag;
-    int iwork[5];
-    int neqn = 2;
-    double pi = 3.141592653589793;
-    double relerr;
-    int step_num = 12;
-    double t;
-    double tout;
-    double *work;
-    double *y;
-
-    printf ( "\n" );
-    printf ( "TEST02\n" );
-    printf ( "  ODE solves a system of ordinary differential\n" );
-    printf ( "  equations.\n" );
-    printf ( "\n" );
-    printf ( "  In this example, we integrate in the negative\n" );
-    printf ( "  time direction.\n" );
-    printf ( "\n" );
-    printf ( "      T           Y(1)         Y(2)\n" );
-    printf ( "\n" );
-
-    abserr = 0.00001;
-    relerr = 0.00001;
-
-    iflag = 1;
-
-    t = 0.0;
-    y = ( double * ) malloc ( neqn * sizeof ( double ) );
-    y[0] = 1.0;
-    y[1] = 0.0;
-
-    printf ( "  %8g  %14g  %14g\n", t, y[0], y[1] );
-
-    work = ( double * ) malloc ( ( 100 + 21 * neqn ) * sizeof ( double ) );
-
-    for ( i = 1; i <= step_num; i++ )
-    {
-        tout = - ( double ) ( i ) * 2.0 * pi / ( double ) ( step_num );
-
-        ode ( f01, neqn, y, &t, tout, relerr, abserr, &iflag, work, iwork );
-
-        if ( iflag != 2 )
-        {
-            printf ( "\n" );
-            printf ( "TEST02 - Fatal error!\n" );
-            printf ( "  ODE returned IFLAG = %d\n", iflag );
-            break;
-        }
-        printf ( "  %8g  %14g  %14g\n", t, y[0], y[1] );
-    }
-
-    free ( work );
-    free ( y );
-
-    return;
-}
-
-int main_test ( )
-/*
-  Purpose:
-
-    ode_test() tests ode().
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    01 February 2012
-
-  Author:
-
-    John Burkardt
-*/
-{
-    timestamp ( );
-    printf ( "\n" );
-    printf ( "ODE_TEST\n" );
-    printf ( "  C version\n" );
-    printf ( "  Test the ODE library.\n" );
-
-    test01 ( );
-    test02 ( );
-/*
-  Terminate.
-*/
-    printf ( "\n" );
-    printf ( "ODE_TEST\n" );
-    printf ( "  Normal end of execution.\n" );
-    printf ( "\n" );
-    timestamp ( );
-
-    return 0;
-}
-
 
 void outputToFile(string path, string text, bool append){
     ofstream outputf;
@@ -327,7 +127,7 @@ void outputToFile(string path, string text, bool append){
 }
 
 
-void predator_phase_plot ( int n, int m, double t[], double y[] )
+void phase_plot (int n, int m, double t[], double y[] )
 /*
   Purpose:
 
@@ -362,7 +162,7 @@ void predator_phase_plot ( int n, int m, double t[], double y[] )
     int j;
 
     printf ( "\n" );
-    printf ( "predator_phase_plot:\n" );
+    printf ( "phase_plot:\n" );
     printf ( "  Write command and data files that can be used\n" );
     printf ( "  by gnuplot for a predator-prey phase plot.\n" );
 /*
@@ -389,7 +189,7 @@ void predator_phase_plot ( int n, int m, double t[], double y[] )
     fclose ( data );
 
     printf ( "\n" );
-    printf ( "  predator_phase_plot: data stored in \"%s\".\n", data_filename );
+    printf ( "  phase_plot: data stored in \"%s\".\n", data_filename );
 /*
   Create the command file.
 */
@@ -415,113 +215,11 @@ void predator_phase_plot ( int n, int m, double t[], double y[] )
 
     fclose ( command );
 
-    printf ( "  predator_phase_plot: plot commands stored in \"%s\".\n",
+    printf ( "  phase_plot: plot commands stored in \"%s\".\n",
              command_filename );
 
     return;
 }
-
-void predator_deriv ( double t, double y[], double f[] )
-/*
-  Purpose:
-
-    predator_deriv returns the right hand side of the predator ODE.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    22 April 2020
-
-  Author:
-
-    John Burkardt
-
-  Input:
-
-    double T, the current time.
-
-    double Y[M], the current solution value.
-
-  Output:
-
-    double F[M], the value of the derivative, dU/dT.
-*/
-{
-    double dfdt;
-    double drdt;
-    double fox;
-    double rab;
-
-    rab = y[0];
-    fox = y[1];
-
-    drdt =   2.0 * rab - 0.001 * rab * fox;
-    dfdt = -10.0 * fox + 0.002 * rab * fox;
-
-    f[0] = drdt;
-    f[1] = dfdt;
-
-    return;
-}
-
-void rk4_predator_test ( )
-/*
-  Purpose:
-
-    rk4_predator_test tests RK4 on the predator prey ODE.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    22 April 2020
-
-  Author:
-
-    John Burkardt
-*/
-{
-    int m;
-    int n = 1000;
-    double *t;
-    double tspan[2];
-    double *y;
-    double *y0;
-
-    m = 2;
-    n = 1000;
-
-    t = ( double * ) malloc ( ( n + 1 ) * sizeof ( double ) );
-    y = ( double * ) malloc ( ( n + 1 ) * m * sizeof ( double ) );
-    y0 = ( double * ) malloc ( m * sizeof ( double ) );
-
-    printf ( "\n" );
-    printf ( "rk4_predator_test\n" );
-    printf ( "  Use rk4() to solve the predator prey ODE.\n" );
-
-    tspan[0] = 0.0;
-    tspan[1] = 5.0;
-    y0[0] = 5000.0;
-    y0[1] = 100.0;
-
-    //rk4 ( predator_deriv, tspan, y0, n, m, t, y );
-
-    predator_phase_plot ( n, m, t, y );
-/*
-  Free memory.
-*/
-    free ( t );
-    free ( y );
-    free ( y0 );
-
-    return;
-}
-
 
 
 double difference(double *actual, double **expected, int numVariables, int numElements){
@@ -538,7 +236,7 @@ double difference(double *actual, double **expected, int numVariables, int numEl
     }
 
     if(isnan(difTotal)){
-        return DBL_MAX;
+       return DBL_MAX;
     }
 
     return difTotal;
@@ -567,6 +265,33 @@ double grn5Evaluation(double *dim){
     return difference(y, expectedResult, nVariables, 50);
 }
 
+
+double grn5EvaluatioTest(){
+    //double dim[] = {1.25, 4, 1.02, 1.57, 3.43, 0.72, 0.5, 0.45, 0.51, 0.52, 13, 4, 3, 4, 16};
+    //double dim[] = {5, 5, 0.1, 2.57215, 0.1, 0.1, 1, 0.1, 1, 1, 20.4753, 14.8202, 23.1872, 9.29585, 8.17558};
+    //double dim[] = {5, 5, 0.3, 2.57215, 0.5, 0.1, 1, 0.1, 1, 1, 20.4753, 14.8202, 23.1872, 9.29585, 8.17558};
+    //double dim[] = {0.1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+    double dim[] = {0.1, 5, 0.3, 2.57215, 0.5, 0.1, 1, 0.1, 1, 1, 20.4753, 14.8202, 23.1872, 9.29585, 8.17558};
+
+
+    rk4 (twoBody, tspan, y_0, nSteps, nVariables, vectors[0], dim, y);
+    for(int i=0; i<nVariables; i++){
+        for(int j=0; j<nSteps;j++){
+            cout << expectedResult[i][j] << " ";
+        }
+        cout<< "\n";
+    }
+    cout << "\n\n";
+    for(int i=0; i<nVariables; i++){
+        for(int j=0; j<nSteps;j++){
+            cout << y[j*nVariables + i] << " ";
+        }
+        cout<< "\n";
+    }
+
+
+    return difference(y, expectedResult, nVariables, 50);
+}
 void grn_test ( )
 
 {
@@ -608,7 +333,7 @@ void grn_test ( )
 
     rk4 (twoBodyFixed, tspan, y0, nSteps, nVariables, vectors[0], coefficients, y );
 
-    predator_phase_plot (nSteps, nVariables, vectors[0], y );
+    phase_plot(nSteps, nVariables, vectors[0], y);
 /*
   Free memory.
 */
@@ -621,48 +346,6 @@ void grn_test ( )
     }
 
     return;
-}
-
-int main_test2 ( )
-/*
-  Purpose:
-
-    MAIN is the main program for rk4_test.
-
-  Discussion:
-
-    rk4_test tests rk4().
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    22 April 2020
-
-  Author:
-
-    John Burkardt
-*/
-{
-    timestamp ( );
-    printf ( "\n" );
-    printf ( "rk4_test:\n" );
-    printf ( "  C version\n" );
-    printf ( "  Test rk4() .\n" );
-
-    rk4_predator_test ( );
-/*
-  Terminate.
-*/
-    printf ( "\n" );
-    printf ( "rk4_test:\n" );
-    printf ( "  Normal end of execution.\n" );
-    printf ( "\n" );
-    timestamp ( );
-
-    return 0;
 }
 
 double testFunc(Individual* ind){
@@ -727,8 +410,23 @@ int main(){
 
     //grn_test();
     //return 0;
+    double a = 123456789123400000.5574455458415154484;
+   // cout << a << endl;
+
+
+   for(int i=0; i < 100; i++){
+       a =a/0.000000000001;
+       cout << a << endl;
+   }
+
+   cout << a / (a+10) << "\n";
+    //return 0;
 
     initializeGRN5();
+
+    cout << grn5EvaluatioTest() <<"\n";
+    return 0;
+
     ESAlgorithm esAlgorithm = ESAlgorithm(IND_SIZE);
     esAlgorithm.setEvaluationFunction(grn5Evaluation);
 
@@ -749,7 +447,8 @@ int main(){
     }
 
     esAlgorithm.setSigmaBounds(MIN_STRATEGY, MAX_STRATEGY);
-    esAlgorithm.runPopulationalIsotropicES(1, 0.5, 1000, 5, 10);
+    esAlgorithm.runPopulationalIsotropicES(0, 0.5, 1000, 10, 20);
+    //esAlgorithm.run1Plus1ES(1, 0.5, 0.817, 10, 10000);
     cout << esAlgorithm.populationToCSVString() + "\n";
 
     clearGRN();
