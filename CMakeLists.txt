@@ -7,7 +7,15 @@ set(CMAKE_CXX_STANDARD 14)
 
 include_directories(.)
 
+add_library(liblsoda STATIC IMPORTED)
+set_property(TARGET liblsoda PROPERTY
+        IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/liblsoda.dll")
+set_property(TARGET liblsoda PROPERTY
+        IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/liblsoda.lib")
+
+
 add_executable(ES
+        lsoda.h
         dependencies.h
         ESAlgorithm.cpp
         ESAlgorithm.h
@@ -21,4 +29,11 @@ add_executable(ES
         read.cpp
         read.h
         rk4.c
-        rk4.h)
+        rk4.h
+
+        )
+
+target_link_libraries(ES PRIVATE liblsoda)
+
+#add_library()
+#target_link_libraries(ES "${CMAKE_SOURCE_DIR}/liblsoda.lib")

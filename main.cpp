@@ -4,6 +4,8 @@
 
 #include <cstring>
 #include "dependencies.h"
+#include "lsoda.h"
+
 
 using namespace std;
 int IND_SIZE;  // Tamanho do indivíduo (quantidade de coeficientes)
@@ -68,6 +70,47 @@ void twoBody(double t, double y[], double* dim, double yp[]) {
 
 
     return;
+}
+
+/*void twoBodyLSODA(double t, double *y, double *ydot, void *dim) {
+
+    double* tau = &dim[0];
+    double* k = &dim[TAU_SIZE];
+    double* n = &dim[TAU_SIZE+N_SIZE];
+
+    ydot[0] = ((1 - (pow((y[4] / maxValues[4]), (int)n[0])) / (pow((y[4] / maxValues[4]),  (int)n[0]) + pow(k[0],  (int)n[0]))) - (y[0] / maxValues[0])) / tau[0];
+
+    ydot[1] = (((pow((y[0] / maxValues[0]), (int)n[1])) / (pow((y[0] / maxValues[0]),  (int)n[1]) + pow(k[1],  (int)n[1]))) - (y[1] / maxValues[1])) / tau[1];
+
+    ydot[2] = (((pow((y[1] / maxValues[1]),  (int)n[2])) / (pow((y[1] / maxValues[1]),  (int)n[2]) + pow(k[2],  (int)n[2]))) - (y[2] / maxValues[2])) / tau[2];
+
+    ydot[3] = (((pow((y[2] / maxValues[2]),  (int)n[3])) / (pow((y[2] / maxValues[2]),  (int)n[3]) + pow(k[3],  (int)n[3]))) - (y[3] / maxValues[3])) / tau[3];
+
+    ydot[4] = (((pow((y[3] / maxValues[3]),  (int)n[4])) / (pow((y[3] / maxValues[3]),  (int)n[4]) + pow(k[4],  (int)n[4]))) - (y[4] / maxValues[4])) / tau[4];
+
+
+    return;
+}*/
+
+int twoBodyFixedLSODA(double t, double *y, double *ydot, void *data) {
+    //todo: observar que os n devem ser avaliados como inteiros
+    double max[] = {2.96, 1.8768, 1.0653, 1.0101, 1.4608};
+    double tau[] = {1.25, 4, 1.02, 1.57, 3.43};
+    double n[] = {13, 4, 3, 4, 16};
+    double k[] = {0.72, 0.50, 0.45, 0.51, 0.52};
+
+    ydot[0] = ((1 - (pow((y[4] / max[4]), n[0])) / (pow((y[4] / max[4]),  n[0]) + pow(k[0],  n[0]))) - (
+            y[0] / max[0])) / tau[0];
+
+    ydot[1] = (((pow((y[0] / max[0]), n[1])) / (pow((y[0] / max[0]),  n[1]) + pow(k[1],  n[1]))) - (y[1] / max[1])) / tau[1];
+
+    ydot[2] = (((pow((y[1] / max[1]),  n[2])) / (pow((y[1] / max[1]),  n[2]) + pow(k[2],  n[2]))) - (y[2] / max[2])) / tau[2];
+
+    ydot[3] = (((pow((y[2] / max[2]),  n[3])) / (pow((y[2] / max[2]),  n[3]) + pow(k[3],  n[3]))) - (y[3] / max[3])) / tau[3];
+
+    ydot[4] = (((pow((y[3] / max[3]),  n[4])) / (pow((y[3] / max[3]),  n[4]) + pow(k[4],  n[4]))) - (y[4] / max[4])) / tau[4];
+
+    return 0;
 }
 
 void twoBody10Var(double t, double y[], double* dim, double yp[]) {
@@ -145,6 +188,20 @@ void twoBody10Var(double t, double y[], double* dim, double yp[]) {
     yp[8] = (pow(y[6]/maximo_G,nIG)/(pow(y[6]/maximo_G,nIG)+pow(kIG,nIG))*pow(y[7]/maximo_H,nIH)/(pow(y[7]/maximo_H,nIH)+pow(kIH,nIH))-(y[8]/maximo_I)) / tauI;
 
     yp[9] = (pow(y[8]/maximo_I,nJI)/(pow(y[8]/maximo_I,nJI)+pow(kJI,nJI))-(y[9]/maximo_J)) / tauJ;
+
+
+    yp[3] = (pow(y[5]/maximo_F,nDF)/(pow(y[4]/maximo_E,nDF)+pow(kDF,nDF))-(y[3]/maximo_D)) / tauD;
+
+    cout << "#########################" <<endl;
+    cout << pow(y[5]/maximo_F,nDF) << endl;
+    cout << pow(y[4]/maximo_E,nDF) << endl;
+    cout << pow(kDF,nDF) << endl;
+    cout << (y[3]/maximo_D) << endl;
+    cout << tauD << endl;
+    cout << y[3] << endl;
+    cout << maximo_D << endl;
+    cout << "#########################" <<endl;
+
 
 }
 
@@ -286,6 +343,7 @@ double difference(double *actual, double **expected, int numVariables, int numEl
        // dif[i] = 0;
         for(int j=0; j<numElements; j++){
           //  dif[i] += fabs(actual[i][j] - expected[i][j]);
+            //if(i==3)continue;
             difTotal += fabs(actual[j*numVariables + i] - expected[i][j]);
         }
     }
@@ -297,34 +355,16 @@ double difference(double *actual, double **expected, int numVariables, int numEl
     return difTotal;
 }
 
-double difference(double **actual){
-    //todo: testar função e remover essa linha
-    //double *dif = new double [numVariables];
-    double difTotal = 0.0;
-    int numVariables = 5;
-    int numElements = 50;
-
-    for(int i=0; i< numVariables; i++){
-        // dif[i] = 0;
-        for(int j=0; j<numElements; j++){
-            //  dif[i] += fabs(actual[i][j] - expected[i][j]);
-            difTotal += fabs(actual[i][j] - expectedResult[i][j]);
-        }
-    }
-
-    return difTotal;
-}
-
 double grn5Evaluation(double *dim){
     rk4 (twoBody, tspan, y_0, nSteps, nVariables, vectors[0], dim, y);
     return difference(y, expectedResult, nVariables, 50);
 }
 
+
 double grn10Evaluation(double *dim){
     rk4 (twoBody10Var, tspan, y_0, nSteps, nVariables, vectors[0], dim, y);
     return difference(y, expectedResult, nVariables, 50);
 }
-
 
 
 void grn_test ( )
@@ -441,7 +481,7 @@ void initializeGRN5(){
         vectors[i] = new double [50];
     }
 
-    readFileToVectors("../GRN5.txt", nVariables + 1, vectors);
+    readFileToVectors("GRN5.txt", nVariables + 1, vectors);
     getMaxValues(vectors, maxValues, nVariables, nSteps+1);
 
     y_0 = new double [nVariables];
@@ -493,6 +533,7 @@ void initializeGRN10(){
 
 }
 
+
 void clearGRN(){
     //free ( t );
     delete [] y;
@@ -501,6 +542,59 @@ void clearGRN(){
     for(int i=0; i < nVariables; i++){
         delete [] vectors[i];
     }
+}
+
+double grn5EvaluationLSODA(){
+    double          atol[5], rtol[5], t, tout, y[5];
+    int             neq = 5;
+    int             iout;
+    initializeGRN5();
+
+    //esse y será y_0
+    y[0] = y_0[0];
+    y[1] = y_0[1];
+    y[2] = y_0[2];
+    y[3] = y_0[3];
+    y[4] = y_0[4];
+    t = 0.0E0;
+    tout = 72.0/49.0;
+    struct lsoda_opt_t opt = {0};
+    opt.ixpr = 0;
+    opt.rtol = rtol;
+    opt.atol = atol;
+    opt.itask = 1;
+
+
+    rtol[0] =atol[0] = 1.49012e-8;
+    rtol[1] =atol[1] = 1.49012e-8;
+    rtol[2] =atol[2] = 1.49012e-8;
+    rtol[3] =atol[3] = 1.49012e-8;
+    rtol[4] =atol[4] = 1.49012e-8;
+
+    struct lsoda_context_t ctx = {
+            .function = twoBodyFixedLSODA,
+            .data = NULL,
+            .neq = neq,
+            .state = 1,
+    };
+
+
+    lsoda_prepare(&ctx, &opt);
+
+    for (iout = 1; iout <= 12; iout++) {
+        lsoda(&ctx, y, &t, tout);
+        printf(" at t= %f y= %14.6e %14.6e %14.6e %14.6e %14.6e\n", t, y[0], y[1], y[2], y[3], y[4]);
+        if (ctx.state <= 0) {
+            printf("error istate = %d\n", ctx.state);
+            exit(0);
+        }
+        tout = tout +(72.0/49.0);
+    }
+    lsoda_free(&ctx);
+    clearGRN();
+
+    //rk4 (twoBody, tspan, y_0, nSteps, nVariables, vectors[0], dim, y);
+    return 0;//difference(y, expectedResult, nVariables, 50);
 }
 
 double grn5EvaluatioTest(){
@@ -537,7 +631,7 @@ double grn5EvaluatioTest(){
 
 double grn10EvaluatioTest(){
     initializeGRN10();
-    double dim[] = {1.73,2,0.81,0.11, 1.23, 1.78, 1.14, 1.04, 3.47, 3.21,
+    double dim[] = {1.73, 2, 0.81,0.11, 1.23, 1.78, 1.14, 1.04, 3.47, 3.21,
                     0.45, 0.56, 0.99, 0.77, 0.71, 0.66, 0.46, 0.48, 0.66, 0.99, 0.85, 0.61, 0.55, 0.46, 0.17,
                     20, 9, 24, 12, 2, 2, 6, 4, 7, 24, 2, 7, 21, 20, 3 };
 
@@ -745,10 +839,69 @@ void runGRN10ESComparisonExperiment(){
     clearGRN();
 }
 
+int fex(double t, double *y, double *ydot, void *data)
+{
+    ydot[0] = 1.0E4 * y[1] * y[2] - .04E0 * y[0];
+    ydot[2] = 3.0E7 * y[1] * y[1];
+    ydot[1] = -1.0 * (ydot[0] + ydot[2]);
+    return(0);
+}
+
+int testLsoda(void)
+{
+    double          atol[3], rtol[3], t, tout, y[3];
+    int             neq = 3;
+    int             iout;
+
+    y[0] = 1.0E0;
+    y[1] = 0.0E0;
+    y[2] = 0.0E0;
+    t = 0.0E0;
+    tout = 0.4E0;
+    struct lsoda_opt_t opt = {0};
+    opt.ixpr = 0;
+    opt.rtol = rtol;
+    opt.atol = atol;
+    opt.itask = 1;
+
+    rtol[0] = rtol[2] = 1.0E-4;
+    rtol[1] = 1.0E-4;
+    atol[0] = 1.0E-6;
+    atol[1] = 1.0E-10;
+    atol[2] = 1.0E-6;
+
+
+    struct lsoda_context_t ctx = {
+            .function = fex,
+            .data = NULL,
+            .neq = neq,
+            .state = 1,
+    };
+
+    lsoda_prepare(&ctx, &opt);
+
+    for (iout = 1; iout <= 12; iout++) {
+        lsoda(&ctx, y, &t, tout);
+        printf(" at t= %12.4e y= %14.6e %14.6e %14.6e\n", t, y[0], y[1], y[2]);
+        if (ctx.state <= 0) {
+            printf("error istate = %d\n", ctx.state);
+            exit(0);
+        }
+        tout = tout * 10.0E0;
+    }
+    lsoda_free(&ctx);
+    return(0);
+}
+
 int main(){
 
-    grn10EvaluatioTest();
+
+
+    //grn10EvaluatioTest();
    // grn5EvaluatioTest();
+
+    grn5EvaluationLSODA();
+
     return 0;
 
 
