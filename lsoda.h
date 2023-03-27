@@ -28,12 +28,12 @@ struct lsoda_opt_t {
 	double *atol;
 };
 
-typedef int (*_lsoda_f) (double, double *, double *, void *);
+typedef int (*_lsoda_f) (double, double *, double *, double *);
 
 
 struct lsoda_context_t {
 	_lsoda_f function;
-	void * data;
+	double * data;
 	int neq;
 	int state;
 	char * error;
@@ -42,14 +42,21 @@ struct lsoda_context_t {
 	struct lsoda_opt_t * opt;
 };
 
-extern "C" LIBLSODA int lsoda_prepare(struct lsoda_context_t * ctx, struct lsoda_opt_t * opt);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+LIBLSODA int lsoda_prepare(struct lsoda_context_t * ctx, struct lsoda_opt_t * opt);
 void lsoda_reset(struct lsoda_context_t * ctx);
-extern "C" LIBLSODA int lsoda(struct lsoda_context_t * ctx, double *y, double *t, double tout);
-extern "C" LIBLSODA void lsoda_free(struct lsoda_context_t * ctx);
+LIBLSODA int lsoda(struct lsoda_context_t * ctx, double *y, double *t, double tout);
+LIBLSODA void lsoda_free(struct lsoda_context_t * ctx);
 void lsoda_free_opt(struct lsoda_opt_t * opt);
 
 struct lsoda_context_t * lsoda_create_ctx();
 struct lsoda_opt_t * lsoda_create_opt();
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif
