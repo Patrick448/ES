@@ -34,6 +34,4 @@ add_executable(ES
         )
 
 target_link_libraries(ES PRIVATE liblsoda)
-
-#add_library()
 #target_link_libraries(ES "${CMAKE_SOURCE_DIR}/liblsoda.lib")

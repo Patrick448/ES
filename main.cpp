@@ -957,7 +957,7 @@ void runGRN5ESComparisonExperiment() {
     initializeGRN5();
 
     ESAlgorithm esAlgorithm = ESAlgorithm(IND_SIZE);
-    esAlgorithm.setEvaluationFunction(grn5Evaluation);
+    esAlgorithm.setEvaluationFunction(grn5EvaluationLSODA);
     esAlgorithm.setSigmaBounds(MIN_STRATEGY, MAX_STRATEGY);
 
     int cont = 0;
@@ -988,35 +988,41 @@ void runGRN5ESComparisonExperiment() {
 
     for (int i = 0; i < numRuns; i++) {
         cout << "Run " << to_string(i) << "\n";
-        esAlgorithm.run1Plus1ES(i, 0.5, 0.817, 10, 200000);
+
+        cout<< "1" <<"\n";
+        esAlgorithm.run1Plus1ES(i, 0.5, 0.817, 10, 200);
         results[0][i] = esAlgorithm.getPopulation().back()->getEvaluation();
         if (results[0][i] < bestIndsEval[0]) {
             bestIndsEval[0] = results[0][i];
             bestInds[0] = esAlgorithm.getPopulation().back()->toCSVString();
         }
 
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 10000, 10, 20);
+        cout<< "2" <<"\n";
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 10, 10, 20);
         results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[1][i] < bestIndsEval[1]) {
             bestIndsEval[1] = results[1][i];
             bestInds[1] = esAlgorithm.getPopulation()[0]->toCSVString();
         }
 
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 10000, 10, 20);
+        cout<< "3" <<"\n";
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 10, 10, 20);
         results[2][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[2][i] < bestIndsEval[2]) {
             bestIndsEval[2] = results[2][i];
             bestInds[2] = esAlgorithm.getPopulation()[0]->toCSVString();
         }
 
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 20000, 5, 10);
+        cout<< "4" <<"\n";
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 10, 5, 20);
         results[3][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[3][i] < bestIndsEval[3]) {
             bestIndsEval[3] = results[3][i];
             bestInds[3] = esAlgorithm.getPopulation()[0]->toCSVString();
         }
 
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 20000, 5, 10);
+        cout<< "5" <<"\n";
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 10, 5, 20);
         results[4][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[4][i] < bestIndsEval[4]) {
             bestIndsEval[4] = results[4][i];
@@ -1036,8 +1042,8 @@ void runGRN5ESComparisonExperiment() {
     string bestIndividuals =
             bestInds[0] + "\n" + bestInds[1] + "\n" + bestInds[2] + "\n" + bestInds[3] + "\n" + bestInds[4];
 
-    outputToFile("../comparison-30runs-200000it.csv", csvOutput, false);
-    outputToFile("../best-individuals.txt", bestIndividuals, false);
+    outputToFile("../comparison-30runs-200000it_LSODA.csv", csvOutput, false);
+    outputToFile("../best-individuals_LSODA.txt", bestIndividuals, false);
 
     clearGRN();
 }
@@ -1171,8 +1177,8 @@ int main() {
     return 0;*/
 
 
-    runGRN10ESComparisonExperiment();
-    //runGRN5ESComparisonExperiment();
+    //runGRN10ESComparisonExperiment();
+    runGRN5ESComparisonExperiment();
     return 0;
 
     //grn_test();
