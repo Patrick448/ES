@@ -977,7 +977,8 @@ void runGRN5ESComparisonExperiment() {
     }
 
     int numRuns = 30;
-    vector<vector<double>> results(5);
+    vector<vector<double>> results();
+    results.resize(5);
     results[0].resize(numRuns);
     results[1].resize(numRuns);
     results[2].resize(numRuns);
@@ -1072,12 +1073,22 @@ void runGRN10ESComparisonExperiment() {
     }
 
     int numRuns = 10;
-    vector<vector<double>> results(5);
+    /*vector<vector<double>> results(5);
+    
     results[0].resize(numRuns);
     results[1].resize(numRuns);
     results[2].resize(numRuns);
     results[3].resize(numRuns);
     results[4].resize(numRuns);
+    
+    */
+    double** results = new double*[5];
+    results[0] = new double[numRuns];
+    results[1] = new double[numRuns];
+    results[2] = new double[numRuns];
+    results[3] = new double[numRuns];
+    results[4] = new double[numRuns];
+
     vector<string> bestInds(5);
     vector<double> bestIndsEval(5, DBL_MAX);
 
@@ -1138,6 +1149,15 @@ void runGRN10ESComparisonExperiment() {
 
     outputToFile("../lsoda-comparison-GRN10-30runs-200000it.csv", csvOutput, false);
     outputToFile("../lsoda-best-individuals-GRN10.txt", bestIndividuals, false);
+
+
+    delete [] results[0];
+    delete [] results[1];
+    delete [] results[2];
+    delete [] results[3];
+    delete [] results[4];
+    delete [] results;
+
 
     clearGRN();
 }
