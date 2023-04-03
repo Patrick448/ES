@@ -3,11 +3,11 @@
 #include <stdlib.h>
 #pragma once
 
-#ifdef LIBLSODA_EXPORTS
+/*#ifdef LIBLSODA_EXPORTS
 #define LIBLSODA __declspec(dllexport)
 #else
 #define LIBLSODA __declspec(dllimport)
-#endif
+#endif*/
 
 /* ************************************
  * 
@@ -46,10 +46,10 @@ struct lsoda_context_t {
 extern "C" {
 #endif
 
-LIBLSODA int lsoda_prepare(struct lsoda_context_t * ctx, struct lsoda_opt_t * opt);
+/*LIBLSODA*/ int lsoda_prepare(struct lsoda_context_t * ctx, struct lsoda_opt_t * opt);
 void lsoda_reset(struct lsoda_context_t * ctx);
-LIBLSODA int lsoda(struct lsoda_context_t * ctx, double *y, double *t, double tout);
-LIBLSODA void lsoda_free(struct lsoda_context_t * ctx);
+/*LIBLSODA*/ int lsoda(struct lsoda_context_t * ctx, double *y, double *t, double tout);
+/*LIBLSODA*/ void lsoda_free(struct lsoda_context_t * ctx);
 void lsoda_free_opt(struct lsoda_opt_t * opt);
 
 struct lsoda_context_t * lsoda_create_ctx();

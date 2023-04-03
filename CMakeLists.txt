@@ -9,9 +9,11 @@ include_directories(.)
 
 add_library(liblsoda STATIC IMPORTED)
 set_property(TARGET liblsoda PROPERTY
+        IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/liblsoda.so")
+#[[set_property(TARGET liblsoda PROPERTY
         IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/liblsoda.dll")
 set_property(TARGET liblsoda PROPERTY
-        IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/liblsoda.lib")
+        IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/liblsoda.lib")]]
 
 
 add_executable(ES
