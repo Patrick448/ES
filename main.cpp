@@ -977,13 +977,27 @@ void runGRN5ESComparisonExperiment() {
     }
 
     int numRuns = 30;
-    vector<vector<double>> results();
-    results.resize(5);
+    /*vector<vector<double>> results(5);
+    
     results[0].resize(numRuns);
     results[1].resize(numRuns);
     results[2].resize(numRuns);
     results[3].resize(numRuns);
     results[4].resize(numRuns);
+    
+
+    double *results = new double[5*numRuns];
+
+#define R(i,j) results[i*5 + j]
+
+    */
+    double** results = new double*[5];
+    results[0] = new double[numRuns];
+    results[1] = new double[numRuns];
+    results[2] = new double[numRuns];
+    results[3] = new double[numRuns];
+    results[4] = new double[numRuns];
+
     vector<string> bestInds(5);
     vector<double> bestIndsEval(5, DBL_MAX);
 
@@ -1046,6 +1060,13 @@ void runGRN5ESComparisonExperiment() {
     outputToFile("../comparison-30runs-200000it_LSODA.csv", csvOutput, false);
     outputToFile("../best-individuals_LSODA.txt", bestIndividuals, false);
 
+
+    delete [] results[0];
+    delete [] results[1];
+    delete [] results[2];
+    delete [] results[3];
+    delete [] results[4];
+    delete [] results;
     clearGRN();
 }
 
