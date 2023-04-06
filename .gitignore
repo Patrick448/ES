@@ -4,3 +4,4 @@ CMakeFiles
 .cmake
 *.stackdump
 build
+cmake-build*
