@@ -851,12 +851,13 @@ double grn5EvaluationLSODA() {
     opt.atol = atol;
     opt.itask = 1;
 
-
     rtol[0] = atol[0] = 1.49012e-8;
     rtol[1] = atol[1] = 1.49012e-8;
     rtol[2] = atol[2] = 1.49012e-8;
     rtol[3] = atol[3] = 1.49012e-8;
     rtol[4] = atol[4] = 1.49012e-8;
+
+
 
     struct lsoda_context_t ctx = {
             .function = twoBodyFixedLSODA,
@@ -971,12 +972,12 @@ void runGRN5ESComparisonExperiment() {
         cont = i;
     }
 
-    for (int i = cont + 1; i < TAU_SIZE + K_SIZE + N_SIZE + 1; i++) {
+    for (int i = cont + 1; i < TAU_SIZE + K_SIZE + N_SIZE; i++) {
         esAlgorithm.setBounds(i, MIN_N, MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
         cont = i;
     }
 
-    int numRuns = 30;
+    int numRuns = 1;
     /*vector<vector<double>> results(5);
     
     results[0].resize(numRuns);
@@ -1088,7 +1089,7 @@ void runGRN10ESComparisonExperiment() {
         cont = i;
     }
 
-    for (int i = cont + 1; i < TAU_SIZE + K_SIZE + N_SIZE + 1; i++) {
+    for (int i = cont + 1; i < TAU_SIZE + K_SIZE + N_SIZE; i++) {
         esAlgorithm.setBounds(i, MIN_N, MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
         cont = i;
     }
@@ -1194,7 +1195,7 @@ int fex(double t, double *y, double *ydot, void *data) {
 int main() {
 
 
-/*
+
     //grn10EvaluatioTest();
     // grn5EvaluatioTest();
     initializeGRN5();
@@ -1215,7 +1216,7 @@ int main() {
     cout << "\n\n\n";
     clearGRN();
 
-    return 0;*/
+    return 0;
 
 
     //runGRN10ESComparisonExperiment();

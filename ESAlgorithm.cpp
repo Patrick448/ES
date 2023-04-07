@@ -210,6 +210,7 @@ void ESAlgorithm::run1Plus1ES(int seed, double initialSigma, double c, int n,  i
 
         }else{
             successHistory.push_back(0);
+            delete newInd;
         }
 
         if((i+1)%n == 0){
