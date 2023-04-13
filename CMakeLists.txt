@@ -14,12 +14,12 @@ include_directories(include)
 include_directories(liblsoda/src)
 
 add_custom_target(
-   libsoda
+   liblsoda
    COMMAND make
    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/liblsoda
 )
 
 add_executable(ES ${source_cpp} ${source_c})
-add_dependencies(ES libsoda)
-target_link_libraries(ES PRIVATE ${CMAKE_SOURCE_DIR}/liblsoda/src/liblsoda.so)
+add_dependencies(ES liblsoda)
+target_link_libraries(ES PUBLIC ${CMAKE_SOURCE_DIR}/liblsoda/src/liblsoda.so)
 

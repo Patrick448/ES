@@ -126,8 +126,9 @@ int twoBodyFixedLSODA(double t, double *y, double *ydot, double *data) {
     return 0;
 }
 
-int twoBody5VarLSODA(double t, double *y, double *ydot, double *data) {
+int twoBody5VarLSODA(double t, double *y, double *ydot, void *_data) {
 
+    double *data = (double *) _data;
     double *tau = &data[0];
     double *k = &data[TAU_SIZE];
     double *n = &data[TAU_SIZE + N_SIZE];
@@ -154,8 +155,8 @@ int twoBody5VarLSODA(double t, double *y, double *ydot, double *data) {
     return 0;
 }
 
-int twoBody10VarLSODA(double t, double *y, double *ydot, double *data) {
-
+int twoBody10VarLSODA(double t, double *y, double *ydot, void *_data) {
+    double *data = (double *) _data;
     double *tau = &data[0];
     double *k = &data[TAU_SIZE];
     double *n = &data[TAU_SIZE + N_SIZE];
@@ -743,7 +744,7 @@ void clearGRNData() {
 }
 
 
-double lsodaWrapper(int dydt(double t, double *y, double *ydot, double *data), double tspan[2],
+double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), double tspan[2],
                     double y0[], int n, int m, double tVec[], double *coefficients, double _yout[]) {
 
     //todo: tentar colocar essa alocação fora da função
