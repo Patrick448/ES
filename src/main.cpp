@@ -101,7 +101,7 @@ void twoBody5Var(double t, double y[], double *dim, double yp[]) {
     return;
 }*/
 
-int twoBodyFixedLSODA(double t, double *y, double *ydot, double *data) {
+int twoBodyFixedLSODA(double t, double *y, double *ydot, void *data) {
     //todo: observar que os n devem ser avaliados como inteiros
     double max[] = {2.96, 1.8768, 1.0653, 1.0101, 1.4608};
     double tau[] = {1.25, 4, 1.02, 1.57, 3.43};
@@ -156,6 +156,7 @@ int twoBody5VarLSODA(double t, double *y, double *ydot, void *_data) {
 }
 
 int twoBody10VarLSODA(double t, double *y, double *ydot, void *_data) {
+
     double *data = (double *) _data;
     double *tau = &data[0];
     double *k = &data[TAU_SIZE];
