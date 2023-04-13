@@ -671,13 +671,6 @@ void initializeGRN5() {
 
     maxValues = new double[nVariables];
 
-    //maxValues[0] = 0;//2.96;
-    //maxValues[1] = 0;//1.8768;
-    //maxValues[2] = 0;//1.0653;
-    //maxValues[3] = 0;//1.0101;
-    //maxValues[4] = 0;//1.4608;
-
-
     yout = new double[(nSteps + 1) * nVariables];
 
     vectors = new double *[nVariables + 1];
@@ -738,7 +731,7 @@ void initializeGRN10() {
 }
 
 
-void clearGRN() {
+void clearGRNData() {
     //free ( t );
     delete[] yout;
     delete[] y_0;
@@ -753,7 +746,7 @@ void clearGRN() {
 double lsodaWrapper(int dydt(double t, double *y, double *ydot, double *data), double tspan[2],
                     double y0[], int n, int m, double tVec[], double *coefficients, double _yout[]) {
 
-    //todo: colocar essa alocação fora da função
+    //todo: tentar colocar essa alocação fora da função
     // esses vetores serão alocados toda vez, e essa função será chamada
     // a cada avaliação de indivíduo
 
@@ -763,15 +756,12 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, double *data), d
 
     double*  iterYOut = new double[m];
     int iout;
-    //initializeGRN5();
 
     for(int i=0; i<m; i++){
         iterYOut[i] = y0[i];
         rtol[i] = atol[i] = 1.49012e-8;
         _yout[i] = y0[i];
-       // x[i] = y0[i];
     }
-
 
     t = 0.0E0;
     dt = ( tspan[1] - tspan[0] ) / ( double ) ( n );
@@ -783,25 +773,20 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, double *data), d
     opt.atol = atol;
     opt.itask = 1;
 
-
     struct lsoda_context_t ctx = {
             .function = dydt,
             .data = NULL,
             .neq = m,
             .state = 1,
     };
-
+    ctx.data = coefficients;
 
     lsoda_prepare(&ctx, &opt);
-    //double dim[] = {1.25, 4, 1.02, 1.57, 3.43, 0.72, 0.5, 0.45, 0.51, 0.52, 13, 4, 3, 4, 16};
 
     for (iout = 1; iout <= n; iout++) {
-        ctx.data = coefficients;
         lsoda(&ctx, iterYOut, &t, tout);
-        //printf(" at t= %f y= %14.6e %14.6e %14.6e %14.6e %14.6e\n", t, iterYOut[0], iterYOut[1], iterYOut[2], iterYOut[3], iterYOut[4]);
         for(int i=0; i<m; i++){
            _yout[iout*m + i] = iterYOut[i];
-           //cout << iout*m + i << ": " << _yout[iout*m + i] <<"\n";
         }
 
         if (ctx.state <= 0) {
@@ -815,10 +800,8 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, double *data), d
     delete [] atol;
     delete [] iterYOut;
     lsoda_free(&ctx);
-    //clearGRN();
 
-    //rk4 (twoBody, tspan, y_0, nSteps, nVariables, vectors[0], dim, y);
-    return 0;//difference(y, expectedResult, nVariables, 50);
+    return 0;
 }
 
 double grn5EvaluationLSODA(double *dim) {
@@ -882,7 +865,7 @@ double grn5EvaluationLSODA() {
         tout = tout + (72.0 / 49.0);
     }
     lsoda_free(&ctx);
-    clearGRN();
+    clearGRNData();
 
     //rk4 (twoBody, tspan, y_0, nSteps, nVariables, vectors[0], dim, y);
     return 0;//difference(y, expectedResult, nVariables, 50);
@@ -914,7 +897,7 @@ double grn5EvaluatioTest() {
 
 
     cout << "Diference: " << difference(yout, expectedResult, nVariables, 50) << endl;
-    clearGRN();
+    clearGRNData();
 
     return 0;
 }
@@ -949,7 +932,7 @@ double grn10EvaluatioTest() {
 
 
     cout << "Diference: " << difference(yout, expectedResult, nVariables, 50) << "\n\n";
-    clearGRN();
+    clearGRNData();
 
     return 0;
 }
@@ -978,19 +961,10 @@ void runGRN5ESComparisonExperiment() {
     }
 
     int numRuns = 1;
-    /*vector<vector<double>> results(5);
-    
-    results[0].resize(numRuns);
-    results[1].resize(numRuns);
-    results[2].resize(numRuns);
-    results[3].resize(numRuns);
-    results[4].resize(numRuns);
-    
 
-    double *results = new double[5*numRuns];
-
-#define R(i,j) results[i*5 + j]
-
+    /*todo: usar representação contígua para essa matriz
+     * e, para calcular posição, usar
+     * #define R(i,j) results[i*5 + j]
     */
     double** results = new double*[5];
     results[0] = new double[numRuns];
@@ -1068,7 +1042,7 @@ void runGRN5ESComparisonExperiment() {
     delete [] results[3];
     delete [] results[4];
     delete [] results;
-    clearGRN();
+    clearGRNData();
 }
 
 void runGRN10ESComparisonExperiment() {
@@ -1181,7 +1155,7 @@ void runGRN10ESComparisonExperiment() {
     delete [] results;
 
 
-    clearGRN();
+    clearGRNData();
 }
 
 int fex(double t, double *y, double *ydot, void *data) {
@@ -1194,116 +1168,31 @@ int fex(double t, double *y, double *ydot, void *data) {
 
 int main() {
 
-
-
-    //grn10EvaluatioTest();
-    // grn5EvaluatioTest();
+    //testa a saida da função difference com coeficientes pré-definidos
+    //resultado: ~108.0
     initializeGRN5();
     double dim5[] = {1.25, 4, 1.02, 1.57, 3.43, 0.72, 0.5, 0.45, 0.51, 0.52, 13, 4, 3, 4, 16};
-    //double tspan_[] = {0.0,  72.0};
-    //lsodaWrapperTest(twoBody5VarLSODA, tspan, y_0, 49, nVariables, vectors[0], dim, yout);
-    //lsodaWrapper(twoBody5VarLSODA, tspan, y_0, nSteps, nVariables, vectors[0], dim, y);
     cout << grn5EvaluationLSODA(dim5) << "\n";
     cout << "\n\n\n";
-    //grn5EvaluationLSODA();
-    clearGRN();
+    clearGRNData();
 
+    //resultado: ~56.0
     initializeGRN10();
     double dim10[] = {1.73,2,0.81,0.11, 1.23, 1.78, 1.14, 1.04, 3.47, 3.21,
                       0.45, 0.56, 0.99, 0.77, 0.71, 0.66, 0.46, 0.48, 0.66, 0.99, 0.85, 0.61, 0.55, 0.46, 0.17,
                       20, 9, 24, 12, 2, 2, 6, 4, 7, 24, 2, 7, 21, 20, 3};
     cout << grn10EvaluationLSODA(dim10) << "\n";
     cout << "\n\n\n";
-    clearGRN();
+    clearGRNData();
 
     return 0;
 
 
     //runGRN10ESComparisonExperiment();
-    runGRN5ESComparisonExperiment();
-    return 0;
-
-    //grn_test();
-    //return 0;
-    //double a = 123456789123400000.5574455458415154484;
-    // cout << a << endl;
-
-
-    //for(int i=0; i < 100; i++){
-    //    a =a/0.000000000001;
-    //    cout << a << endl;
-    //}
-
-    //cout << a / (a+10) << "\n";
+    //runGRN5ESComparisonExperiment();
     //return 0;
 
 
-    initializeGRN5();
-
-    //cout << grn5EvaluatioTest() <<"\n";
-    //return 0;
-
-    ESAlgorithm esAlgorithm = ESAlgorithm(IND_SIZE);
-    esAlgorithm.setEvaluationFunction(grn5Evaluation);
-
-    int cont = 0;
-    for (int i = 0; i < TAU_SIZE; i++) {
-        esAlgorithm.setBounds(i, MIN_TAU, MAX_TAU, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
-        cont = i;
-    }
-
-    for (int i = cont + 1; i < TAU_SIZE + K_SIZE; i++) {
-        esAlgorithm.setBounds(i, MIN_K, MAX_K, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
-        cont = i;
-    }
-
-    for (int i = cont + 1; i < TAU_SIZE + K_SIZE + N_SIZE + 1; i++) {
-        esAlgorithm.setBounds(i, MIN_N, MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
-        cont = i;
-    }
-
-    esAlgorithm.setSigmaBounds(MIN_STRATEGY, MAX_STRATEGY);
-    esAlgorithm.runPopulationalIsotropicES(0, 0.5, 1000, 10, 20);
-    //esAlgorithm.run1Plus1ES(1, 0.5, 0.817, 10, 10000);
-    cout << esAlgorithm.populationToCSVString() + "\n";
-
-    clearGRN();
-    return 0;
-//    main_test2();
-
-    /* grn_test();
-
-     double *vectors[6];
-     for(int i=0; i<6; i++){
-         vectors[i] = new double [50];
-     }
-
-     readFileToVectors("../GRN5.txt", 6, vectors);
-     readFile("../GRN5.txt", 5);
-     return 0;*/
-
-    /*cout << "\nHello\n";
-    int numDim = 2;
-    ESAlgorithm esAlgorithm = ESAlgorithm(numDim, 5, 10);
-
-    for(int i=0; i<numDim; i++){
-       esAlgorithm.setBounds(i, -10, 10, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
-    }
-   // esAlgorithm.createPopulation(0, 10);
-
-   esAlgorithm.setEvaluationFunction(testFunc);
-   esAlgorithm.run1Plus1ES(1, 1.0, 0.817, 10, 250);
-   cout << esAlgorithm.populationToCSVString() + "\n";
-
-    esAlgorithm.setSigmaBounds(0.1, 10);
-    esAlgorithm.runPopulationalIsotropicES(1, 0.5, 100, 5, 10);
-    cout << esAlgorithm.populationToCSVString() + "\n";
-
-    esAlgorithm.setSigmaBounds(0.1, 10);
-    esAlgorithm.runPopulationalNonIsotropicES(1, 0.5, 100, 5, 10);
-    cout << esAlgorithm.populationToCSVString() + "\n";
-
-    cout << "\nFinished\n";*/
 }
 
 
