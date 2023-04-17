@@ -17,7 +17,7 @@ CC = clang
 endif
 
 ifeq ($(USEGCC),1)
-CC = g++
+CC = gcc
 endif
 
 ifeq ($(OS), Linux)

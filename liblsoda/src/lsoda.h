@@ -1,5 +1,5 @@
-#ifndef _LSODA_H_
-#define _LSODA_H_
+#ifndef LSODA_H__
+#define LSODA_H__
 #include <stdlib.h>
 /* ************************************
  * 
@@ -44,4 +44,4 @@ struct lsoda_context_t * lsoda_create_ctx();
 struct lsoda_opt_t * lsoda_create_opt();
 
 
-#endif
+#endif /* LSODA_H__ */

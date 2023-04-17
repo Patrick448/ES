@@ -1,5 +1,5 @@
-#ifndef DEFINES_HPP
-#define DEFINES_HPP
+#ifndef DEPENDENCIES_H__
+#define DEPENDENCIES_H__
 
 #include <fstream>
 #include <iomanip>
@@ -13,16 +13,18 @@
 #include <ctime>
 #include <sys/time.h>
 #include <time.h>
-#include "read.h"
-#include "ode.h"
 #include <iostream>
-#include "ESAlgorithm.h"
 #include <random>
 #include <float.h>
+
+
+#include "ESAlgorithm.h"
+#include "read.h"
+#include "ode.h"
 #include "rk4.h"
 
 
 
 using namespace std;
 
-#endif // DEFINES_HPP
+#endif /* DEPENDENCIES_H__ */

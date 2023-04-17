@@ -12,17 +12,6 @@ include_directories(include)
 include_directories(liblsoda/src)
 
 
-# # Example
-# add_external_library(TARGET YourLib
-#     COMMAND           /bin/bash compile_your_lib.sh
-#     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-#     OUTPUT            "output/yourlib.a"
-#     INCLUDE_DIRS      "include/a" "include/b"
-#     COMMENT           "Building YourLib")
-
-# add_executable(YourExe)
-# target_link_libraries(YourExe YourLib)
-
 # Create a target out of the library compilation result
 add_custom_target(lsoda_target
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/liblsoda/src
@@ -30,7 +19,7 @@ add_custom_target(lsoda_target
     COMMENT "Building liblsoda")
 
 # Create an library target out of the library compilation result
-add_library(liblsoda SHARED IMPORTED GLOBAL)
+add_library(liblsoda STATIC IMPORTED GLOBAL)
 add_dependencies(liblsoda lsoda_target)
 set_target_properties(liblsoda
     PROPERTIES
@@ -41,3 +30,5 @@ set_target_properties(liblsoda
 add_executable(ES ${source_cpp} ${source_c})
 target_link_libraries(ES PUBLIC liblsoda)
 
+# add_executable(test tests/test.cpp)
+# target_link_libraries(test PUBLIC liblsoda)

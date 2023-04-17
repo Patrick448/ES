@@ -4,7 +4,16 @@
 
 #include <cstring>
 #include "dependencies.h"
+
+#ifdef __cplusplus 
+extern "C" { 
+#endif 
+
 #include "lsoda.h"
+
+#ifdef __cplusplus 
+}
+#endif 
 
 
 using namespace std;
