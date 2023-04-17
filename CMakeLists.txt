@@ -14,7 +14,7 @@ include_directories(liblsoda/src)
 
 # Create a target out of the library compilation result
 add_custom_target(lsoda_target
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/liblsoda/src
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/liblsoda/src
     COMMAND make
     COMMENT "Building liblsoda")
 
@@ -23,9 +23,9 @@ add_library(liblsoda STATIC IMPORTED GLOBAL)
 add_dependencies(liblsoda lsoda_target)
 set_target_properties(liblsoda
     PROPERTIES
-    IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/liblsoda/src/liblsoda.so
-    IMPORTED_IMPLIB ${CMAKE_CURRENT_SOURCE_DIR}/liblsoda/src/liblsoda.so
-    INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/liblsoda/src)
+    IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/liblsoda/src/liblsoda.so
+    IMPORTED_IMPLIB ${CMAKE_SOURCE_DIR}/liblsoda/src/liblsoda.so
+    INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/liblsoda/src)
 
 add_executable(ES ${source_cpp} ${source_c})
 target_link_libraries(ES PUBLIC liblsoda)
