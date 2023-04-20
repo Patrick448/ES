@@ -19,6 +19,7 @@ vector<double> doubleVectorFromText(string text)
         }
     }
 
+    result.push_back(stod(part));
     return result;
 }
 
@@ -78,6 +79,7 @@ void readFileToVectors(string path, int numVectors, double *vectors[])
     //vector<vector<double>> allElements(numVectors);
 
 
+    //todo: ver se preciso tratar caso de linha vazia
     for(int i=0; !input.eof(); i++){
         getline(input, textAux);
         lineElements = doubleVectorFromText(textAux);

@@ -855,6 +855,9 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), dou
     for (iout = 1; iout <= n; iout++)
     {
         lsoda(&ctx, iterYOut, &t, tout);
+        printf(" at t= %12.4e y= %14.6e %14.6e %14.6e %14.6e %14.6e\n", t,
+               iterYOut[0], iterYOut[1], iterYOut[2], iterYOut[3], iterYOut[4]);
+
         for (int i = 0; i < m; i++)
         {
             _yout[iout * m + i] = iterYOut[i];
@@ -874,6 +877,66 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), dou
     lsoda_free(&ctx);
 
     return 0;
+}
+
+int test(int dydt(double t, double *y, double *ydot, void *data), double tspan[2],
+         double y0[], int n, int m, double tVec[], double *coefficients, double _yout[])
+{
+    double          atol[5], rtol[5], t, tout, y[5];
+    int             neq = 5;
+    int             iout;
+    double dt = (tspan[1] - tspan[0]) / (double)(n);
+    y[0] = 0.7095;
+    y[1] = 0.1767;
+    y[2] = 0.1522;
+    y[3] = 0.0806;
+    y[4] = 0.7095;
+
+    _yout[0] = 0.7095;
+    _yout[1] = 0.1767;
+    _yout[2] = 0.1522;
+    _yout[3] = 0.0806;
+    _yout[4] = 0.7095;
+
+    t = 0.0E0;
+    tout = dt;
+    struct lsoda_opt_t opt = {0};
+    opt.ixpr = 0;
+    opt.rtol = rtol;
+    opt.atol = atol;
+    opt.itask = 1;
+
+    rtol[0] = atol[0] = 1.49012e-8;
+    rtol[1] = atol[1] = 1.49012e-8;
+    rtol[2] = atol[2] = 1.49012e-8;
+    rtol[3] = atol[3] = 1.49012e-8;
+    rtol[4] = atol[4] = 1.49012e-8;
+
+
+    struct lsoda_context_t ctx = {
+            .function = twoBody5VarLSODA,
+            .data = coefficients,
+            .neq = neq,
+            .state = 1,
+    };
+
+    lsoda_prepare(&ctx, &opt);
+
+    for (iout = 1; iout <= n; iout++) {
+        lsoda(&ctx, y, &t, tout);
+        printf(" at t= %12.4e y= %14.6e %14.6e %14.6e %14.6e %14.6e\n", t, y[0], y[1], y[2], y[3], y[4]);
+
+        for(int i=0; i<m; i++) {
+            _yout[m * iout + i] = y[i];
+        }
+        if (ctx.state <= 0) {
+            printf("error istate = %d\n", ctx.state);
+            exit(0);
+        }
+        tout = tout + dt;
+    }
+    lsoda_free(&ctx);
+    return(0);
 }
 
 double grn5EvaluationLSODA(double *dim)
@@ -1268,23 +1331,24 @@ int fex(double t, double *y, double *ydot, void *data)
 
 int main()
 {
-
+   // test(twoBodyFixedLSODA, tspanTest, nullptr, 49, 5, nullptr, nullptr, nullptr);
+    //cout << "\n\n\n";
     // testa a saida da função difference com coeficientes pré-definidos
     // resultado: ~108.0
-    // initializeGRN5();
+    initializeGRN5();
     double dim5[] = {1.25, 4, 1.02, 1.57, 3.43, 0.72, 0.5, 0.45, 0.51, 0.52, 13, 4, 3, 4, 16};
     cout << grn5EvaluationLSODA(dim5) << "\n";
     cout << "\n\n\n";
     // clearGRNData();
 
     // //resultado: ~56.0
-    // initializeGRN10();
-    // double dim10[] = {1.73,2,0.81,0.11, 1.23, 1.78, 1.14, 1.04, 3.47, 3.21,
-    //                   0.45, 0.56, 0.99, 0.77, 0.71, 0.66, 0.46, 0.48, 0.66, 0.99, 0.85, 0.61, 0.55, 0.46, 0.17,
-    //                   20, 9, 24, 12, 2, 2, 6, 4, 7, 24, 2, 7, 21, 20, 3};
-    // cout << grn10EvaluationLSODA(dim10) << "\n";
-    // cout << "\n\n\n";
-    // clearGRNData();
+     initializeGRN10();
+     double dim10[] = {1.73,2,0.81,0.11, 1.23, 1.78, 1.14, 1.04, 3.47, 3.21,
+                       0.45, 0.56, 0.99, 0.77, 0.71, 0.66, 0.46, 0.48, 0.66, 0.99, 0.85, 0.61, 0.55, 0.46, 0.17,
+                       20, 9, 24, 12, 2, 2, 6, 4, 7, 24, 2, 7, 21, 20, 3};
+     cout << grn10EvaluationLSODA(dim10) << "\n";
+     cout << "\n\n\n";
+     clearGRNData();
 
     return 0;
 

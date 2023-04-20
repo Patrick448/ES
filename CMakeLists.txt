@@ -30,5 +30,9 @@ set_target_properties(liblsoda
 add_executable(ES ${source_cpp} ${source_c})
 target_link_libraries(ES PUBLIC liblsoda)
 
-# add_executable(test tests/test.cpp)
-# target_link_libraries(test PUBLIC liblsoda)
+add_executable(test tests/test.cpp)
+target_link_libraries(test PUBLIC liblsoda)
+
+add_executable(test2 tests/test2.cpp)
+target_link_libraries(test2 PUBLIC liblsoda)
+
