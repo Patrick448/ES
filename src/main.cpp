@@ -37,7 +37,31 @@ double tspan[2];
 double *yout;
 double *y_0;
 double **vectors;
-double **expectedResult; 
+double **expectedResult;
+
+struct appContext {
+    int IND_SIZE;        // Tamanho do indivíduo (quantidade de coeficientes)
+    double MIN_K;        // Menor valor que K pode assumir
+    double MAX_K;        // Maior valor que K pode assumir
+    double MIN_N;        // Menor valor que N pode assumir
+    double MAX_N;        // Maior valor que N pode assumir
+    double MIN_TAU;      // Menor valor que TAU pode assumir
+    double MAX_TAU;      // Maior valor que TAU pode assumir
+    double MIN_STRATEGY; // Menor valor que a estratégia pode assumir
+    double MAX_STRATEGY; // Maior valor que a estratégia pode assumir
+    int TAU_SIZE;
+    int N_SIZE;
+    int K_SIZE;
+    double *maxValues;
+
+    int nVariables;
+    int nSteps;
+    double tspan[2];
+    double *yout;
+    double *y_0;
+    double **vectors;
+    double **expectedResult;
+};
 
 void twoBody(double t, double y[], double max[], double tau[], double n[], double k[], double yp[])
 {
@@ -716,6 +740,48 @@ void getMaxValues(double **data, double *outMaxValues, int numVariables, int num
     }
 }
 
+void initializeGRN5Context(appContext* ctx)
+{
+    //appContext *ctx = new appContext;
+    ctx->IND_SIZE = 15;      // Tamanho do indivíduo (quantidade de coeficientes)
+    ctx->MIN_K = 0.1;        // Menor valor que K pode assumir
+    ctx->MAX_K = 1;          // Maior valor que K pode assumir
+    ctx->MIN_N = 1;          // Menor valor que N pode assumir
+    ctx->MAX_N = 25;         // Maior valor que N pode assumir
+    ctx->MIN_TAU = 0.1;      // Menor valor que TAU pode assumir
+    ctx->MAX_TAU = 5;        // Maior valor que TAU pode assumir
+    ctx->MIN_STRATEGY = 0.1; // Menor valor que a estratégia pode assumir
+    ctx->MAX_STRATEGY = 10;  // Maior valor que a estratégia pode assumir
+    ctx->TAU_SIZE = 5;
+    ctx->N_SIZE = 5;
+    ctx->K_SIZE = 5;
+    ctx->nVariables = 5;
+    ctx->nSteps = 49;
+
+    ctx->maxValues = new double[ctx->nVariables];
+
+    ctx->yout = new double[(ctx->nSteps + 1) * ctx->nVariables];
+
+    ctx->vectors = new double *[ctx->nVariables + 1];
+    for (int i = 0; i < ctx->nVariables + 1; i++)
+    {
+        ctx->vectors[i] = new double[50];
+    }
+
+    readFileToVectors("GRN5.txt", ctx->nVariables + 1, ctx->vectors);
+    getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->nSteps + 1);
+
+    ctx->y_0 = new double[ctx->nVariables];
+    ctx->expectedResult = &ctx->vectors[1];
+    for (int i = 0; i < ctx->nVariables; i++)
+    {
+        ctx->y_0[i] = ctx->vectors[i + 1][0];
+    }
+
+    ctx->tspan[0] = 0.0;
+    ctx->tspan[1] = 72.0;
+}
+
 void initializeGRN5()
 {
     IND_SIZE = 15;      // Tamanho do indivíduo (quantidade de coeficientes)
@@ -1335,7 +1401,9 @@ int main()
     //cout << "\n\n\n";
     // testa a saida da função difference com coeficientes pré-definidos
     // resultado: ~108.0
-    initializeGRN5();
+    appContext ctx{};
+    initializeGRN5Context(&ctx);
+
     double dim5[] = {1.25, 4, 1.02, 1.57, 3.43, 0.72, 0.5, 0.45, 0.51, 0.52, 13, 4, 3, 4, 16};
     cout << grn5EvaluationLSODA(dim5) << "\n";
     cout << "\n\n\n";
