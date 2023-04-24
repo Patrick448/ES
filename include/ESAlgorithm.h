@@ -16,11 +16,12 @@ private:
     vector<int> upperBoundTypes;
     vector<int> lowerBoundTypes;
     int numDimensions;
-    double (*evaluationFunction)(double*);
+    double (*evaluationFunction)(void*, void*);
     int algorithmType;
     int evaluationsCounter;
     double minSigma;
     double maxSigma;
+    void *context;
 
 public:
     static int UPPER_OPEN;
@@ -41,7 +42,8 @@ public:
     void setNumDimensions(int val);
     void setBounds(int index, double lower, double upper, int lowerBoundType, int upperBoundType);
     int getNumDimensions();
-    void setEvaluationFunction(double (*evaluationFunction)(double*));
+    void setEvaluationFunction(double (*evaluationFunction)(void*, void*));
+    void setContext(void* ctx);
     void createPopulation(int seed, int numIndividuals);
     double getBound(int index, int which);
     void setAlgorithmType(int type);

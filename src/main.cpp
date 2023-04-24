@@ -17,6 +17,7 @@ extern "C"
 #endif
 
 using namespace std;
+/*
 int IND_SIZE;        // Tamanho do indivíduo (quantidade de coeficientes)
 double MIN_K;        // Menor valor que K pode assumir
 double MAX_K;        // Maior valor que K pode assumir
@@ -38,6 +39,7 @@ double *yout;
 double *y_0;
 double **vectors;
 double **expectedResult;
+*/
 
 struct appContext {
     int IND_SIZE;        // Tamanho do indivíduo (quantidade de coeficientes)
@@ -61,6 +63,7 @@ struct appContext {
     double *y_0;
     double **vectors;
     double **expectedResult;
+    double* individual;
 };
 
 void twoBody(double t, double y[], double max[], double tau[], double n[], double k[], double yp[])
@@ -93,7 +96,7 @@ void printVector(double *vec, int size)
     }
     cout << "\n";
 }
-
+/*
 void twoBody5Var(double t, double y[], double *dim, double yp[])
 {
 
@@ -128,6 +131,7 @@ void twoBody5Var(double t, double y[], double *dim, double yp[])
 
     return;
 }
+*/
 
 /*void twoBodyLSODA(double t, double *y, double *ydot, void *dim) {
 
@@ -174,6 +178,7 @@ int twoBodyFixedLSODA(double t, double *y, double *ydot, void *data)
     return 0;
 }
 
+/*
 int twoBody5VarLSODA(double t, double *y, double *ydot, void *_data)
 {
 
@@ -212,14 +217,59 @@ int twoBody5VarLSODA(double t, double *y, double *ydot, void *_data)
 
     return 0;
 }
+*/
+
+int twoBody5VarLSODA(double t, double *y, double *ydot, void *_data)
+{
+
+    appContext *ctx = (appContext *)_data;
+    double* data = ctx->individual;
+    double* maxValues = ctx->maxValues;
+    double *tau = &data[0];
+    double *k = &data[ctx->TAU_SIZE];
+    double *n = &data[ctx->TAU_SIZE + ctx->N_SIZE];
+    // double max[] = {2.96, 1.8768, 1.0653, 1.0101, 1.4608};
+
+    // maxValues = max;
+
+    ydot[0] = ((1 - (pow((y[4] / maxValues[4]), (int)n[0])) /
+                    (pow((y[4] / maxValues[4]), (int)n[0]) + pow(k[0], (int)n[0]))) -
+               (y[0] / maxValues[0])) /
+              tau[0];
+
+    ydot[1] = (((pow((y[0] / maxValues[0]), (int)n[1])) /
+                (pow((y[0] / maxValues[0]), (int)n[1]) + pow(k[1], (int)n[1]))) -
+               (y[1] / maxValues[1])) /
+              tau[1];
+
+    ydot[2] = (((pow((y[1] / maxValues[1]), (int)n[2])) /
+                (pow((y[1] / maxValues[1]), (int)n[2]) + pow(k[2], (int)n[2]))) -
+               (y[2] / maxValues[2])) /
+              tau[2];
+
+    ydot[3] = (((pow((y[2] / maxValues[2]), (int)n[3])) /
+                (pow((y[2] / maxValues[2]), (int)n[3]) + pow(k[3], (int)n[3]))) -
+               (y[3] / maxValues[3])) /
+              tau[3];
+
+    ydot[4] = (((pow((y[3] / maxValues[3]), (int)n[4])) /
+                (pow((y[3] / maxValues[3]), (int)n[4]) + pow(k[4], (int)n[4]))) -
+               (y[4] / maxValues[4])) /
+              tau[4];
+
+    return 0;
+}
+
 
 int twoBody10VarLSODA(double t, double *y, double *ydot, void *_data)
 {
 
-    double *data = (double *)_data;
-    double *tau = &data[0];
-    double *k = &data[TAU_SIZE];
-    double *n = &data[TAU_SIZE + N_SIZE];
+    appContext *ctx = (appContext *)_data;
+    double* data = ctx->individual;
+    double* maxValues = ctx->maxValues;    double *tau = &data[0];
+
+    double *k = &data[ctx->TAU_SIZE];
+    double *n = &data[ctx->TAU_SIZE + ctx->N_SIZE];
     double maximo_A = maxValues[0];
     double maximo_B = maxValues[1];
     double maximo_C = maxValues[2];
@@ -347,6 +397,7 @@ int twoBody10VarLSODA(double t, double *y, double *ydot, void *_data)
     return 0;
 }
 
+/*
 void twoBody10Var(double t, double y[], double *dim, double yp[])
 {
 
@@ -477,6 +528,7 @@ void twoBody10Var(double t, double y[], double *dim, double yp[])
     //    cout << maximo_D << endl;
     //    cout << "#########################" << endl;
 }
+*/
 
 void twoBodyFixed(double t, double y[], double *dim, double yp[])
 {
@@ -638,18 +690,22 @@ double difference(double *actual, double **expected, int numVariables, int numEl
     return difTotal;
 }
 
+/*
 double grn5Evaluation(double *dim)
 {
     rk4(twoBody5Var, tspan, y_0, nSteps, nVariables, vectors[0], dim, yout);
     return difference(yout, expectedResult, nVariables, 50);
 }
 
+*/
+/*
 double grn10Evaluation(double *dim)
 {
     rk4(twoBody10Var, tspan, y_0, nSteps, nVariables, vectors[0], dim, yout);
     return difference(yout, expectedResult, nVariables, 50);
 }
-
+*/
+/*
 void grn_test()
 {
     // int m=5;
@@ -692,9 +748,9 @@ void grn_test()
     rk4(twoBodyFixed, tspan, y0, nSteps, nVariables, vectors[0], coefficients, yout);
 
     phase_plot(nSteps, nVariables, vectors[0], yout);
-    /*
-      Free memory.
-    */
+
+    //Free memory.
+
     // free ( t );
     // free ( y );
     delete[] yout;
@@ -706,6 +762,7 @@ void grn_test()
 
     return;
 }
+*/
 
 double testFunc(Individual *ind)
 {
@@ -740,6 +797,7 @@ void getMaxValues(double **data, double *outMaxValues, int numVariables, int num
     }
 }
 
+//todo: make a clearGRN5Data for this context object
 void initializeGRN5Context(appContext* ctx)
 {
     //appContext *ctx = new appContext;
@@ -782,6 +840,47 @@ void initializeGRN5Context(appContext* ctx)
     ctx->tspan[1] = 72.0;
 }
 
+void initializeGRN10Context(appContext* ctx)
+{
+    ctx->IND_SIZE = 40;      // Tamanho do indivíduo (quantidade de coeficientes)
+    ctx->MIN_K = 0.1;        // Menor valor que K pode assumir
+    ctx->MAX_K = 1;          // Maior valor que K pode assumir
+    ctx->MIN_N = 1;          // Menor valor que N pode assumir
+    ctx->MAX_N = 25;         // Maior valor que N pode assumir
+    ctx->MIN_TAU = 0.1;      // Menor valor que TAU pode assumir
+    ctx->MAX_TAU = 5;        // Maior valor que TAU pode assumir
+    ctx->MIN_STRATEGY = 0.1; // Menor valor que a estratégia pode assumir
+    ctx->MAX_STRATEGY = 10;  // Maior valor que a estratégia pode assumir
+    ctx->TAU_SIZE = 10;
+    ctx->N_SIZE = 15;
+    ctx->K_SIZE = 15;
+    ctx->nVariables = 10;
+    ctx->nSteps = 49;
+    ctx->maxValues = new double[ctx->nVariables];
+
+    ctx->yout = new double[(ctx->nSteps + 1) * ctx->nVariables];
+
+    ctx->vectors = new double *[ctx->nVariables + 1];
+    for (int i = 0; i < ctx->nVariables + 1; i++)
+    {
+        ctx->vectors[i] = new double[50];
+    }
+
+    readFileToVectors("GRN10.txt", ctx->nVariables + 1, ctx->vectors);
+    getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->nSteps + 1);
+
+    ctx->y_0 = new double[ctx->nVariables];
+    ctx->expectedResult = &ctx->vectors[1];
+    for (int i = 0; i < ctx->nVariables; i++)
+    {
+        ctx->y_0[i] = ctx->vectors[i + 1][0];
+    }
+
+    ctx->tspan[0] = 0.0;
+    ctx->tspan[1] = 72.0;
+}
+
+/*
 void initializeGRN5()
 {
     IND_SIZE = 15;      // Tamanho do indivíduo (quantidade de coeficientes)
@@ -822,7 +921,8 @@ void initializeGRN5()
     tspan[0] = 0.0;
     tspan[1] = 72.0;
 }
-
+*/
+/*
 void initializeGRN10()
 {
     IND_SIZE = 40;      // Tamanho do indivíduo (quantidade de coeficientes)
@@ -862,7 +962,8 @@ void initializeGRN10()
     tspan[0] = 0.0;
     tspan[1] = 72.0;
 }
-
+*/
+/*
 void clearGRNData()
 {
     // free ( t );
@@ -875,7 +976,22 @@ void clearGRNData()
         delete[] vectors[i];
     }
 }
+*/
 
+void clearContext(appContext* ctx)
+{
+    // free ( t );
+    delete[] ctx->yout;
+    delete[] ctx->y_0;
+    // todo: algum problema na desalocação, investigar
+    delete[] ctx->maxValues;
+    for (int i = 0; i < ctx->nVariables; i++)
+    {
+        delete[] ctx->vectors[i];
+    }
+}
+
+/*
 double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), double tspan[2],
                     double y0[], int n, int m, double tVec[], double *coefficients, double _yout[])
 {
@@ -944,79 +1060,112 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), dou
 
     return 0;
 }
+*/
 
-int test(int dydt(double t, double *y, double *ydot, void *data), double tspan[2],
-         double y0[], int n, int m, double tVec[], double *coefficients, double _yout[])
+double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), appContext *appCtx, double *_yout)
 {
-    double          atol[5], rtol[5], t, tout, y[5];
-    int             neq = 5;
-    int             iout;
-    double dt = (tspan[1] - tspan[0]) / (double)(n);
-    y[0] = 0.7095;
-    y[1] = 0.1767;
-    y[2] = 0.1522;
-    y[3] = 0.0806;
-    y[4] = 0.7095;
 
-    _yout[0] = 0.7095;
-    _yout[1] = 0.1767;
-    _yout[2] = 0.1522;
-    _yout[3] = 0.0806;
-    _yout[4] = 0.7095;
+    // todo: tentar colocar essa alocação fora da função
+    //  esses vetores serão alocados toda vez, e essa função será chamada
+    //  a cada avaliação de indivíduo
+
+    double *atol = new double[appCtx->nVariables];
+    double *rtol = new double[appCtx->nVariables];
+    double t, tout, dt;
+
+    double *y = new double[appCtx->nVariables];
+    int iout;
+
+    for (int i = 0; i < appCtx->nVariables; i++)
+    {
+        y[i] = appCtx->y_0[i];
+        rtol[i] = atol[i] = 1.49012e-4;
+        _yout[i] = appCtx->y_0[i];
+    }
 
     t = 0.0E0;
+    dt = (appCtx->tspan[1] - appCtx->tspan[0]) / (double)(appCtx->nSteps);
     tout = dt;
+
     struct lsoda_opt_t opt = {0};
     opt.ixpr = 0;
     opt.rtol = rtol;
     opt.atol = atol;
     opt.itask = 1;
 
-    rtol[0] = atol[0] = 1.49012e-8;
-    rtol[1] = atol[1] = 1.49012e-8;
-    rtol[2] = atol[2] = 1.49012e-8;
-    rtol[3] = atol[3] = 1.49012e-8;
-    rtol[4] = atol[4] = 1.49012e-8;
-
-
     struct lsoda_context_t ctx = {
-            .function = twoBody5VarLSODA,
-            .data = coefficients,
-            .neq = neq,
+            .function = dydt,
+            .data = appCtx,
+            .neq = appCtx->nVariables,
             .state = 1,
     };
+    //ctx.data = coefficients;
 
     lsoda_prepare(&ctx, &opt);
 
-    for (iout = 1; iout <= n; iout++) {
+    for (iout = 1; iout <= appCtx->nSteps; iout++)
+    {
         lsoda(&ctx, y, &t, tout);
-        printf(" at t= %12.4e y= %14.6e %14.6e %14.6e %14.6e %14.6e\n", t, y[0], y[1], y[2], y[3], y[4]);
+        //printf(" at t= %12.4e y= %14.6e %14.6e %14.6e %14.6e %14.6e\n", t, y[0], y[1], y[2], y[3], y[4]);
 
-        for(int i=0; i<m; i++) {
-            _yout[m * iout + i] = y[i];
+        for(int i=0; i<appCtx->nVariables; i++) {
+            _yout[appCtx->nVariables * iout + i] = y[i];
         }
-        if (ctx.state <= 0) {
+
+        if (ctx.state <= 0)
+        {
             printf("error istate = %d\n", ctx.state);
             exit(0);
         }
         tout = tout + dt;
     }
+
+    delete[] rtol;
+    delete[] atol;
+    delete[] y;
     lsoda_free(&ctx);
-    return(0);
+
+    return 0;
 }
 
-double grn5EvaluationLSODA(double *dim)
+
+//todo: renomear quando concluir
+double grn5EvaluationLSODA(void *ind, void* data)
 {
+    appContext* ctx = (appContext*)(data);
+    double* _ind = (double *)ind;
+    ctx->individual = _ind;
+    lsodaWrapper(twoBody5VarLSODA, ctx, ctx->yout);
+    return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, 50);
+}
+
+double grn10EvaluationLSODA(void *ind, void *data)
+{
+    appContext* ctx = (appContext*)(data);
+    double* _ind = (double *)ind;
+    ctx->individual = _ind;
+    lsodaWrapper(twoBody10VarLSODA, ctx, ctx->yout);
+    return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, 50);
+
+}
+
+/*
+double grn5EvaluationLSODA(void *data)
+{
+    double *dim = (double*)data;
     lsodaWrapper(twoBody5VarLSODA, tspan, y_0, nSteps, nVariables, vectors[0], dim, yout);
     return difference(yout, expectedResult, nVariables, 50);
-}
-
-double grn10EvaluationLSODA(double *dim)
+}*/
+/*
+double grn10EvaluationLSODA(void *data)
 {
+    double *dim = (double*)data;
     lsodaWrapper(twoBody10VarLSODA, tspan, y_0, nSteps, nVariables, vectors[0], dim, yout);
     return difference(yout, expectedResult, nVariables, 50);
 }
+*/
 
+/*
 double grn5EvaluationLSODA()
 {
     double atol[5], rtol[5], t, tout, y[5];
@@ -1073,7 +1222,8 @@ double grn5EvaluationLSODA()
     // rk4 (twoBody, tspan, y_0, nSteps, nVariables, vectors[0], dim, y);
     return 0; // difference(y, expectedResult, nVariables, 50);
 }
-
+*/
+/*
 double grn5EvaluatioTest()
 {
     initializeGRN5();
@@ -1107,7 +1257,8 @@ double grn5EvaluatioTest()
 
     return 0;
 }
-
+*/
+/*
 double grn10EvaluatioTest()
 {
     initializeGRN10();
@@ -1144,7 +1295,8 @@ double grn10EvaluatioTest()
 
     return 0;
 }
-
+*/
+/*
 void runGRN5ESComparisonExperiment()
 {
     initializeGRN5();
@@ -1174,10 +1326,10 @@ void runGRN5ESComparisonExperiment()
 
     int numRuns = 1;
 
-    /*todo: usar representação contígua para essa matriz
-     * e, para calcular posição, usar
-     * #define R(i,j) results[i*5 + j]
-     */
+    //todo: usar representação contígua para essa matriz
+    // e, para calcular posição, usar
+    // #define R(i,j) results[i*5 + j]
+    //
     double **results = new double *[5];
     results[0] = new double[numRuns];
     results[1] = new double[numRuns];
@@ -1263,7 +1415,246 @@ void runGRN5ESComparisonExperiment()
     delete[] results;
     clearGRNData();
 }
+*/
 
+void runGRN5ESComparisonExperiment()
+{
+    appContext ctx{};
+    initializeGRN5Context(&ctx);
+
+    ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
+    esAlgorithm.setEvaluationFunction(grn5EvaluationLSODA);
+    esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
+    esAlgorithm.setContext(&ctx);
+
+    int cont = 0;
+    for (int i = 0; i < ctx.TAU_SIZE; i++)
+    {
+        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+    for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
+    {
+        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+    for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
+    {
+        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+    int numRuns = 3;
+
+    /*todo: usar representação contígua para essa matriz
+     * e, para calcular posição, usar
+     * #define R(i,j) results[i*5 + j]
+     */
+    double **results = new double *[5];
+    results[0] = new double[numRuns];
+    results[1] = new double[numRuns];
+    results[2] = new double[numRuns];
+    results[3] = new double[numRuns];
+    results[4] = new double[numRuns];
+
+    vector<string> bestInds(5);
+    vector<double> bestIndsEval(5, DBL_MAX);
+
+    for (int i = 0; i < numRuns; i++)
+    {
+        cout << "Run " << to_string(i) << "\n";
+
+        cout << "1"
+             << "\n";
+        esAlgorithm.run1Plus1ES(i, 0.5, 0.817, 10, 2000);
+        results[0][i] = esAlgorithm.getPopulation().back()->getEvaluation();
+        if (results[0][i] < bestIndsEval[0])
+        {
+            bestIndsEval[0] = results[0][i];
+            bestInds[0] = esAlgorithm.getPopulation().back()->toCSVString();
+        }
+
+        cout << "2"
+             << "\n";
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 100, 10, 20);
+        results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        if (results[1][i] < bestIndsEval[1])
+        {
+            bestIndsEval[1] = results[1][i];
+            bestInds[1] = esAlgorithm.getPopulation()[0]->toCSVString();
+        }
+
+        cout << "3"
+             << "\n";
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 100, 10, 20);
+        results[2][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        if (results[2][i] < bestIndsEval[2])
+        {
+            bestIndsEval[2] = results[2][i];
+            bestInds[2] = esAlgorithm.getPopulation()[0]->toCSVString();
+        }
+
+        cout << "4"
+             << "\n";
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 100, 5, 20);
+        results[3][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        if (results[3][i] < bestIndsEval[3])
+        {
+            bestIndsEval[3] = results[3][i];
+            bestInds[3] = esAlgorithm.getPopulation()[0]->toCSVString();
+        }
+
+        cout << "5"
+             << "\n";
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 100, 5, 20);
+        results[4][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        if (results[4][i] < bestIndsEval[4])
+        {
+            bestIndsEval[4] = results[4][i];
+            bestInds[4] = esAlgorithm.getPopulation()[0]->toCSVString();
+        }
+    }
+
+    string csvOutput = "1+1,10+20-i,10+20-ni,5+10-i,5+10-ni\n";
+    for (int j = 0; j < numRuns; j++)
+    {
+        csvOutput += to_string(results[0][j]) + "," + to_string(results[1][j]) + "," + to_string(results[2][j]) + "," + to_string(results[3][j]) + "," + to_string(results[4][j]) + "\n";
+    }
+
+    string bestIndividuals =
+            bestInds[0] + "\n" + bestInds[1] + "\n" + bestInds[2] + "\n" + bestInds[3] + "\n" + bestInds[4];
+
+    outputToFile("../comparison-30runs-200000it_LSODA.csv", csvOutput, false);
+    outputToFile("../best-individuals_LSODA.txt", bestIndividuals, false);
+
+    delete[] results[0];
+    delete[] results[1];
+    delete[] results[2];
+    delete[] results[3];
+    delete[] results[4];
+    delete[] results;
+    clearContext(&ctx);
+}
+
+void runGRN10ESComparisonExperiment()
+{
+    appContext ctx{};
+    initializeGRN10Context(&ctx);
+
+    ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
+    esAlgorithm.setEvaluationFunction(grn10EvaluationLSODA);
+    esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
+    esAlgorithm.setContext(&ctx);
+
+    int cont = 0;
+    for (int i = 0; i < ctx.TAU_SIZE; i++)
+    {
+        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+    for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
+    {
+        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+    for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
+    {
+        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+    int numRuns = 1;
+
+    double **results = new double *[5];
+    results[0] = new double[numRuns];
+    results[1] = new double[numRuns];
+    results[2] = new double[numRuns];
+    results[3] = new double[numRuns];
+    results[4] = new double[numRuns];
+
+    vector<string> bestInds(5);
+    vector<double> bestIndsEval(5, DBL_MAX);
+
+    for (int i = 0; i < numRuns; i++)
+    {
+        cout << "Run " << to_string(i) << endl;
+
+        cout << "0"
+             << "\n";
+        esAlgorithm.run1Plus1ES(i, 0.5, 0.817, 10, 200);
+        results[0][i] = esAlgorithm.getPopulation().back()->getEvaluation();
+        if (results[0][i] < bestIndsEval[0])
+        {
+            bestIndsEval[0] = results[0][i];
+            bestInds[0] = esAlgorithm.getPopulation().back()->toCSVString();
+        }
+        cout << "1"
+             << "\n";
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 10, 10, 20);
+        results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        if (results[1][i] < bestIndsEval[1])
+        {
+            bestIndsEval[1] = results[1][i];
+            bestInds[1] = esAlgorithm.getPopulation()[0]->toCSVString();
+        }
+
+        cout << "2"
+             << "\n";
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 10, 10, 20);
+        results[2][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        if (results[2][i] < bestIndsEval[2])
+        {
+            bestIndsEval[2] = results[2][i];
+            bestInds[2] = esAlgorithm.getPopulation()[0]->toCSVString();
+        }
+
+        cout << "3"
+             << "\n";
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 10, 10, 20);
+        results[3][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        if (results[3][i] < bestIndsEval[3])
+        {
+            bestIndsEval[3] = results[3][i];
+            bestInds[3] = esAlgorithm.getPopulation()[0]->toCSVString();
+        }
+
+        cout << "4"
+             << "\n";
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 10, 10, 20);
+        results[4][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        if (results[4][i] < bestIndsEval[4])
+        {
+            bestIndsEval[4] = results[4][i];
+            bestInds[4] = esAlgorithm.getPopulation()[0]->toCSVString();
+        }
+    }
+
+    string csvOutput = "1+1,10+20-i,10+20-ni,5+10-i,5+10-ni\n";
+    for (int j = 0; j < numRuns; j++)
+    {
+        csvOutput += to_string(results[0][j]) + "," + to_string(results[1][j]) + "," + to_string(results[2][j]) + "," + to_string(results[3][j]) + "," + to_string(results[4][j]) + "\n";
+    }
+
+    string bestIndividuals =
+            bestInds[0] + "\n" + bestInds[1] + "\n" + bestInds[2] + "\n" + bestInds[3] + "\n" + bestInds[4];
+
+    outputToFile("../lsoda-comparison-GRN10-30runs-200000it.csv", csvOutput, false);
+    outputToFile("../lsoda-best-individuals-GRN10.txt", bestIndividuals, false);
+
+    delete[] results[0];
+    delete[] results[1];
+    delete[] results[2];
+    delete[] results[3];
+    delete[] results[4];
+    delete[] results;
+
+    clearContext(&ctx);
+}
+/*
 void runGRN10ESComparisonExperiment()
 {
     initializeGRN10();
@@ -1292,15 +1683,7 @@ void runGRN10ESComparisonExperiment()
     }
 
     int numRuns = 10;
-    /*vector<vector<double>> results(5);
 
-    results[0].resize(numRuns);
-    results[1].resize(numRuns);
-    results[2].resize(numRuns);
-    results[3].resize(numRuns);
-    results[4].resize(numRuns);
-
-    */
     double **results = new double *[5];
     results[0] = new double[numRuns];
     results[1] = new double[numRuns];
@@ -1386,6 +1769,7 @@ void runGRN10ESComparisonExperiment()
 
     clearGRNData();
 }
+*/
 
 int fex(double t, double *y, double *ydot, void *data)
 {
@@ -1397,30 +1781,39 @@ int fex(double t, double *y, double *ydot, void *data)
 
 int main()
 {
+    runGRN5ESComparisonExperiment();
+    //runGRN10ESComparisonExperiment();
+
+   double ind[] = {1.25, 4, 1.02, 1.57, 3.43, 0.72, 0.5, 0.45, 0.51, 0.52, 13, 4, 3, 4, 16};
+
+   appContext ctx{};
+   initializeGRN5Context(&ctx);
+   cout << grn5EvaluationLSODA(ind, &ctx) << "\n";
+
    // test(twoBodyFixedLSODA, tspanTest, nullptr, 49, 5, nullptr, nullptr, nullptr);
     //cout << "\n\n\n";
     // testa a saida da função difference com coeficientes pré-definidos
     // resultado: ~108.0
-    appContext ctx{};
-    initializeGRN5Context(&ctx);
 
-    double dim5[] = {1.25, 4, 1.02, 1.57, 3.43, 0.72, 0.5, 0.45, 0.51, 0.52, 13, 4, 3, 4, 16};
-    cout << grn5EvaluationLSODA(dim5) << "\n";
-    cout << "\n\n\n";
+    //initializeGRN5();
+
+    //double dim5[] = {1.25, 4, 1.02, 1.57, 3.43, 0.72, 0.5, 0.45, 0.51, 0.52, 13, 4, 3, 4, 16};
+    //cout << grn5EvaluationLSODA(dim5) << "\n";
+    //cout << "\n\n\n";
     // clearGRNData();
 
     // //resultado: ~56.0
-     initializeGRN10();
-     double dim10[] = {1.73,2,0.81,0.11, 1.23, 1.78, 1.14, 1.04, 3.47, 3.21,
-                       0.45, 0.56, 0.99, 0.77, 0.71, 0.66, 0.46, 0.48, 0.66, 0.99, 0.85, 0.61, 0.55, 0.46, 0.17,
-                       20, 9, 24, 12, 2, 2, 6, 4, 7, 24, 2, 7, 21, 20, 3};
-     cout << grn10EvaluationLSODA(dim10) << "\n";
-     cout << "\n\n\n";
-     clearGRNData();
+     //initializeGRN10();
+     //double dim10[] = {1.73,2,0.81,0.11, 1.23, 1.78, 1.14, 1.04, 3.47, 3.21,
+     //                  0.45, 0.56, 0.99, 0.77, 0.71, 0.66, 0.46, 0.48, 0.66, 0.99, 0.85, 0.61, 0.55, 0.46, 0.17,
+      //                 20, 9, 24, 12, 2, 2, 6, 4, 7, 24, 2, 7, 21, 20, 3};
+     //cout << grn10EvaluationLSODA(dim10) << "\n";
+     //cout << "\n\n\n";
+     //clearGRNData();
 
-    return 0;
+
 
     // runGRN10ESComparisonExperiment();
     // runGRN5ESComparisonExperiment();
-    // return 0;
+    return 0;
 }

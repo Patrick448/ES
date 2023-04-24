@@ -51,7 +51,7 @@ void ESAlgorithm::addIndividual(Individual* individual){
     this->population.push_back(individual);
 }
 double ESAlgorithm::evaluate(Individual* ind){
-    double eval =this->evaluationFunction(ind->getDimensions());
+    double eval =this->evaluationFunction(ind->getDimensions(), this->context);
     ind->setEvaluation(eval);
     this->evaluationsCounter++;
     return eval;
@@ -72,7 +72,7 @@ void ESAlgorithm::setBounds(int index, double lower, double upper, int lowerBoun
     this->upperBoundTypes[index] = upperBoundType;
 }
 
-void ESAlgorithm::setEvaluationFunction(double (*evaluationFunction)(double*)){
+void ESAlgorithm::setEvaluationFunction(double (*evaluationFunction)(void*, void*)){
     this->evaluationFunction = evaluationFunction;
 }
 
@@ -114,6 +114,10 @@ double ESAlgorithm::getBound(int index, int which){
         }
     }
 
+}
+
+void ESAlgorithm::setContext(void *ctx) {
+    this->context = ctx;
 }
 
 void ESAlgorithm::setAlgorithmType(int type) {
