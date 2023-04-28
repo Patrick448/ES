@@ -3,6 +3,7 @@
 //
 
 #include <cstring>
+#include <chrono>
 #include "dependencies.h"
 
 #ifdef __cplusplus
@@ -1462,13 +1463,16 @@ void runGRN5ESComparisonExperiment()
     vector<string> bestInds(5);
     vector<double> bestIndsEval(5, DBL_MAX);
 
+
     for (int i = 0; i < numRuns; i++)
     {
+        auto beg = chrono::high_resolution_clock::now();
+
         cout << "Run " << to_string(i) << "\n";
 
         cout << "1"
              << "\n";
-        esAlgorithm.run1Plus1ES(i, 0.5, 0.817, 10, 2000);
+        esAlgorithm.run1Plus1ES(i, 0.5, 0.817, 10, 20000);
         results[0][i] = esAlgorithm.getPopulation().back()->getEvaluation();
         if (results[0][i] < bestIndsEval[0])
         {
@@ -1478,7 +1482,7 @@ void runGRN5ESComparisonExperiment()
 
         cout << "2"
              << "\n";
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 100, 10, 20);
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 1000, 10, 20);
         results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[1][i] < bestIndsEval[1])
         {
@@ -1488,7 +1492,7 @@ void runGRN5ESComparisonExperiment()
 
         cout << "3"
              << "\n";
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 100, 10, 20);
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 1000, 10, 20);
         results[2][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[2][i] < bestIndsEval[2])
         {
@@ -1498,7 +1502,7 @@ void runGRN5ESComparisonExperiment()
 
         cout << "4"
              << "\n";
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 100, 5, 20);
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 1000, 5, 20);
         results[3][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[3][i] < bestIndsEval[3])
         {
@@ -1508,14 +1512,22 @@ void runGRN5ESComparisonExperiment()
 
         cout << "5"
              << "\n";
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 100, 5, 20);
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 1000, 5, 20);
         results[4][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[4][i] < bestIndsEval[4])
         {
             bestIndsEval[4] = results[4][i];
             bestInds[4] = esAlgorithm.getPopulation()[0]->toCSVString();
         }
+
+
+        //temporização
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<std::chrono::seconds>(end - beg);
+        cout << "Elapsed Time: " << duration.count() << "\n";
     }
+
+
 
     string csvOutput = "1+1,10+20-i,10+20-ni,5+10-i,5+10-ni\n";
     for (int j = 0; j < numRuns; j++)
@@ -1783,6 +1795,7 @@ int main()
 {
     runGRN5ESComparisonExperiment();
     //runGRN10ESComparisonExperiment();
+    return 0;
 
    double ind[] = {1.25, 4, 1.02, 1.57, 3.43, 0.72, 0.5, 0.45, 0.51, 0.52, 13, 4, 3, 4, 16};
 
