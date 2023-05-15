@@ -9,6 +9,10 @@ file(GLOB source_cpp src/*.cpp)
 file(GLOB source_h include/*.h)
 file(GLOB source_c src/*.c)
 
+#
+# sudo apt install libboost1.74-all-dev
+#
+find_package(Boost COMPONENTS system filesystem unit_test_framework REQUIRED)
 
 include_directories(include)
 include_directories(liblsoda/src)
@@ -31,8 +35,12 @@ set_target_properties(liblsoda
 add_executable(ES ${source_cpp} ${source_c})
 target_link_libraries(ES PUBLIC liblsoda)
 
-add_executable(test tests/test.cpp tests/unit_tests.cpp)
-target_link_libraries(test PUBLIC liblsoda)
+add_executable(test tests/unit_tests.cpp)
+target_link_libraries(test PUBLIC liblsoda
+    ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_SYSTEM_LIBRARY}
+    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} 
+)
 
 add_executable(test2 tests/test2.cpp)
 target_link_libraries(test2 PUBLIC liblsoda)
