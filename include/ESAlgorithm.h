@@ -55,7 +55,7 @@ public:
     void runPopulationalIsotropicES(int seed, double sigmaVariation, int maxIterations, int numParents, int numOffspring);
     void runPopulationalNonIsotropicES(int seed, double sigmaVariation, int maxIterations, int numParents, int numOffspring);
     void clear();
-    double setSigmaBounds(double min, double max);
+    void setSigmaBounds(double min, double max);
 
 };
 

@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16.3)
 project(ES)
 
 set(CMAKE_CXX_STANDARD 14)
+SET(CMAKE_CXX_FLAGS "-O3")
+SET(CMAKE_C_FLAGS "-O3")
 
 file(GLOB source_cpp src/*.cpp)
 file(GLOB source_h include/*.h)
@@ -10,7 +12,6 @@ file(GLOB source_c src/*.c)
 
 include_directories(include)
 include_directories(liblsoda/src)
-
 
 # Create a target out of the library compilation result
 add_custom_target(lsoda_target
@@ -30,7 +31,7 @@ set_target_properties(liblsoda
 add_executable(ES ${source_cpp} ${source_c})
 target_link_libraries(ES PUBLIC liblsoda)
 
-add_executable(test tests/test.cpp)
+add_executable(test tests/test.cpp tests/unit_tests.cpp)
 target_link_libraries(test PUBLIC liblsoda)
 
 add_executable(test2 tests/test2.cpp)

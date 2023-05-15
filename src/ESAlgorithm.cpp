@@ -132,7 +132,7 @@ double ESAlgorithm::getMaxSigma() {
     return this->maxSigma;
 }
 
-double ESAlgorithm::setSigmaBounds(double min, double max) {
+void ESAlgorithm::setSigmaBounds(double min, double max) {
     this->minSigma = min;
     this->maxSigma = max;
 }

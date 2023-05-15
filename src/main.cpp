@@ -692,13 +692,19 @@ double difference(double *actual, double **expected, int numVariables, int numEl
 }
 
 /*
-double grn5Evaluation(double *dim)
-{
-    rk4(twoBody5Var, tspan, y_0, nSteps, nVariables, vectors[0], dim, yout);
-    return difference(yout, expectedResult, nVariables, 50);
-}
+double grn5EvaluationRK4(void *ind, void* data)
 
+{   appContext* ctx = (appContext*)(data);
+    double* _ind = (double *)ind;
+    ctx->individual = _ind;
+    //lsodaWrapper(twoBody5VarLSODA, ctx, ctx->yout);
+    rk4(twoBody5VarLSODA, ctx->tspan, ctx->y_0, ctx->nSteps, ctx->nVariables, ctx->vectors[0], ind, ctx->yout);
+
+    return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, 50);
+
+}
 */
+
 /*
 double grn10Evaluation(double *dim)
 {
@@ -986,10 +992,12 @@ void clearContext(appContext* ctx)
     delete[] ctx->y_0;
     // todo: algum problema na desalocação, investigar
     delete[] ctx->maxValues;
-    for (int i = 0; i < ctx->nVariables; i++)
+    for (int i = 0; i < ctx->nVariables+1; i++)
     {
         delete[] ctx->vectors[i];
     }
+
+    delete [] ctx->vectors;
 }
 
 /*
@@ -1447,7 +1455,7 @@ void runGRN5ESComparisonExperiment()
         cont = i;
     }
 
-    int numRuns = 3;
+    int numRuns = 30;
 
     /*todo: usar representação contígua para essa matriz
      * e, para calcular posição, usar
@@ -1538,7 +1546,7 @@ void runGRN5ESComparisonExperiment()
     string bestIndividuals =
             bestInds[0] + "\n" + bestInds[1] + "\n" + bestInds[2] + "\n" + bestInds[3] + "\n" + bestInds[4];
 
-    outputToFile("../comparison-30runs-200000it_LSODA.csv", csvOutput, false);
+    outputToFile("../comparison-30runs-20000it_LSODA.csv", csvOutput, false);
     outputToFile("../best-individuals_LSODA.txt", bestIndividuals, false);
 
     delete[] results[0];
@@ -1579,7 +1587,7 @@ void runGRN10ESComparisonExperiment()
         cont = i;
     }
 
-    int numRuns = 1;
+    int numRuns = 30;
 
     double **results = new double *[5];
     results[0] = new double[numRuns];
@@ -1597,7 +1605,7 @@ void runGRN10ESComparisonExperiment()
 
         cout << "0"
              << "\n";
-        esAlgorithm.run1Plus1ES(i, 0.5, 0.817, 10, 200);
+        esAlgorithm.run1Plus1ES(i, 0.5, 0.817, 10, 2000);
         results[0][i] = esAlgorithm.getPopulation().back()->getEvaluation();
         if (results[0][i] < bestIndsEval[0])
         {
@@ -1606,7 +1614,7 @@ void runGRN10ESComparisonExperiment()
         }
         cout << "1"
              << "\n";
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 10, 10, 20);
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 1000, 10, 20);
         results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[1][i] < bestIndsEval[1])
         {
@@ -1616,7 +1624,7 @@ void runGRN10ESComparisonExperiment()
 
         cout << "2"
              << "\n";
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 10, 10, 20);
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 1000, 10, 20);
         results[2][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[2][i] < bestIndsEval[2])
         {
@@ -1626,7 +1634,7 @@ void runGRN10ESComparisonExperiment()
 
         cout << "3"
              << "\n";
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 10, 10, 20);
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 1000, 10, 20);
         results[3][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[3][i] < bestIndsEval[3])
         {
@@ -1636,7 +1644,7 @@ void runGRN10ESComparisonExperiment()
 
         cout << "4"
              << "\n";
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 10, 10, 20);
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 1000, 10, 20);
         results[4][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[4][i] < bestIndsEval[4])
         {
@@ -1645,7 +1653,7 @@ void runGRN10ESComparisonExperiment()
         }
     }
 
-    string csvOutput = "1+1,10+20-i,10+20-ni,5+10-i,5+10-ni\n";
+    string csvOutput = "1+1,10+20-i,10+20-ni,10+20-i,10+20-ni\n";
     for (int j = 0; j < numRuns; j++)
     {
         csvOutput += to_string(results[0][j]) + "," + to_string(results[1][j]) + "," + to_string(results[2][j]) + "," + to_string(results[3][j]) + "," + to_string(results[4][j]) + "\n";
@@ -1654,7 +1662,7 @@ void runGRN10ESComparisonExperiment()
     string bestIndividuals =
             bestInds[0] + "\n" + bestInds[1] + "\n" + bestInds[2] + "\n" + bestInds[3] + "\n" + bestInds[4];
 
-    outputToFile("../lsoda-comparison-GRN10-30runs-200000it.csv", csvOutput, false);
+    outputToFile("../lsoda-comparison-GRN10-30runs-20000it.csv", csvOutput, false);
     outputToFile("../lsoda-best-individuals-GRN10.txt", bestIndividuals, false);
 
     delete[] results[0];
