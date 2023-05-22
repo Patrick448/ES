@@ -4,7 +4,6 @@ project(ES)
 set(CMAKE_CXX_STANDARD 14)
 SET(CMAKE_CXX_FLAGS "-O3")
 SET(CMAKE_C_FLAGS "-O3")
-
 file(GLOB source_cpp src/*.cpp)
 file(GLOB source_h include/*.h)
 file(GLOB source_c src/*.c)

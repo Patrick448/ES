@@ -1480,7 +1480,7 @@ void runGRN5ESComparisonExperiment()
 
         cout << "1"
              << "\n";
-        esAlgorithm.run1Plus1ES(i, 0.5, 0.817, 10, 20000);
+        esAlgorithm.run1Plus1ES(i, 0.5, 0.817, 10, 200000);
         results[0][i] = esAlgorithm.getPopulation().back()->getEvaluation();
         if (results[0][i] < bestIndsEval[0])
         {
@@ -1490,7 +1490,7 @@ void runGRN5ESComparisonExperiment()
 
         cout << "2"
              << "\n";
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 1000, 10, 20);
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 10000, 10, 20);
         results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[1][i] < bestIndsEval[1])
         {
@@ -1500,7 +1500,7 @@ void runGRN5ESComparisonExperiment()
 
         cout << "3"
              << "\n";
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 1000, 10, 20);
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 10000, 10, 20);
         results[2][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[2][i] < bestIndsEval[2])
         {
@@ -1510,7 +1510,7 @@ void runGRN5ESComparisonExperiment()
 
         cout << "4"
              << "\n";
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 1000, 5, 20);
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 20000, 5, 10);
         results[3][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[3][i] < bestIndsEval[3])
         {
@@ -1520,7 +1520,7 @@ void runGRN5ESComparisonExperiment()
 
         cout << "5"
              << "\n";
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 1000, 5, 20);
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 20000, 5, 10);
         results[4][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[4][i] < bestIndsEval[4])
         {
@@ -1532,10 +1532,9 @@ void runGRN5ESComparisonExperiment()
         //temporização
         auto end = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<std::chrono::seconds>(end - beg);
+        outputToFile("../results/exp2/GRN5-200000-C++_impl-time.csv", to_string(duration.count()) + ",", true);
         cout << "Elapsed Time: " << duration.count() << "\n";
     }
-
-
 
     string csvOutput = "1+1,10+20-i,10+20-ni,5+10-i,5+10-ni\n";
     for (int j = 0; j < numRuns; j++)
@@ -1546,8 +1545,8 @@ void runGRN5ESComparisonExperiment()
     string bestIndividuals =
             bestInds[0] + "\n" + bestInds[1] + "\n" + bestInds[2] + "\n" + bestInds[3] + "\n" + bestInds[4];
 
-    outputToFile("../comparison-30runs-20000it_LSODA.csv", csvOutput, false);
-    outputToFile("../best-individuals_LSODA.txt", bestIndividuals, false);
+    outputToFile("../results/exp2/GRN5-200000-C++_impl.csv.csv", csvOutput, false);
+    outputToFile("../results/exp2/GRN5-200000-C++_impl-best_inds.txt", bestIndividuals, false);
 
     delete[] results[0];
     delete[] results[1];
