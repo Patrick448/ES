@@ -70,8 +70,8 @@ void readFile(string path, int numVectors)
 
 }
 
-// Teste de leitura da instância
-void readFileToVectors(string path, int numVectors, double *vectors[])
+/// reads input at path and stores it in an array of arrays of double
+void readGRNFileToVectors(string path, int numVectors, double *vectors[])
 {
     ifstream input(path);
     string textAux;

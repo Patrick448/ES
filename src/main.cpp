@@ -731,7 +731,7 @@ void grn_test()
     }
 
     y0 = new double[nVariables];
-    readFileToVectors("../GRN5.txt", nVariables + 1, vectors);
+    readGRNFileToVectors("../GRN5.txt", nVariables + 1, vectors);
 
     for (int i = 0; i < nVariables; i++)
     {
@@ -833,7 +833,7 @@ void initializeGRN5Context(appContext* ctx)
         ctx->vectors[i] = new double[50];
     }
 
-    readFileToVectors("GRN5.txt", ctx->nVariables + 1, ctx->vectors);
+    readGRNFileToVectors("GRN5.txt", ctx->nVariables + 1, ctx->vectors);
     getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->nSteps + 1);
 
     ctx->y_0 = new double[ctx->nVariables];
@@ -873,7 +873,7 @@ void initializeGRN10Context(appContext* ctx)
         ctx->vectors[i] = new double[50];
     }
 
-    readFileToVectors("GRN10.txt", ctx->nVariables + 1, ctx->vectors);
+    readGRNFileToVectors("GRN10.txt", ctx->nVariables + 1, ctx->vectors);
     getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->nSteps + 1);
 
     ctx->y_0 = new double[ctx->nVariables];
@@ -915,7 +915,7 @@ void initializeGRN5()
         vectors[i] = new double[50];
     }
 
-    readFileToVectors("GRN5.txt", nVariables + 1, vectors);
+    readGRNFileToVectors("GRN5.txt", nVariables + 1, vectors);
     getMaxValues(vectors, maxValues, nVariables, nSteps + 1);
 
     y_0 = new double[nVariables];
@@ -956,7 +956,7 @@ void initializeGRN10()
         vectors[i] = new double[50];
     }
 
-    readFileToVectors("GRN10.txt", nVariables + 1, vectors);
+    readGRNFileToVectors("GRN10.txt", nVariables + 1, vectors);
     getMaxValues(vectors, maxValues, nVariables, nSteps + 1);
 
     y_0 = new double[nVariables];
