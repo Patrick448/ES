@@ -43,6 +43,10 @@ double **expectedResult;
 */
 
 struct appContext {
+    int TRAINING_MODE = 0;
+    int TEST_MODE = 2;
+    int VALIDATION_MODE = 1;
+    int mode=0;
     int IND_SIZE;        // Tamanho do indivíduo (quantidade de coeficientes)
     double MIN_K;        // Menor valor que K pode assumir
     double MAX_K;        // Maior valor que K pode assumir
@@ -59,6 +63,7 @@ struct appContext {
 
     int nVariables;
     int nSteps;
+    int dataSetSize;
     int trainingSteps;
     int testSteps;
     int validationSteps;
@@ -69,6 +74,7 @@ struct appContext {
     int validationSetStart;
     int validationSetEnd;
     double tspan[2];
+    double trainingTSpan[2];
     double *yout;
     double *y_0;
     double **vectors;
@@ -825,7 +831,6 @@ void getMaxValues(double **data, double *outMaxValues, int numVariables, int num
     }
 }
 
-//todo: make a clearGRN5Data for this context object
 void initializeGRN5Context(appContext* ctx)
 {
     //appContext *ctx = new appContext;
@@ -843,10 +848,20 @@ void initializeGRN5Context(appContext* ctx)
     ctx->K_SIZE = 5;
     ctx->nVariables = 5;
     ctx->nSteps = 49;
+    ctx->dataSetSize = 50;
+    ctx->trainingSetStart = 0;
+    ctx->trainingSetEnd = 19;
+    ctx->trainingSteps = 19;
+    ctx->validationSetStart = 0;
+    ctx->validationSetEnd = 0;
+    ctx->validationSteps = 0;
+    ctx->testSetStart = 0;
+    ctx->testSetEnd = 0;
+    ctx->testSteps = 0;
 
     ctx->maxValues = new double[ctx->nVariables];
 
-    ctx->yout = new double[(ctx->nSteps + 1) * ctx->nVariables];
+    ctx->yout = new double[(ctx->trainingSteps + 1) * ctx->nVariables];
 
     ctx->vectors = new double *[ctx->nVariables + 1];
     for (int i = 0; i < ctx->nVariables + 1; i++)
@@ -855,7 +870,7 @@ void initializeGRN5Context(appContext* ctx)
     }
 
     readGRNFileToVectors("GRN5.txt", ctx->nVariables + 1, ctx->vectors);
-    getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->nSteps + 1);
+    getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->trainingSteps + 1);
 
     ctx->y_0 = new double[ctx->nVariables];
     ctx->expectedResult = &ctx->vectors[1];
@@ -866,6 +881,8 @@ void initializeGRN5Context(appContext* ctx)
 
     ctx->tspan[0] = 0.0;
     ctx->tspan[1] = 72.0;
+    ctx->trainingTSpan[0] = 0.0;
+    ctx->trainingTSpan[1] = (ctx->tspan[1]/ctx->nSteps)*ctx->trainingSteps;
 }
 
 void initializeGRN10Context(appContext* ctx)
@@ -1114,7 +1131,7 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), app
     }
 
     t = 0.0E0;
-    dt = (appCtx->tspan[1] - appCtx->tspan[0]) / (double)(appCtx->nSteps);
+    dt = (appCtx->trainingTSpan[1] - appCtx->trainingTSpan[0]) / (double)(appCtx->trainingSteps);
     tout = dt;
 
     struct lsoda_opt_t opt = {0};
@@ -1133,13 +1150,14 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), app
 
     lsoda_prepare(&ctx, &opt);
 
-    for (iout = 1; iout <= appCtx->nSteps; iout++)
+    for (iout =appCtx->trainingSetStart+ 1; iout <= appCtx->trainingSetEnd; iout++)
     {
         lsoda(&ctx, y, &t, tout);
         //printf(" at t= %12.4e y= %14.6e %14.6e %14.6e %14.6e %14.6e\n", t, y[0], y[1], y[2], y[3], y[4]);
 
         for(int i=0; i<appCtx->nVariables; i++) {
-            _yout[appCtx->nVariables * iout + i] = y[i];
+            int outIndex = appCtx->nVariables * (iout - appCtx->trainingSetStart) + i;
+            _yout[outIndex] = y[i];
         }
 
         if (ctx.state <= 0)
@@ -1164,9 +1182,22 @@ double grn5EvaluationLSODA(void *ind, void* data)
 {
     appContext* ctx = (appContext*)(data);
     double* _ind = (double *)ind;
+    int numElements;
+    int offset;
     ctx->individual = _ind;
     lsodaWrapper(twoBody5VarLSODA, ctx, ctx->yout);
-    return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, 50);
+
+    if(ctx->mode == ctx->TRAINING_MODE){
+        numElements = ctx->trainingSetEnd - ctx->trainingSetStart+1;
+        offset = ctx->trainingSetStart;
+    } else if(ctx->mode == ctx->VALIDATION_MODE){
+        numElements = ctx->validationSetEnd - ctx->validationSetStart+1;
+        offset = ctx->validationSetStart;
+    }else{
+        numElements = ctx->testSetEnd - ctx->testSetStart+1;
+        offset = ctx->testSetStart;
+    }
+    return difference(ctx->yout, ctx->expectedResult+offset, ctx->nVariables, numElements);
 }
 
 double grn10EvaluationLSODA(void *ind, void *data)
@@ -1476,7 +1507,7 @@ void runGRN5ESComparisonExperiment()
         cont = i;
     }
 
-    int numRuns = 30;
+    int numRuns = 3;
 
     /*todo: usar representação contígua para essa matriz
      * e, para calcular posição, usar
@@ -1501,7 +1532,7 @@ void runGRN5ESComparisonExperiment()
 
         cout << "1"
              << "\n";
-        esAlgorithm.run1Plus1ES(i, 0.5, 0.817, 10, 200000);
+        esAlgorithm.run1Plus1ES(i, 0.5, 0.817, 10, 2000);
         results[0][i] = esAlgorithm.getPopulation().back()->getEvaluation();
         if (results[0][i] < bestIndsEval[0])
         {
@@ -1511,7 +1542,7 @@ void runGRN5ESComparisonExperiment()
 
         cout << "2"
              << "\n";
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 10000, 10, 20);
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 100, 10, 20);
         results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[1][i] < bestIndsEval[1])
         {
@@ -1521,7 +1552,7 @@ void runGRN5ESComparisonExperiment()
 
         cout << "3"
              << "\n";
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 10000, 10, 20);
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 100, 10, 20);
         results[2][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[2][i] < bestIndsEval[2])
         {
@@ -1531,7 +1562,7 @@ void runGRN5ESComparisonExperiment()
 
         cout << "4"
              << "\n";
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 20000, 5, 10);
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, 200, 5, 10);
         results[3][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[3][i] < bestIndsEval[3])
         {
@@ -1541,7 +1572,7 @@ void runGRN5ESComparisonExperiment()
 
         cout << "5"
              << "\n";
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 20000, 5, 10);
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, 200, 5, 10);
         results[4][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[4][i] < bestIndsEval[4])
         {
@@ -1553,7 +1584,7 @@ void runGRN5ESComparisonExperiment()
         //temporização
         auto end = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<std::chrono::seconds>(end - beg);
-        outputToFile("../results/exp2/GRN5-200000-C++_impl-time.csv", to_string(duration.count()) + ",", true);
+        outputToFile("../results/test-res-time.csv", to_string(duration.count()) + ",", true);
         cout << "Elapsed Time: " << duration.count() << "\n";
     }
 
@@ -1566,8 +1597,8 @@ void runGRN5ESComparisonExperiment()
     string bestIndividuals =
             bestInds[0] + "\n" + bestInds[1] + "\n" + bestInds[2] + "\n" + bestInds[3] + "\n" + bestInds[4];
 
-    outputToFile("../results/exp2/GRN5-200000-C++_impl.csv.csv", csvOutput, false);
-    outputToFile("../results/exp2/GRN5-200000-C++_impl-best_inds.txt", bestIndividuals, false);
+    outputToFile("../results/test-res.csv", csvOutput, false);
+    outputToFile("../results/test-res-best.txt", bestIndividuals, false);
 
     delete[] results[0];
     delete[] results[1];
@@ -1821,7 +1852,7 @@ int fex(double t, double *y, double *ydot, void *data)
 
 int main()
 {
-    double **vectors = new double *[6];
+   /* double **vectors = new double *[6];
 
     for (int i = 0; i < 6; i++)
     {
@@ -1829,7 +1860,7 @@ int main()
     }
     readGRNFileToVectors("GRN5.txt", 6, vectors);
     printGRNVector(vectors, 6, 50);
-    return 0;
+    return 0;*/
 
 
     runGRN5ESComparisonExperiment();
