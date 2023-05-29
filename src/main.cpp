@@ -59,12 +59,22 @@ struct appContext {
 
     int nVariables;
     int nSteps;
+    int trainingSteps;
+    int testSteps;
+    int validationSteps;
+    int trainingSetStart;
+    int trainingSetEnd;
+    int testSetStart;
+    int testSetEnd;
+    int validationSetStart;
+    int validationSetEnd;
     double tspan[2];
     double *yout;
     double *y_0;
     double **vectors;
     double **expectedResult;
     double* individual;
+
 };
 
 void twoBody(double t, double y[], double max[], double tau[], double n[], double k[], double yp[])
@@ -96,6 +106,17 @@ void printVector(double *vec, int size)
         cout << vec[i] << " ";
     }
     cout << "\n";
+}
+
+void printGRNVector(double **vec, int rows, int cols)
+{
+    for(int j = 0; j < cols; j++){
+        for(int i = 0; i < rows; i++){
+            cout << vec[i][j] << "\t";
+        }
+        cout << "\n";
+    }
+
 }
 /*
 void twoBody5Var(double t, double y[], double *dim, double yp[])
@@ -1800,6 +1821,17 @@ int fex(double t, double *y, double *ydot, void *data)
 
 int main()
 {
+    double **vectors = new double *[6];
+
+    for (int i = 0; i < 6; i++)
+    {
+        vectors[i] = new double[50];
+    }
+    readGRNFileToVectors("GRN5.txt", 6, vectors);
+    printGRNVector(vectors, 6, 50);
+    return 0;
+
+
     runGRN5ESComparisonExperiment();
     //runGRN10ESComparisonExperiment();
     return 0;
