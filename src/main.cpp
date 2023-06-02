@@ -73,6 +73,8 @@ struct appContext {
     int testSetEnd;
     int validationSetStart;
     int validationSetEnd;
+    int setStart;
+    int setEnd;
     double tspan[2];
     double trainingTSpan[2];
     double *yout;
@@ -105,13 +107,16 @@ void twoBody(double t, double y[], double max[], double tau[], double n[], doubl
             tau[4];
 }
 
-void printVector(double *vec, int size)
+string vectorToString(double *vec, int start, int end)
 {
-    for (int i = 0; i < size; i++)
+    string s = "";
+    for (int i = start; i <= end; i++)
     {
-        cout << vec[i] << " ";
+        s.append(to_string(vec[i]) + " " );
     }
     cout << "\n";
+
+    return s;
 }
 
 void printGRNVector(double **vec, int rows, int cols)
@@ -718,6 +723,32 @@ double difference(double *actual, double **expected, int numVariables, int numEl
     return difTotal;
 }
 
+double difference(double *actual, double **expected, int numVariables, int start, int end)
+{
+    // todo: testar função e remover essa linha
+    // double *dif = new double [numVariables];
+    double difTotal = 0.0;
+    int numElements = end - start + 1;
+
+    for (int i = 0; i < numVariables; i++)
+    {
+        // dif[i] = 0;
+        for (int j = start; j <= end; j++)
+        {
+            //  dif[i] += fabs(actual[i][j] - expected[i][j]);
+            // if(i==3)continue;
+            difTotal += fabs(actual[j * numVariables + i] - expected[i][j]);
+        }
+    }
+
+    if (isnan(difTotal))
+    {
+        return DBL_MAX;
+    }
+
+    return difTotal;
+}
+
 /*
 double grn5EvaluationRK4(void *ind, void* data)
 
@@ -831,7 +862,64 @@ void getMaxValues(double **data, double *outMaxValues, int numVariables, int num
     }
 }
 
-void initializeGRN5Context(appContext* ctx)
+double getMaxValue(double *values, int start, int end)
+{
+    double maxValue = 0;
+    for (int i = start; i <= end; i++)
+    {
+        if (values[i] > maxValue)
+        {
+            maxValue = values[i];
+        }
+    }
+
+    return maxValue;
+}
+
+void getMaxValues(double **data, double *outMaxValues, int numVariables, int start, int end)
+{
+
+    for (int i = 1; i < numVariables + 1; i++)
+    {
+        outMaxValues[i - 1] = getMaxValue(data[i], start, end);
+    }
+}
+
+void printContext(appContext* ctx){
+    printf("IND_SIZE: %d\n", ctx->IND_SIZE);
+    printf("MIN_K: %f\n", ctx->MIN_K);
+    printf("MAX_K: %f\n", ctx->MAX_K);
+    printf("MIN_N: %f\n", ctx->MIN_N);
+    printf("MAX_N: %f\n", ctx->MAX_N);
+    printf("MIN_TAU: %f\n", ctx->MIN_TAU);
+    printf("MAX_TAU: %f\n", ctx->MAX_TAU);
+    printf("MIN_STRATEGY: %f\n", ctx->MIN_STRATEGY);
+    printf("MAX_STRATEGY: %f\n", ctx->MAX_STRATEGY);
+    printf("TAU_SIZE: %d\n", ctx->TAU_SIZE);
+    printf("N_SIZE: %d\n", ctx->N_SIZE);
+    printf("K_SIZE: %d\n", ctx->K_SIZE);
+    printf("nVariables: %d\n", ctx->nVariables);
+    printf("nSteps: %d\n", ctx->nSteps);
+    printf("dataSetSize: %d\n", ctx->dataSetSize);
+    printf("trainingSetStart: %d\n", ctx->trainingSetStart);
+    printf("trainingSetEnd: %d\n", ctx->trainingSetEnd);
+    printf("trainingSteps: %d\n", ctx->trainingSteps);
+    printf("validationSetStart: %d\n", ctx->validationSetStart);
+    printf("validationSetEnd: %d\n", ctx->validationSetEnd);
+    printf("validationSteps: %d\n", ctx->validationSteps);
+    printf("testSetStart: %d\n", ctx->testSetStart);
+    printf("testSetEnd: %d\n", ctx->testSetEnd);
+    printf("testSteps: %d\n", ctx->testSteps);
+    printf("mode: %d\n", ctx->mode);
+    printf("tspan[0]: %f\n", ctx->tspan[0]);
+    printf("tspan[1]: %f\n", ctx->tspan[1]);
+    printf("maxValues: %s\n",  vectorToString(ctx->maxValues, 0,  ctx->nVariables-1).c_str());
+    printf("y_0: %s\n",  vectorToString(ctx->y_0, 0,  ctx->nVariables-1).c_str());
+
+
+}
+
+void initializeGRN5Context(appContext* ctx, int mode)
 {
     //appContext *ctx = new appContext;
     ctx->IND_SIZE = 15;      // Tamanho do indivíduo (quantidade de coeficientes)
@@ -850,19 +938,32 @@ void initializeGRN5Context(appContext* ctx)
     ctx->nSteps = 49;
     ctx->dataSetSize = 50;
     ctx->trainingSetStart = 0;
-    ctx->trainingSetEnd = 19;
-    ctx->trainingSteps = 19;
-    ctx->validationSetStart = 0;
-    ctx->validationSetEnd = 0;
-    ctx->validationSteps = 0;
-    ctx->testSetStart = 0;
-    ctx->testSetEnd = 0;
-    ctx->testSteps = 0;
+    ctx->trainingSetEnd = 49;
+    ctx->trainingSteps = 50;
+    ctx->validationSetStart = 20;
+    ctx->validationSetEnd = 34;
+    ctx->validationSteps = 15;
+    ctx->testSetStart = 35;
+    ctx->testSetEnd = 49;
+    ctx->testSteps = 15;
+    ctx->mode = mode;
+
+    if(mode == ctx->TRAINING_MODE){
+        ctx->setStart = ctx->trainingSetStart;
+        ctx->setEnd = ctx->trainingSetEnd;
+        ctx->nSteps = ctx->trainingSteps;
+    } else if(mode == ctx->VALIDATION_MODE){
+        ctx->setStart = ctx->validationSetStart;
+        ctx->setEnd = ctx->validationSetEnd;
+        ctx->nSteps = ctx->validationSteps;
+    }else{
+        ctx->setStart = ctx->testSetStart;
+        ctx->setEnd = ctx->testSetEnd;
+        ctx->nSteps = ctx->testSteps;
+    }
 
     ctx->maxValues = new double[ctx->nVariables];
-
-    ctx->yout = new double[(ctx->trainingSteps + 1) * ctx->nVariables];
-
+    ctx->yout = new double[(ctx->nSteps + 1) * ctx->nVariables];
     ctx->vectors = new double *[ctx->nVariables + 1];
     for (int i = 0; i < ctx->nVariables + 1; i++)
     {
@@ -870,7 +971,8 @@ void initializeGRN5Context(appContext* ctx)
     }
 
     readGRNFileToVectors("GRN5.txt", ctx->nVariables + 1, ctx->vectors);
-    getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->trainingSteps + 1);
+    getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->setStart, ctx->setEnd);
+
 
     ctx->y_0 = new double[ctx->nVariables];
     ctx->expectedResult = &ctx->vectors[1];
@@ -879,10 +981,10 @@ void initializeGRN5Context(appContext* ctx)
         ctx->y_0[i] = ctx->vectors[i + 1][0];
     }
 
-    ctx->tspan[0] = 0.0;
-    ctx->tspan[1] = 72.0;
-    ctx->trainingTSpan[0] = 0.0;
-    ctx->trainingTSpan[1] = (ctx->tspan[1]/ctx->nSteps)*ctx->trainingSteps;
+    ctx->tspan[0] = ctx->vectors[0][ctx->setStart];
+    ctx->tspan[1] = ctx->vectors[0][ctx->setEnd];
+    //ctx->trainingTSpan[0] = 0.0;
+    //ctx->trainingTSpan[1] = (ctx->tspan[1]/ctx->nSteps)*ctx->trainingSteps;
 }
 
 void initializeGRN10Context(appContext* ctx)
@@ -1131,7 +1233,7 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), app
     }
 
     t = 0.0E0;
-    dt = (appCtx->trainingTSpan[1] - appCtx->trainingTSpan[0]) / (double)(appCtx->trainingSteps);
+    dt = (appCtx->tspan[1] - appCtx->tspan[0]) / (double)(appCtx->nSteps);
     tout = dt;
 
     struct lsoda_opt_t opt = {0};
@@ -1150,15 +1252,16 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), app
 
     lsoda_prepare(&ctx, &opt);
 
-    for (iout =appCtx->trainingSetStart+ 1; iout <= appCtx->trainingSetEnd; iout++)
+    for (iout =appCtx->setStart+ 1; iout <= appCtx->setEnd; iout++)
     {
         lsoda(&ctx, y, &t, tout);
         //printf(" at t= %12.4e y= %14.6e %14.6e %14.6e %14.6e %14.6e\n", t, y[0], y[1], y[2], y[3], y[4]);
 
         for(int i=0; i<appCtx->nVariables; i++) {
-            int outIndex = appCtx->nVariables * (iout - appCtx->trainingSetStart) + i;
+            int outIndex = appCtx->nVariables * (iout - appCtx->setEnd) + i;
             _yout[outIndex] = y[i];
         }
+
 
         if (ctx.state <= 0)
         {
@@ -1176,18 +1279,84 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), app
     return 0;
 }
 
+/*
+double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), appContext *appCtx, double *_yout)
+{
 
+    // todo: tentar colocar essa alocação fora da função
+    //  esses vetores serão alocados toda vez, e essa função será chamada
+    //  a cada avaliação de indivíduo
+
+    double *atol = new double[appCtx->nVariables];
+    double *rtol = new double[appCtx->nVariables];
+    double t, tout, dt;
+
+    double *y = new double[appCtx->nVariables];
+    int iout;
+
+    for (int i = 0; i < appCtx->nVariables; i++)
+    {
+        y[i] = appCtx->y_0[i];
+        rtol[i] = atol[i] = 1.49012e-4;
+        _yout[i] = appCtx->y_0[i];
+    }
+
+    t = 0.0E0;
+    dt = (appCtx->tspan[1] - appCtx->tspan[0]) / (double)(appCtx->nSteps);
+    tout = dt;
+
+    struct lsoda_opt_t opt = {0};
+    opt.ixpr = 0;
+    opt.rtol = rtol;
+    opt.atol = atol;
+    opt.itask = 1;
+
+    struct lsoda_context_t ctx = {
+            .function = dydt,
+            .data = appCtx,
+            .neq = appCtx->nVariables,
+            .state = 1,
+    };
+    //ctx.data = coefficients;
+
+    lsoda_prepare(&ctx, &opt);
+
+    for (iout = 1; iout <= appCtx->nSteps; iout++)
+    {
+        lsoda(&ctx, y, &t, tout);
+        //printf(" at t= %12.4e y= %14.6e %14.6e %14.6e %14.6e %14.6e\n", t, y[0], y[1], y[2], y[3], y[4]);
+
+        for(int i=0; i<appCtx->nVariables; i++) {
+            _yout[appCtx->nVariables * iout + i] = y[i];
+        }
+
+        if (ctx.state <= 0)
+        {
+            printf("error istate = %d\n", ctx.state);
+            exit(0);
+        }
+        tout = tout + dt;
+    }
+
+    delete[] rtol;
+    delete[] atol;
+    delete[] y;
+    lsoda_free(&ctx);
+
+    return 0;
+}
+*/
 //todo: renomear quando concluir
 double grn5EvaluationLSODA(void *ind, void* data)
 {
     appContext* ctx = (appContext*)(data);
     double* _ind = (double *)ind;
-    int numElements;
+    int numElements = ctx->setEnd - ctx->setStart+1;
     int offset;
     ctx->individual = _ind;
     lsodaWrapper(twoBody5VarLSODA, ctx, ctx->yout);
 
-    if(ctx->mode == ctx->TRAINING_MODE){
+    /*if(ctx->mode == ctx->TRAINING_MODE){
         numElements = ctx->trainingSetEnd - ctx->trainingSetStart+1;
         offset = ctx->trainingSetStart;
     } else if(ctx->mode == ctx->VALIDATION_MODE){
@@ -1196,8 +1365,8 @@ double grn5EvaluationLSODA(void *ind, void* data)
     }else{
         numElements = ctx->testSetEnd - ctx->testSetStart+1;
         offset = ctx->testSetStart;
-    }
-    return difference(ctx->yout, ctx->expectedResult+offset, ctx->nVariables, numElements);
+    }*/
+    return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd);
 }
 
 double grn10EvaluationLSODA(void *ind, void *data)
@@ -1481,7 +1650,7 @@ void runGRN5ESComparisonExperiment()
 void runGRN5ESComparisonExperiment()
 {
     appContext ctx{};
-    initializeGRN5Context(&ctx);
+    initializeGRN5Context(&ctx, ctx.TRAINING_MODE);
 
     ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
     esAlgorithm.setEvaluationFunction(grn5EvaluationLSODA);
@@ -1863,14 +2032,15 @@ int main()
     return 0;*/
 
 
-    runGRN5ESComparisonExperiment();
+    //runGRN5ESComparisonExperiment();
     //runGRN10ESComparisonExperiment();
-    return 0;
+    //return 0;
 
    double ind[] = {1.25, 4, 1.02, 1.57, 3.43, 0.72, 0.5, 0.45, 0.51, 0.52, 13, 4, 3, 4, 16};
 
    appContext ctx{};
-   initializeGRN5Context(&ctx);
+   initializeGRN5Context(&ctx, ctx.TRAINING_MODE);
+   printContext(&ctx);
    cout << grn5EvaluationLSODA(ind, &ctx) << "\n";
 
    // test(twoBodyFixedLSODA, tspanTest, nullptr, 49, 5, nullptr, nullptr, nullptr);
