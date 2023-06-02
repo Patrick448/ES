@@ -114,7 +114,6 @@ string vectorToString(double *vec, int start, int end)
     {
         s.append(to_string(vec[i]) + " " );
     }
-    cout << "\n";
 
     return s;
 }
@@ -900,6 +899,8 @@ void printContext(appContext* ctx){
     printf("K_SIZE: %d\n", ctx->K_SIZE);
     printf("nVariables: %d\n", ctx->nVariables);
     printf("nSteps: %d\n", ctx->nSteps);
+    printf("setStart: %d\n", ctx->setStart);
+    printf("setEnd: %d\n", ctx->setEnd);
     printf("dataSetSize: %d\n", ctx->dataSetSize);
     printf("trainingSetStart: %d\n", ctx->trainingSetStart);
     printf("trainingSetEnd: %d\n", ctx->trainingSetEnd);
@@ -939,7 +940,7 @@ void initializeGRN5Context(appContext* ctx, int mode)
     ctx->dataSetSize = 50;
     ctx->trainingSetStart = 0;
     ctx->trainingSetEnd = 49;
-    ctx->trainingSteps = 50;
+    ctx->trainingSteps = 49;
     ctx->validationSetStart = 20;
     ctx->validationSetEnd = 34;
     ctx->validationSteps = 15;
@@ -1258,7 +1259,7 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), app
         //printf(" at t= %12.4e y= %14.6e %14.6e %14.6e %14.6e %14.6e\n", t, y[0], y[1], y[2], y[3], y[4]);
 
         for(int i=0; i<appCtx->nVariables; i++) {
-            int outIndex = appCtx->nVariables * (iout - appCtx->setEnd) + i;
+            int outIndex = appCtx->nVariables * (iout - appCtx->setStart) + i;
             _yout[outIndex] = y[i];
         }
 
@@ -2042,6 +2043,7 @@ int main()
    initializeGRN5Context(&ctx, ctx.TRAINING_MODE);
    printContext(&ctx);
    cout << grn5EvaluationLSODA(ind, &ctx) << "\n";
+   clearContext(&ctx);
 
    // test(twoBodyFixedLSODA, tspanTest, nullptr, 49, 5, nullptr, nullptr, nullptr);
     //cout << "\n\n\n";
