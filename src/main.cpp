@@ -988,9 +988,13 @@ void initializeGRN5Context(appContext* ctx, int mode)
     //ctx->trainingTSpan[1] = (ctx->tspan[1]/ctx->nSteps)*ctx->trainingSteps;
 }
 
-void initializeGRN10Context(appContext* ctx)
+void initializeGRN10Context(appContext* ctx, int mode)
 {
-    ctx->IND_SIZE = 40;      // Tamanho do indivíduo (quantidade de coeficientes)
+
+    ctx->TRAINING_MODE = 0;
+    ctx->TEST_MODE = 2;
+    ctx->VALIDATION_MODE = 1;
+    ctx->IND_SIZE = 15;      // Tamanho do indivíduo (quantidade de coeficientes)
     ctx->MIN_K = 0.1;        // Menor valor que K pode assumir
     ctx->MAX_K = 1;          // Maior valor que K pode assumir
     ctx->MIN_N = 1;          // Menor valor que N pode assumir
@@ -1004,10 +1008,34 @@ void initializeGRN10Context(appContext* ctx)
     ctx->K_SIZE = 15;
     ctx->nVariables = 10;
     ctx->nSteps = 49;
+    ctx->dataSetSize = 50;
+    ctx->trainingSetStart = 0;
+    ctx->trainingSetEnd = 49;
+    ctx->trainingSteps = 6*49;
+    ctx->validationSetStart = 20;
+    ctx->validationSetEnd = 34;
+    ctx->validationSteps = 15;
+    ctx->testSetStart = 35;
+    ctx->testSetEnd = 49;
+    ctx->testSteps = 15;
+    ctx->mode = mode;
+
+    if(mode == ctx->TRAINING_MODE){
+        ctx->setStart = ctx->trainingSetStart;
+        ctx->setEnd = ctx->trainingSetEnd;
+        ctx->nSteps = ctx->trainingSteps;
+    } else if(mode == ctx->VALIDATION_MODE){
+        ctx->setStart = ctx->validationSetStart;
+        ctx->setEnd = ctx->validationSetEnd;
+        ctx->nSteps = ctx->validationSteps;
+    }else{
+        ctx->setStart = ctx->testSetStart;
+        ctx->setEnd = ctx->testSetEnd;
+        ctx->nSteps = ctx->testSteps;
+    }
+
     ctx->maxValues = new double[ctx->nVariables];
-
     ctx->yout = new double[(ctx->nSteps + 1) * ctx->nVariables];
-
     ctx->vectors = new double *[ctx->nVariables + 1];
     for (int i = 0; i < ctx->nVariables + 1; i++)
     {
@@ -1015,17 +1043,20 @@ void initializeGRN10Context(appContext* ctx)
     }
 
     readGRNFileToVectors("GRN10.txt", ctx->nVariables + 1, ctx->vectors);
-    getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->nSteps + 1);
+    getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->setStart, ctx->setEnd);
+
 
     ctx->y_0 = new double[ctx->nVariables];
     ctx->expectedResult = &ctx->vectors[1];
+    //todo: verificar se o y_0 está correto para
+    // o caso de inicio fora do zero
     for (int i = 0; i < ctx->nVariables; i++)
     {
-        ctx->y_0[i] = ctx->vectors[i + 1][0];
+        ctx->y_0[i] = ctx->vectors[i + 1][ctx->setStart];
     }
 
-    ctx->tspan[0] = 0.0;
-    ctx->tspan[1] = 72.0;
+    ctx->tspan[0] = ctx->vectors[0][ctx->setStart];
+    ctx->tspan[1] = ctx->vectors[0][ctx->setEnd];
 }
 
 /*
@@ -1379,13 +1410,37 @@ double grn5EvaluationRK4(void *ind, void* data)
     return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
 
 }
+
 double grn10EvaluationLSODA(void *ind, void *data)
 {
     appContext* ctx = (appContext*)(data);
     double* _ind = (double *)ind;
     ctx->individual = _ind;
     lsodaWrapper(twoBody10VarLSODA, ctx, ctx->yout);
-    return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, 50);
+
+    /*if(ctx->mode == ctx->TRAINING_MODE){
+        numElements = ctx->trainingSetEnd - ctx->trainingSetStart+1;
+        offset = ctx->trainingSetStart;
+    } else if(ctx->mode == ctx->VALIDATION_MODE){
+        numElements = ctx->validationSetEnd - ctx->validationSetStart+1;
+        offset = ctx->validationSetStart;
+    }else{
+        numElements = ctx->testSetEnd - ctx->testSetStart+1;
+        offset = ctx->testSetStart;
+    }*/
+    return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
+
+}
+
+double grn10EvaluationRK4(void *ind, void* data)
+
+{   appContext* ctx = (appContext*)(data);
+    double* _ind = (double *)ind;
+    ctx->individual = _ind;
+    double *t = new double [ctx->nSteps+1];
+    rk4(twoBody10VarLSODA, ctx->tspan, ctx->y_0, ctx->nSteps, ctx->nVariables, t, _ind, ctx);
+
+    return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
 
 }
 
@@ -1791,7 +1846,7 @@ void runGRN5ESComparisonExperiment()
 void runGRN10ESComparisonExperiment()
 {
     appContext ctx{};
-    initializeGRN10Context(&ctx);
+    initializeGRN10Context(&ctx, ctx.TRAINING_MODE);
 
     ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
     esAlgorithm.setEvaluationFunction(grn10EvaluationLSODA);
@@ -2029,56 +2084,32 @@ int fex(double t, double *y, double *ydot, void *data)
     return (0);
 }
 
+void test(){
+    double ind_5[] = {1.25, 4, 1.02, 1.57, 3.43, 0.72, 0.5, 0.45, 0.51, 0.52, 13, 4, 3, 4, 16};
+    double ind_5_2[] ={1.2163355099083872, 1.1264485098219865, 2.973714367061704, 2.952143123315177, 2.998260518457365, 0.5687249950503857, 0.4580723119903261, 0.46214892372246563, 0.6182568295500336, 0.5213082492659304, 0.7708877748759901, 0.1497642024548283, 4.254757908429968, 3.759370669969996, 4.784173526119725, 10.935884810737809, 24.595975874929724, 2.8109199678182635, 4.922623602327875, 1.804297289687443, 0.6961641316460799, 1.1805067448542073, 3.769380877770944, 0.6268588518301711, 0.7945926074279098, 0.8665901143646684, 1.1631405647512596, 2.3141178250393146, 1.2841062086785697, 0.7091739090057955, 2.245324305294896, 0.8208096283146853, 0.6911548119817139, 0.7874359961268611, 1.101498884676361, 0.7742237807425528, 0.9816157239798934, 70.97756457350062};
+    double ind_10[] = {1.73,2,0.81,0.11, 1.23, 1.78, 1.14, 1.04, 3.47, 3.21,
+                       0.45, 0.56, 0.99, 0.77, 0.71, 0.66, 0.46, 0.48, 0.66, 0.99, 0.85, 0.61, 0.55, 0.46, 0.17,
+                       20, 9, 24, 12, 2, 2, 6, 4, 7, 24, 2, 7, 21, 20, 3};
+    appContext ctx{};
+    initializeGRN5Context(&ctx, ctx.TRAINING_MODE);
+    //printContext(&ctx);
+    cout << to_string(grn5EvaluationRK4(ind_5_2, &ctx)) << "\n";
+    cout << to_string(grn5EvaluationLSODA(ind_5_2, &ctx)) << "\n";
+    clearContext(&ctx);
+
+    initializeGRN10Context(&ctx, ctx.TRAINING_MODE);
+    //printContext(&ctx);
+    cout << to_string(grn10EvaluationLSODA(ind_10, &ctx)) << "\n";
+    cout << to_string(grn10EvaluationRK4(ind_10, &ctx)) << "\n";
+    clearContext(&ctx);
+}
+
 int main()
 {
-   /* double **vectors = new double *[6];
-
-    for (int i = 0; i < 6; i++)
-    {
-        vectors[i] = new double[50];
-    }
-    readGRNFileToVectors("GRN5.txt", 6, vectors);
-    printGRNVector(vectors, 6, 50);
-    return 0;*/
-
-
+    test();
     //runGRN5ESComparisonExperiment();
     //runGRN10ESComparisonExperiment();
     //return 0;
 
-   double ind[] = {1.25, 4, 1.02, 1.57, 3.43, 0.72, 0.5, 0.45, 0.51, 0.52, 13, 4, 3, 4, 16};
-   double ind2[] ={1.2163355099083872, 1.1264485098219865, 2.973714367061704, 2.952143123315177, 2.998260518457365, 0.5687249950503857, 0.4580723119903261, 0.46214892372246563, 0.6182568295500336, 0.5213082492659304, 0.7708877748759901, 0.1497642024548283, 4.254757908429968, 3.759370669969996, 4.784173526119725, 10.935884810737809, 24.595975874929724, 2.8109199678182635, 4.922623602327875, 1.804297289687443, 0.6961641316460799, 1.1805067448542073, 3.769380877770944, 0.6268588518301711, 0.7945926074279098, 0.8665901143646684, 1.1631405647512596, 2.3141178250393146, 1.2841062086785697, 0.7091739090057955, 2.245324305294896, 0.8208096283146853, 0.6911548119817139, 0.7874359961268611, 1.101498884676361, 0.7742237807425528, 0.9816157239798934, 70.97756457350062};
-   appContext ctx{};
-   initializeGRN5Context(&ctx, ctx.TRAINING_MODE);
-   printContext(&ctx);
-   cout << grn5EvaluationRK4(ind2, &ctx) << "\n";
-    cout << grn5EvaluationLSODA(ind2, &ctx) << "\n";
-   clearContext(&ctx);
-
-   // test(twoBodyFixedLSODA, tspanTest, nullptr, 49, 5, nullptr, nullptr, nullptr);
-    //cout << "\n\n\n";
-    // testa a saida da função difference com coeficientes pré-definidos
-    // resultado: ~108.0
-
-    //initializeGRN5();
-
-    //double dim5[] = {1.25, 4, 1.02, 1.57, 3.43, 0.72, 0.5, 0.45, 0.51, 0.52, 13, 4, 3, 4, 16};
-    //cout << grn5EvaluationLSODA(dim5) << "\n";
-    //cout << "\n\n\n";
-    // clearGRNData();
-
-    // //resultado: ~56.0
-     //initializeGRN10();
-     //double dim10[] = {1.73,2,0.81,0.11, 1.23, 1.78, 1.14, 1.04, 3.47, 3.21,
-     //                  0.45, 0.56, 0.99, 0.77, 0.71, 0.66, 0.46, 0.48, 0.66, 0.99, 0.85, 0.61, 0.55, 0.46, 0.17,
-      //                 20, 9, 24, 12, 2, 2, 6, 4, 7, 24, 2, 7, 21, 20, 3};
-     //cout << grn10EvaluationLSODA(dim10) << "\n";
-     //cout << "\n\n\n";
-     //clearGRNData();
-
-
-
-    // runGRN10ESComparisonExperiment();
-    // runGRN5ESComparisonExperiment();
     return 0;
 }
