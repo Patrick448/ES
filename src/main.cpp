@@ -284,10 +284,13 @@ int twoBody5VarLSODA(double t, double *y, double *ydot, void *_data)
                (y[3] / maxValues[3])) /
               tau[3];
 
-    ydot[4] = (((pow((y[3] / maxValues[3]), (int)n[4])) /
-                (pow((y[3] / maxValues[3]), (int)n[4]) + pow(k[4], (int)n[4]))) -
-               (y[4] / maxValues[4])) /
-              tau[4];
+    //ydot[4] = (((pow((y[3] / maxValues[3]), (int)n[4])) /
+     //           (pow((y[3] / maxValues[3]), (int)n[4]) + pow(k[4], (int)n[4]))) -
+     //          (y[4] / maxValues[4])) /
+    //          tau[4];
+
+    ydot[4] = ((((pow(y[1]/maxValues[2], n[4])/(pow(y[1]/maxValues[2], n[4]) + pow(k[4], n[4])))*(pow(y[3]/maxValues[3], n[5])/(pow(y[3]/maxValues[3], n[5]) + pow(k[3], n[5]))))+((pow(y[3]/maxValues[3], n[5])/(pow(y[3]/maxValues[3], n[5]) + pow(k[3], n[5])))
+            *(pow(y[4]/maxValues[4], n[6])/(pow(y[4]/maxValues[4], n[6]) + pow(k[6], n[6]))))) - (y[4]/maxValues[4])) / tau[4];
 
     return 0;
 }
@@ -928,8 +931,8 @@ void initializeGRN5Context(appContext* ctx, int mode)
     ctx->MIN_STRATEGY = 0.1; // Menor valor que a estratégia pode assumir
     ctx->MAX_STRATEGY = 10;  // Maior valor que a estratégia pode assumir
     ctx->TAU_SIZE = 5;
-    ctx->N_SIZE = 5;
-    ctx->K_SIZE = 5;
+    ctx->N_SIZE = 7;
+    ctx->K_SIZE = 7;
     ctx->nVariables = 5;
     ctx->nSteps = 49;
     ctx->dataSetSize = 50;
@@ -2044,12 +2047,12 @@ int main()
     //return 0;
 
    double ind[] = {1.25, 4, 1.02, 1.57, 3.43, 0.72, 0.5, 0.45, 0.51, 0.52, 13, 4, 3, 4, 16};
-
+   double ind2[] ={1.2163355099083872, 1.1264485098219865, 2.973714367061704, 2.952143123315177, 2.998260518457365, 0.5687249950503857, 0.4580723119903261, 0.46214892372246563, 0.6182568295500336, 0.5213082492659304, 0.7708877748759901, 0.1497642024548283, 4.254757908429968, 3.759370669969996, 4.784173526119725, 10.935884810737809, 24.595975874929724, 2.8109199678182635, 4.922623602327875, 1.804297289687443, 0.6961641316460799, 1.1805067448542073, 3.769380877770944, 0.6268588518301711, 0.7945926074279098, 0.8665901143646684, 1.1631405647512596, 2.3141178250393146, 1.2841062086785697, 0.7091739090057955, 2.245324305294896, 0.8208096283146853, 0.6911548119817139, 0.7874359961268611, 1.101498884676361, 0.7742237807425528, 0.9816157239798934, 70.97756457350062};
    appContext ctx{};
    initializeGRN5Context(&ctx, ctx.TRAINING_MODE);
    printContext(&ctx);
-   cout << grn5EvaluationRK4(ind, &ctx) << "\n";
-    cout << grn5EvaluationLSODA(ind, &ctx) << "\n";
+   cout << grn5EvaluationRK4(ind2, &ctx) << "\n";
+    cout << grn5EvaluationLSODA(ind2, &ctx) << "\n";
    clearContext(&ctx);
 
    // test(twoBodyFixedLSODA, tspanTest, nullptr, 49, 5, nullptr, nullptr, nullptr);
