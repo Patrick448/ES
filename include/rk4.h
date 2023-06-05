@@ -9,7 +9,8 @@
 extern "C" {
 #endif
 
-extern void rk4 ( void dydt ( double t, double u[], double* coefficients, double f[] ), double tspan[2], double y0[], int n, int m, double t[], double* coefficients, double y[] );
+extern void rk4 ( int dydt (double t, double *y, double *ydot, void *_data), double tspan[2],
+                  double y0[], int n, int m, double t[], double* coefficients, void *ctx );
 //extern void timestamp();
 
 #ifdef __cplusplus

@@ -5,7 +5,7 @@
 #include <cstring>
 #include <chrono>
 #include "dependencies.h"
-
+#include "appCtx.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -42,7 +42,7 @@ double **vectors;
 double **expectedResult;
 */
 
-struct appContext {
+/*struct appContext {
     int TRAINING_MODE = 0;
     int TEST_MODE = 2;
     int VALIDATION_MODE = 1;
@@ -83,7 +83,7 @@ struct appContext {
     double **expectedResult;
     double* individual;
 
-};
+};*/
 
 void twoBody(double t, double y[], double max[], double tau[], double n[], double k[], double yp[])
 {
@@ -750,19 +750,9 @@ double difference(double *actual, double **expected, int numVariables, int start
     return difTotal;
 }
 
-/*
-double grn5EvaluationRK4(void *ind, void* data)
 
-{   appContext* ctx = (appContext*)(data);
-    double* _ind = (double *)ind;
-    ctx->individual = _ind;
-    //lsodaWrapper(twoBody5VarLSODA, ctx, ctx->yout);
-    rk4(twoBody5VarLSODA, ctx->tspan, ctx->y_0, ctx->nSteps, ctx->nVariables, ctx->vectors[0], ind, ctx->yout);
 
-    return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, 50);
 
-}
-*/
 
 /*
 double grn10Evaluation(double *dim)
@@ -925,6 +915,9 @@ void printContext(appContext* ctx){
 void initializeGRN5Context(appContext* ctx, int mode)
 {
     //appContext *ctx = new appContext;
+    ctx->TRAINING_MODE = 0;
+    ctx->TEST_MODE = 2;
+    ctx->VALIDATION_MODE = 1;
     ctx->IND_SIZE = 15;      // Tamanho do indivíduo (quantidade de coeficientes)
     ctx->MIN_K = 0.1;        // Menor valor que K pode assumir
     ctx->MAX_K = 1;          // Maior valor que K pode assumir
@@ -942,7 +935,7 @@ void initializeGRN5Context(appContext* ctx, int mode)
     ctx->dataSetSize = 50;
     ctx->trainingSetStart = 0;
     ctx->trainingSetEnd = 49;
-    ctx->trainingSteps = 49;
+    ctx->trainingSteps = 98;
     ctx->validationSetStart = 20;
     ctx->validationSetEnd = 34;
     ctx->validationSteps = 15;
@@ -979,9 +972,11 @@ void initializeGRN5Context(appContext* ctx, int mode)
 
     ctx->y_0 = new double[ctx->nVariables];
     ctx->expectedResult = &ctx->vectors[1];
+    //todo: verificar se o y_0 está correto para
+    // o caso de inicio fora do zero
     for (int i = 0; i < ctx->nVariables; i++)
     {
-        ctx->y_0[i] = ctx->vectors[i + 1][0];
+        ctx->y_0[i] = ctx->vectors[i + 1][ctx->setStart];
     }
 
     ctx->tspan[0] = ctx->vectors[0][ctx->setStart];
@@ -1255,13 +1250,13 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), app
 
     lsoda_prepare(&ctx, &opt);
 
-    for (iout =appCtx->setStart+ 1; iout <= appCtx->setEnd; iout++)
+    for (iout =1; iout <= appCtx->nSteps; iout++)
     {
         lsoda(&ctx, y, &t, tout);
         //printf(" at t= %12.4e y= %14.6e %14.6e %14.6e %14.6e %14.6e\n", t, y[0], y[1], y[2], y[3], y[4]);
 
         for(int i=0; i<appCtx->nVariables; i++) {
-            int outIndex = appCtx->nVariables * (iout - appCtx->setStart) + i;
+            int outIndex = appCtx->nVariables * iout + i;
             _yout[outIndex] = y[i];
         }
 
@@ -1354,8 +1349,6 @@ double grn5EvaluationLSODA(void *ind, void* data)
 {
     appContext* ctx = (appContext*)(data);
     double* _ind = (double *)ind;
-    int numElements = ctx->setEnd - ctx->setStart+1;
-    int offset;
     ctx->individual = _ind;
     lsodaWrapper(twoBody5VarLSODA, ctx, ctx->yout);
 
@@ -1372,6 +1365,17 @@ double grn5EvaluationLSODA(void *ind, void* data)
     return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
 }
 
+double grn5EvaluationRK4(void *ind, void* data)
+
+{   appContext* ctx = (appContext*)(data);
+    double* _ind = (double *)ind;
+    ctx->individual = _ind;
+    double *t = new double [ctx->nSteps+1];
+    rk4(twoBody5VarLSODA, ctx->tspan, ctx->y_0, ctx->nSteps, ctx->nVariables, t, _ind, ctx);
+
+    return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
+
+}
 double grn10EvaluationLSODA(void *ind, void *data)
 {
     appContext* ctx = (appContext*)(data);
@@ -2044,7 +2048,8 @@ int main()
    appContext ctx{};
    initializeGRN5Context(&ctx, ctx.TRAINING_MODE);
    printContext(&ctx);
-   cout << grn5EvaluationLSODA(ind, &ctx) << "\n";
+   cout << grn5EvaluationRK4(ind, &ctx) << "\n";
+    cout << grn5EvaluationLSODA(ind, &ctx) << "\n";
    clearContext(&ctx);
 
    // test(twoBodyFixedLSODA, tspanTest, nullptr, 49, 5, nullptr, nullptr, nullptr);
