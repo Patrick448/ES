@@ -721,13 +721,15 @@ double difference(double *actual, double **expected, int numVariables, int numEl
 
     return difTotal;
 }
-
-double difference(double *actual, double **expected, int numVariables, int start, int end)
+//todo: melhorar vetores, padronizar o formato e melhorar os acessos
+double difference(double *actual, double **expected, int numVariables, int start, int end, int numSteps)
 {
     // todo: testar função e remover essa linha
     // double *dif = new double [numVariables];
     double difTotal = 0.0;
     int numElements = end - start + 1;
+
+    int jump = numSteps / (numElements-1);
 
     for (int i = 0; i < numVariables; i++)
     {
@@ -736,7 +738,7 @@ double difference(double *actual, double **expected, int numVariables, int start
         {
             //  dif[i] += fabs(actual[i][j] - expected[i][j]);
             // if(i==3)continue;
-            difTotal += fabs(actual[j * numVariables + i] - expected[i][j]);
+            difTotal += fabs(actual[j*jump* numVariables + i] - expected[i][j]);
         }
     }
 
@@ -1367,7 +1369,7 @@ double grn5EvaluationLSODA(void *ind, void* data)
         numElements = ctx->testSetEnd - ctx->testSetStart+1;
         offset = ctx->testSetStart;
     }*/
-    return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd);
+    return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
 }
 
 double grn10EvaluationLSODA(void *ind, void *data)
