@@ -1296,7 +1296,9 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), app
 
 
         if (ctx.state <= 0)
-        {
+        { //todo: ver se devo abortar ou não.
+            //todo: entender esse limite de passos e pq está sendo atingido mesmo com tamanho de passo pequeno
+
             //printf("error istate = %d\n", ctx.state);
             //cout << y[0] << endl;
             //cout << y[1] << endl;
@@ -2305,7 +2307,10 @@ int main()
                       0.475951, 0.712506, 0.852778, 0.845837, 0.173564, 0.666615,
                       6.125123, 10.331758, 23.741081, 7.461154, 7.816841, 19.812765,
                       7.771741};
-    double ind2[19] ={3.829097,2.148080,5.000000,5.000000,0.100000,0.100000,1.000000,0.100000,0.100000,1.000000,0.100000,0.100000,15.128335,4.608234,25.000000,1.000000,21.855324,10.160282,1.000000};
+    double ind2[19] ={3.829097,2.148080,5.000000,5.000000,0.100000,0.100000,
+                      1.000000,0.100000,0.100000,1.000000,0.100000,0.100000,
+                      15.128335,4.608234,25.000000,1.000000,21.855324,10.160282,
+                      1.000000};
     cout << to_string(grn5EvaluationRK4(ind, &ctx)) << "\n";
     cout << to_string(grn5EvaluationLSODA(ind, &ctx)) << "\n";
 
