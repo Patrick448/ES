@@ -289,8 +289,8 @@ int twoBody5VarLSODA(double t, double *y, double *ydot, void *_data)
      //          (y[4] / maxValues[4])) /
     //          tau[4];
 
-    ydot[4] = ((((pow(y[1]/maxValues[2], n[4])/(pow(y[1]/maxValues[2], n[4]) + pow(k[4], n[4])))*(pow(y[3]/maxValues[3], n[5])/(pow(y[3]/maxValues[3], n[5]) + pow(k[3], n[5]))))+((pow(y[3]/maxValues[3], n[5])/(pow(y[3]/maxValues[3], n[5]) + pow(k[3], n[5])))
-            *(pow(y[4]/maxValues[4], n[6])/(pow(y[4]/maxValues[4], n[6]) + pow(k[6], n[6]))))) - (y[4]/maxValues[4])) / tau[4];
+    ydot[4] = ((((pow(y[1]/maxValues[2], (int)n[4])/(pow(y[1]/maxValues[2], (int)n[4]) + pow(k[4], (int)n[4])))*(pow(y[3]/maxValues[3], (int)n[5])/(pow(y[3]/maxValues[3], (int)n[5]) + pow(k[3], (int)n[5]))))+((pow(y[3]/maxValues[3], (int)n[5])/(pow(y[3]/maxValues[3], (int)n[5]) + pow(k[3], (int)n[5])))
+            *(pow(y[4]/maxValues[4], (int)n[6])/(pow(y[4]/maxValues[4], (int)n[6]) + pow(k[6], (int)n[6]))))) - (y[4]/maxValues[4])) / tau[4];
 
     return 0;
 }
@@ -938,7 +938,7 @@ void initializeGRN5Context(appContext* ctx, int mode)
     ctx->dataSetSize = 50;
     ctx->trainingSetStart = 0;
     ctx->trainingSetEnd = 49;
-    ctx->trainingSteps = 49;
+    ctx->trainingSteps = 10*49;
     ctx->validationSetStart = 20;
     ctx->validationSetEnd = 34;
     ctx->validationSteps = 15;
@@ -970,7 +970,6 @@ void initializeGRN5Context(appContext* ctx, int mode)
     }
 
     readGRNFileToVectors("GRN5.txt", ctx->nVariables + 1, ctx->vectors);
-    printGRNVector(ctx->vectors, ctx->nVariables + 1, 50);
     getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->setStart, ctx->setEnd);
 
 
@@ -1298,13 +1297,13 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), app
 
         if (ctx.state <= 0)
         {
-            printf("error istate = %d\n", ctx.state);
-            cout << _yout[0] << endl;
-            cout << _yout[1] << endl;
-            cout << _yout[2] << endl;
-            cout << _yout[3] << endl;
-            cout << _yout[4] << endl;
-
+            //printf("error istate = %d\n", ctx.state);
+            //cout << y[0] << endl;
+            //cout << y[1] << endl;
+            //cout << y[2] << endl;
+            //cout << y[3] << endl;
+            //cout << y[4] << endl;
+            break;
             exit(0);
         }
         tout = tout + dt;
@@ -1734,7 +1733,7 @@ void runESComparisonExperiment(string grnMode, string evalMode)
 
 
     if(grnMode == "grn5"){
-        maxEvals = 200;
+        maxEvals = 2000;
         numParents = 10;
         numOffspring = 20;
 
@@ -2294,10 +2293,21 @@ int main()
     //todo: mudar critério de parada de todos os ES para número de avaliações ao invés de gerações
     //test();
     //return 0;
-    //runESComparisonExperiment("grn10", "lsoda");
-    runGRN5ESComparisonExperiment("lsoda", "exp3");
+    //runESComparisonExperiment("grn5", "lsoda");
+    //runESComparisonExperiment("grn5", "rk4");
+
     //runGRN10ESComparisonExperiment();
     //return 0;
 
+   appContext ctx{};
+    initializeGRN5Context(&ctx, ctx.TRAINING_MODE);
+    double ind[19] = {4.052585, 1.136443, 0.852662, 3.120117, 0.104307, 0.754601,
+                      0.475951, 0.712506, 0.852778, 0.845837, 0.173564, 0.666615,
+                      6.125123, 10.331758, 23.741081, 7.461154, 7.816841, 19.812765,
+                      7.771741};
+    double ind2[19] ={3.829097,2.148080,5.000000,5.000000,0.100000,0.100000,1.000000,0.100000,0.100000,1.000000,0.100000,0.100000,15.128335,4.608234,25.000000,1.000000,21.855324,10.160282,1.000000};
+    cout << to_string(grn5EvaluationRK4(ind, &ctx)) << "\n";
+    cout << to_string(grn5EvaluationLSODA(ind2, &ctx)) << "\n";
+    clearContext(&ctx);
     return 0;
 }
