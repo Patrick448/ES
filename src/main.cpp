@@ -921,7 +921,7 @@ void initializeGRN5Context(appContext* ctx, int mode)
     ctx->TRAINING_MODE = 0;
     ctx->TEST_MODE = 2;
     ctx->VALIDATION_MODE = 1;
-    ctx->IND_SIZE = 15;      // Tamanho do indivíduo (quantidade de coeficientes)
+    ctx->IND_SIZE = 19;      // Tamanho do indivíduo (quantidade de coeficientes)
     ctx->MIN_K = 0.1;        // Menor valor que K pode assumir
     ctx->MAX_K = 1;          // Maior valor que K pode assumir
     ctx->MIN_N = 1;          // Menor valor que N pode assumir
@@ -938,7 +938,7 @@ void initializeGRN5Context(appContext* ctx, int mode)
     ctx->dataSetSize = 50;
     ctx->trainingSetStart = 0;
     ctx->trainingSetEnd = 49;
-    ctx->trainingSteps = 98;
+    ctx->trainingSteps = 49;
     ctx->validationSetStart = 20;
     ctx->validationSetEnd = 34;
     ctx->validationSteps = 15;
@@ -970,6 +970,7 @@ void initializeGRN5Context(appContext* ctx, int mode)
     }
 
     readGRNFileToVectors("GRN5.txt", ctx->nVariables + 1, ctx->vectors);
+    printGRNVector(ctx->vectors, ctx->nVariables + 1, 50);
     getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->setStart, ctx->setEnd);
 
 
@@ -1298,6 +1299,12 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), app
         if (ctx.state <= 0)
         {
             printf("error istate = %d\n", ctx.state);
+            cout << _yout[0] << endl;
+            cout << _yout[1] << endl;
+            cout << _yout[2] << endl;
+            cout << _yout[3] << endl;
+            cout << _yout[4] << endl;
+
             exit(0);
         }
         tout = tout + dt;
@@ -1406,7 +1413,7 @@ double grn5EvaluationRK4(void *ind, void* data)
     ctx->individual = _ind;
     double *t = new double [ctx->nSteps+1];
     rk4(twoBody5VarLSODA, ctx->tspan, ctx->y_0, ctx->nSteps, ctx->nVariables, t, _ind, ctx);
-
+    delete [] t;
     return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
 
 }
@@ -1439,7 +1446,7 @@ double grn10EvaluationRK4(void *ind, void* data)
     ctx->individual = _ind;
     double *t = new double [ctx->nSteps+1];
     rk4(twoBody10VarLSODA, ctx->tspan, ctx->y_0, ctx->nSteps, ctx->nVariables, t, _ind, ctx);
-
+    delete [] t;
     return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
 
 }
@@ -1712,13 +1719,54 @@ void runGRN5ESComparisonExperiment()
 }
 */
 
-void runGRN5ESComparisonExperiment()
+void runESComparisonExperiment(string grnMode, string evalMode)
 {
     appContext ctx{};
-    initializeGRN5Context(&ctx, ctx.TRAINING_MODE);
+    double (*func)(void*,void*);
+
+    //one plus one
+    int maxEvals = 200;
+
+    //firt part populational algorithms
+    int numParents = 10;
+    int numOffspring = 20;
+    int numRuns = 3;
+
+
+    if(grnMode == "grn5"){
+        maxEvals = 200;
+        numParents = 10;
+        numOffspring = 20;
+
+        initializeGRN5Context(&ctx, ctx.TRAINING_MODE);
+        if(evalMode == "lsoda"){
+            func = &grn5EvaluationLSODA;
+        }
+        else {
+            func = &grn5EvaluationRK4;
+        }
+    }
+    else {
+        maxEvals = 2000;
+        numParents = 10;
+        numOffspring = 20;
+
+        initializeGRN10Context(&ctx, ctx.TRAINING_MODE);
+        if(evalMode == "lsoda"){
+            func = &grn5EvaluationLSODA;
+        }
+        else {
+            func = &grn5EvaluationRK4;
+        }
+    }
+
+
+    int maxGenerations = maxEvals / numOffspring;
+    string experimentId = grnMode + "-" + evalMode + "-" + to_string(numRuns) + "runs-"+ to_string(maxEvals) + "evals";
+    string experimentGroup = "exp3";
 
     ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
-    esAlgorithm.setEvaluationFunction(grn5EvaluationLSODA);
+    esAlgorithm.setEvaluationFunction(func);
     esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
     esAlgorithm.setContext(&ctx);
 
@@ -1741,7 +1789,144 @@ void runGRN5ESComparisonExperiment()
         cont = i;
     }
 
-    int numRuns = 3;
+
+
+    /*todo: usar representação contígua para essa matriz
+     * e, para calcular posição, usar
+     * #define R(i,j) results[i*5 + j]
+     */
+
+    double **results = new double *[5];
+    results[0] = new double[numRuns];
+    results[1] = new double[numRuns];
+    results[2] = new double[numRuns];
+    results[3] = new double[numRuns];
+    results[4] = new double[numRuns];
+
+    vector<string> bestInds(5);
+    vector<double> bestIndsEval(5, DBL_MAX);
+
+
+    for (int i = 0; i < numRuns; i++)
+    {
+        auto beg = chrono::high_resolution_clock::now();
+
+        cout << "Run " << to_string(i) << "\n";
+
+        cout << "1"
+             << "\n";
+        esAlgorithm.run1Plus1ES(i, 0.5, 0.817, 10, maxEvals);
+        results[0][i] = esAlgorithm.getPopulation().back()->getEvaluation();
+        if (results[0][i] < bestIndsEval[0])
+        {
+            bestIndsEval[0] = results[0][i];
+            bestInds[0] = esAlgorithm.getPopulation().back()->toCSVString();
+        }
+
+        cout << "2"
+             << "\n";
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxGenerations, numParents, numOffspring);
+        results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        if (results[1][i] < bestIndsEval[1])
+        {
+            bestIndsEval[1] = results[1][i];
+            bestInds[1] = esAlgorithm.getPopulation()[0]->toCSVString();
+        }
+
+        cout << "3"
+             << "\n";
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxGenerations, numParents, numOffspring);
+        results[2][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        if (results[2][i] < bestIndsEval[2])
+        {
+            bestIndsEval[2] = results[2][i];
+            bestInds[2] = esAlgorithm.getPopulation()[0]->toCSVString();
+        }
+
+        cout << "4"
+             << "\n";
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxGenerations*2, numParents/2, numOffspring/2);
+        results[3][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        if (results[3][i] < bestIndsEval[3])
+        {
+            bestIndsEval[3] = results[3][i];
+            bestInds[3] = esAlgorithm.getPopulation()[0]->toCSVString();
+        }
+
+        cout << "5"
+             << "\n";
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxGenerations*2, numParents/2, numOffspring/2);
+        results[4][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        if (results[4][i] < bestIndsEval[4])
+        {
+            bestIndsEval[4] = results[4][i];
+            bestInds[4] = esAlgorithm.getPopulation()[0]->toCSVString();
+        }
+
+
+        //temporização
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<std::chrono::seconds>(end - beg);
+        outputToFile("../results/" + experimentGroup + "/" + experimentId+" -time.csv", to_string(duration.count()) + ",", true);
+        cout << "Elapsed Time: " << duration.count() << "\n";
+    }
+
+    //todo: modificar para refletir os parâmetros da execução
+    string csvOutput = "1+1,10+20-i,10+20-ni,5+10-i,5+10-ni\n";
+
+    for (int j = 0; j < numRuns; j++)
+    {
+        csvOutput += to_string(results[0][j]) + "," + to_string(results[1][j]) + "," + to_string(results[2][j]) + "," + to_string(results[3][j]) + "," + to_string(results[4][j]) + "\n";
+    }
+
+    string bestIndividuals =
+            bestInds[0] + "\n" + bestInds[1] + "\n" + bestInds[2] + "\n" + bestInds[3] + "\n" + bestInds[4];
+
+    outputToFile("../results/" + experimentGroup + "/"+experimentId+".csv", csvOutput, false);
+    outputToFile("../results/" + experimentGroup + "/"+experimentId+"-best.csv", bestIndividuals, false);
+
+    delete[] results[0];
+    delete[] results[1];
+    delete[] results[2];
+    delete[] results[3];
+    delete[] results[4];
+    delete[] results;
+    clearContext(&ctx);
+}
+
+void runGRN5ESComparisonExperiment(string evalMode, string experimentId)
+{
+    appContext ctx{};
+    initializeGRN5Context(&ctx, ctx.TRAINING_MODE);
+
+    ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
+    esAlgorithm.setEvaluationFunction(grn5EvaluationLSODA);
+    esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
+    esAlgorithm.setContext(&ctx);
+    int numRuns = 1;
+
+
+    string experimentPrefix = "grn5-" + evalMode + "-" + to_string(numRuns) + "runs-"+ to_string(2000) + "evals";
+
+    int cont = 0;
+    for (int i = 0; i < ctx.TAU_SIZE; i++)
+    {
+        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+    for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
+    {
+        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+    for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
+    {
+        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
 
     /*todo: usar representação contígua para essa matriz
      * e, para calcular posição, usar
@@ -1818,7 +2003,7 @@ void runGRN5ESComparisonExperiment()
         //temporização
         auto end = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<std::chrono::seconds>(end - beg);
-        outputToFile("../results/test-res-time.csv", to_string(duration.count()) + ",", true);
+        outputToFile("../results/" + experimentId +"/"+experimentPrefix+"-time.csv", to_string(duration.count()) + ",", true);
         cout << "Elapsed Time: " << duration.count() << "\n";
     }
 
@@ -1831,8 +2016,8 @@ void runGRN5ESComparisonExperiment()
     string bestIndividuals =
             bestInds[0] + "\n" + bestInds[1] + "\n" + bestInds[2] + "\n" + bestInds[3] + "\n" + bestInds[4];
 
-    outputToFile("../results/test-res.csv", csvOutput, false);
-    outputToFile("../results/test-res-best.txt", bestIndividuals, false);
+    outputToFile("../results/" + experimentId +"/"+experimentPrefix+".csv", csvOutput, false);
+    outputToFile("../results/" + experimentId +"/"+experimentPrefix+"-best_inds.csv", bestIndividuals, false);
 
     delete[] results[0];
     delete[] results[1];
@@ -2086,7 +2271,7 @@ int fex(double t, double *y, double *ydot, void *data)
 
 void test(){
     double ind_5[] = {1.25, 4, 1.02, 1.57, 3.43, 0.72, 0.5, 0.45, 0.51, 0.52, 13, 4, 3, 4, 16};
-    double ind_5_2[] ={1.2163355099083872, 1.1264485098219865, 2.973714367061704, 2.952143123315177, 2.998260518457365, 0.5687249950503857, 0.4580723119903261, 0.46214892372246563, 0.6182568295500336, 0.5213082492659304, 0.7708877748759901, 0.1497642024548283, 4.254757908429968, 3.759370669969996, 4.784173526119725, 10.935884810737809, 24.595975874929724, 2.8109199678182635, 4.922623602327875, 1.804297289687443, 0.6961641316460799, 1.1805067448542073, 3.769380877770944, 0.6268588518301711, 0.7945926074279098, 0.8665901143646684, 1.1631405647512596, 2.3141178250393146, 1.2841062086785697, 0.7091739090057955, 2.245324305294896, 0.8208096283146853, 0.6911548119817139, 0.7874359961268611, 1.101498884676361, 0.7742237807425528, 0.9816157239798934, 70.97756457350062};
+    double ind_5_2[] ={1.2163355099083872, 1.1264485098219865, 2.973714367061704, 2.952143123315177, 2.998260518457365, 0.5687249950503857, 0.4580723119903261, 0.46214892372246563, 0.6182568295500336, 0.5213082492659304, 0.7708877748759901, 0.1497642024548283, 4.254757908429968, 3.759370669969996, 4.784173526119725, 10.935884810737809, 24.595975874929724, 2.8109199678182635, 4.922623602327875};
     double ind_10[] = {1.73,2,0.81,0.11, 1.23, 1.78, 1.14, 1.04, 3.47, 3.21,
                        0.45, 0.56, 0.99, 0.77, 0.71, 0.66, 0.46, 0.48, 0.66, 0.99, 0.85, 0.61, 0.55, 0.46, 0.17,
                        20, 9, 24, 12, 2, 2, 6, 4, 7, 24, 2, 7, 21, 20, 3};
@@ -2099,15 +2284,18 @@ void test(){
 
     initializeGRN10Context(&ctx, ctx.TRAINING_MODE);
     //printContext(&ctx);
-    cout << to_string(grn10EvaluationLSODA(ind_10, &ctx)) << "\n";
     cout << to_string(grn10EvaluationRK4(ind_10, &ctx)) << "\n";
+    cout << to_string(grn10EvaluationLSODA(ind_10, &ctx)) << "\n";
     clearContext(&ctx);
 }
 
 int main()
 {
-    test();
-    //runGRN5ESComparisonExperiment();
+    //todo: mudar critério de parada de todos os ES para número de avaliações ao invés de gerações
+    //test();
+    //return 0;
+    //runESComparisonExperiment("grn10", "lsoda");
+    runGRN5ESComparisonExperiment("lsoda", "exp3");
     //runGRN10ESComparisonExperiment();
     //return 0;
 
