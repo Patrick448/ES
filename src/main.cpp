@@ -2307,6 +2307,9 @@ int main()
                       7.771741};
     double ind2[19] ={3.829097,2.148080,5.000000,5.000000,0.100000,0.100000,1.000000,0.100000,0.100000,1.000000,0.100000,0.100000,15.128335,4.608234,25.000000,1.000000,21.855324,10.160282,1.000000};
     cout << to_string(grn5EvaluationRK4(ind, &ctx)) << "\n";
+    cout << to_string(grn5EvaluationLSODA(ind, &ctx)) << "\n";
+
+    cout << to_string(grn5EvaluationRK4(ind2, &ctx)) << "\n";
     cout << to_string(grn5EvaluationLSODA(ind2, &ctx)) << "\n";
     clearContext(&ctx);
     return 0;
