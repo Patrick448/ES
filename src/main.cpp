@@ -6,6 +6,8 @@
 #include <chrono>
 #include "dependencies.h"
 #include "appCtx.h"
+//#include <pagmo/algorithms/cmaes.hpp>
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -1273,7 +1275,7 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), app
     opt.rtol = rtol;
     opt.atol = atol;
     opt.itask = 1;
-    //opt.mxstep = 5000;
+    opt.mxstep = 5000;
 
 
     struct lsoda_context_t ctx = {
@@ -1300,7 +1302,8 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), app
         if (ctx.state <= 0)
         { //todo: ver se devo abortar ou não.
             //todo: entender esse limite de passos e pq está sendo atingido mesmo com tamanho de passo pequeno
-
+            outputToFile("problematicInds.txt", vectorToString(appCtx->individual, 0, appCtx->IND_SIZE-1) + "\n", true);
+            //cout << vectorToString(appCtx->individual, 0, appCtx->IND_SIZE-1)<<endl;
             //printf("error istate = %d\n", ctx.state);
             //cout << y[0] << endl;
             //cout << y[1] << endl;
@@ -1768,7 +1771,7 @@ void runESComparisonExperiment(string grnMode, string evalMode)
 
     int maxGenerations = maxEvals / numOffspring;
     string experimentId = grnMode + "-" + evalMode + "-" + to_string(numRuns) + "runs-"+ to_string(maxEvals) + "evals";
-    string experimentGroup = "exp5";
+    string experimentGroup = "exp6";
 
     ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
     esAlgorithm.setEvaluationFunction(func);
@@ -2304,7 +2307,6 @@ void test(){
 
 void testLSODARK4(){
     appContext ctx{};
-    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
     double ind[19] = {4.052585, 1.136443, 0.852662, 3.120117, 0.104307, 0.754601,
                       0.475951, 0.712506, 0.852778, 0.845837, 0.173564, 0.666615,
                       6.125123, 10.331758, 23.741081, 7.461154, 7.816841, 19.812765,
@@ -2313,6 +2315,21 @@ void testLSODARK4(){
                       1.000000,0.100000,0.100000,1.000000,0.100000,0.100000,
                       15.128335,4.608234,25.000000,1.000000,21.855324,10.160282,
                       1.000000};
+
+    double ind3[19] = { 0.100000,5.000000,0.851307,3.865580,0.100000,
+                        0.100000,1.000000,0.100000,0.100000,1.000000,
+                        1.000000,0.100000,1.224451,6.558196,13.511094,
+                        5.650953,22.882314,11.149282,1.000000};
+
+
+    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 4);
+    cout << to_string(grn5EvaluationRK4(ind3, &ctx)) << "\n";
+    clearContext(&ctx);
+
+
+    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
+    cout << to_string(grn5EvaluationLSODA(ind3, &ctx)) << "\n";
+    clearContext(&ctx);
 
     initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 4);
     cout << to_string(grn5EvaluationRK4(ind, &ctx)) << "\n";
@@ -2337,8 +2354,8 @@ void testLSODARK4(){
 int main()
 {
     //todo: mudar critério de parada de todos os ES para número de avaliações ao invés de gerações
-    //test();
-    //return 0;
+    testLSODARK4();
+    return 0;
     runESComparisonExperiment("grn5", "lsoda");
     runESComparisonExperiment("grn5", "rk4");
 

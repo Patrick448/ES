@@ -12,6 +12,7 @@ file(GLOB source_c src/*.c)
 # sudo apt install libboost1.74-all-dev
 #
 find_package(Boost COMPONENTS system filesystem unit_test_framework REQUIRED)
+find_package(pagmo REQUIRED)
 
 include_directories(include)
 include_directories(liblsoda/src)
@@ -38,7 +39,7 @@ add_executable(test tests/unit_tests.cpp)
 target_link_libraries(test PUBLIC liblsoda
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
-    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} 
+    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
 )
 
 add_executable(test2 tests/test2.cpp)
