@@ -263,7 +263,17 @@ int twoBody5VarLSODA(double t, double *y, double *ydot, void *_data)
     double *k = &data[ctx->TAU_SIZE];
     double *n = &data[ctx->TAU_SIZE + ctx->N_SIZE];
     // double max[] = {2.96, 1.8768, 1.0653, 1.0101, 1.4608};
+    /*cout << "max:"+ vectorToString(maxValues,0, 4) << endl;
+    cout << "tau:"+vectorToString(tau,0, ctx->TAU_SIZE-1) << endl;
+    cout << "k:"+vectorToString(k,0, ctx->K_SIZE-1) << endl;
+    cout << "n:"+vectorToString(n,0, ctx->N_SIZE-1) << endl;
 
+    cout << "tau size: " << ctx->TAU_SIZE << endl;
+    cout << "k size: " << ctx->K_SIZE << endl;
+    cout << "n size: " << ctx->N_SIZE << endl;*/
+
+
+    cout << vectorToString(data, 0, 18) <<endl;
     // maxValues = max;
 
     ydot[0] = ((1 - (pow((y[4] / maxValues[4]), (int)n[0])) /
@@ -2498,40 +2508,40 @@ void testGRN5LSODARK4(){
     clearContext(&ctx);
 
 
-    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 4);
-    cout << to_string(grn5EvaluationRK4(ind3, &ctx)) << "\n";
-    clearContext(&ctx);
+    //initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 4);
+    //cout << to_string(grn5EvaluationRK4(ind3, &ctx)) << "\n";
+    //clearContext(&ctx);
 
-    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
-    cout << to_string(grn5EvaluationLSODA(ind3, &ctx)) << "\n";
-    clearContext(&ctx);
-
-
-    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 4);
-    cout << to_string(grn5EvaluationRK4(ind4, &ctx)) << "\n";
-    clearContext(&ctx);
-
-    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
-    cout << to_string(grn5EvaluationLSODA(ind4, &ctx)) << "\n";
-    clearContext(&ctx);
+    //initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
+    //cout << to_string(grn5EvaluationLSODA(ind3, &ctx)) << "\n";
+    //clearContext(&ctx);
 
 
-    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 4);
-    cout << to_string(grn5EvaluationRK4(ind, &ctx)) << "\n";
-    clearContext(&ctx);
+    //initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 4);
+    //cout << to_string(grn5EvaluationRK4(ind4, &ctx)) << "\n";
+    //clearContext(&ctx);
 
-    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
-    cout << to_string(grn5EvaluationLSODA(ind, &ctx)) << "\n";
-    clearContext(&ctx);
+    //initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
+    //cout << to_string(grn5EvaluationLSODA(ind4, &ctx)) << "\n";
+    //clearContext(&ctx);
 
 
-    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 4);
-    cout << to_string(grn5EvaluationRK4(ind2, &ctx)) << "\n";
-    clearContext(&ctx);
+    //initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 4);
+    //cout << to_string(grn5EvaluationRK4(ind, &ctx)) << "\n";
+    //clearContext(&ctx);
 
-    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
-    cout << to_string(grn5EvaluationLSODA(ind2, &ctx)) << "\n";
-    clearContext(&ctx);
+    //initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
+    //cout << to_string(grn5EvaluationLSODA(ind, &ctx)) << "\n";
+    //clearContext(&ctx);
+
+
+    //initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 4);
+    //cout << to_string(grn5EvaluationRK4(ind2, &ctx)) << "\n";
+    //clearContext(&ctx);
+
+    //initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
+    //cout << to_string(grn5EvaluationLSODA(ind2, &ctx)) << "\n";
+    //clearContext(&ctx);
 }
 
 void testGRN10LSODARK4(){
