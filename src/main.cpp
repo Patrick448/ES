@@ -2552,7 +2552,7 @@ void testGRN10LSODARK4(){
                       1.14, 1.04, 3.47, 3.21, 0.45,
                       0.56, 0.99, 0.77, 0.71, 0.66,
                       0.46, 0.48, 0.66, 0.99, 0.85,
-                      0.61, 0.55, 0.46, 0.17, 0,
+                      0.61, 0.55, 0.46, 0.17, 20,
                       9, 24, 12, 2, 2, 6, 4, 7,
                       24, 2, 7, 21, 20, 3 };
 
@@ -2572,7 +2572,7 @@ int main()
 {
     //todo: mudar critério de parada de todos os ES para número de avaliações ao invés de gerações
     testGRN5LSODARK4();
-    //testGRN10LSODARK4();
+    testGRN10LSODARK4();
     return 0;
     runESComparisonExperiment("grn5", "lsoda");
     runESComparisonExperiment("grn5", "rk4");
