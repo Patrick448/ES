@@ -32,10 +32,10 @@ set_target_properties(liblsoda
     IMPORTED_IMPLIB ${CMAKE_SOURCE_DIR}/liblsoda/src/liblsoda.so
     INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/liblsoda/src)
 
-add_executable(ES ${source_cpp} ${source_c})
+add_executable(ES ${source_cpp} ${source_c} src/GRNEDOHelpers.cpp)
 target_link_libraries(ES PUBLIC liblsoda)
 
-add_executable(test tests/unit_tests.cpp)
+add_executable(test include/GRNEDOHelpers.h src/GRNEDOHelpers.cpp src/read.cpp src/rk4.c tests/unit_tests.cpp)
 target_link_libraries(test PUBLIC liblsoda
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
