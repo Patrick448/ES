@@ -300,8 +300,8 @@ int twoBody5VarLSODA(double t, double *y, double *ydot, void *_data)
     //cout << "ydot[3] = " << ydot[3] << endl;
     //cout << "ydot[4] = " << ydot[4] << endl;
     //cout << "numerador ydot[4]"<< ((((pow(y[1]/maxValues[2], (int)n[4])/(pow(y[1]/maxValues[2], (int)n[4]) + pow(k[4], (int)n[4])))*(pow(y[3]/maxValues[3], (int)n[5])/(pow(y[3]/maxValues[3], (int)n[5]) + pow(k[3], (int)n[5]))))+((pow(y[3]/maxValues[3], (int)n[5])/(pow(y[3]/maxValues[3], (int)n[5]) + pow(k[3], (int)n[5])))
-    //                                                                                                                                                                                                                                 *(pow(y[4]/maxValues[4], (int)n[6])/(pow(y[4]/maxValues[4], (int)n[6]) + pow(k[6], (int)n[6]))))) - (y[4]/maxValues[4]))
-     //                                                                                                                                                                                                                                <<endl;
+     //                                                                                                                                                                                                                                *(pow(y[4]/maxValues[4], (int)n[6])/(pow(y[4]/maxValues[4], (int)n[6]) + pow(k[6], (int)n[6]))))) - (y[4]/maxValues[4]))
+
     return 0;
 }
 
@@ -1305,6 +1305,7 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), app
         for(int i=0; i<appCtx->nVariables; i++) {
             int outIndex = appCtx->nVariables * iout + i;
             _yout[outIndex] = y[i];
+
         }
 
         //cout << "iout: " + to_string(iout) << endl;
@@ -1316,7 +1317,7 @@ double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), app
         if (ctx.state <= 0)
         { //todo: ver se devo abortar ou não.
             //todo: entender esse limite de passos e pq está sendo atingido mesmo com tamanho de passo pequeno
-            outputToFile("problematicInds.txt", vectorToString(appCtx->individual, 0, appCtx->IND_SIZE-1) + "\n", true);
+           // outputToFile("problematicInds.txt", vectorToString(appCtx->individual, 0, appCtx->IND_SIZE-1) + "\n", true);
             //cout << vectorToString(appCtx->individual, 0, appCtx->IND_SIZE-1)<<endl;
             //printf("error istate = %d\n", ctx.state);
 
@@ -1749,7 +1750,7 @@ void runESComparisonExperiment(string grnMode, string evalMode)
         }
         else {
             func = &grn5EvaluationRK4;
-            initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 20);
+            initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 10);
         }
     }
     else {
@@ -1763,14 +1764,14 @@ void runESComparisonExperiment(string grnMode, string evalMode)
         }
         else {
             func = &grn10EvaluationRK4;
-            initializeGRN10Context(&ctx, ctx.TRAINING_MODE, 20);
+            initializeGRN10Context(&ctx, ctx.TRAINING_MODE, 10);
         }
     }
 
 
     int maxGenerations = maxEvals / numOffspring;
     string experimentId = grnMode + "-" + evalMode + "-" + to_string(numRuns) + "runs-"+ to_string(maxEvals) + "evals";
-    string experimentGroup = "exp6";
+    string experimentGroup = "exp7";
 
     ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
     esAlgorithm.setEvaluationFunction(func);
@@ -2478,7 +2479,7 @@ void testGRN5LSODARK4(){
                       15.128335,4.608234,25.000000,1.000000,21.855324,10.160282,
                       1.000000};
 
-    double ind3[19] = { 0.100000,5.000000,0.851307,3.865580,0.100000,
+    double ind3[19] = { 0.1,5,0.851307,3.865580,0.1,
                         0.100000,1.000000,0.100000,0.100000,1.000000,
                         1.000000,0.100000,1.224451,6.558196,13.511094,
                         5.650953,22.882314,11.149282,1.000000};
@@ -2489,7 +2490,7 @@ void testGRN5LSODARK4(){
                        13.671514,23.013432,8.502602,25.000000,
                        1.420259,1.262061};
 
-    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 4);
+    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 10);
     cout << to_string(grn5EvaluationRK4(ind0, &ctx)) << "\n";
     clearContext(&ctx);
 
@@ -2498,40 +2499,40 @@ void testGRN5LSODARK4(){
     clearContext(&ctx);
 
 
-    //initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 4);
-    //cout << to_string(grn5EvaluationRK4(ind3, &ctx)) << "\n";
-    //clearContext(&ctx);
+    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 10);
+    cout << to_string(grn5EvaluationRK4(ind3, &ctx)) << "\n";
+    clearContext(&ctx);
 
-    //initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
-    //cout << to_string(grn5EvaluationLSODA(ind3, &ctx)) << "\n";
-    //clearContext(&ctx);
-
-
-    //initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 4);
-    //cout << to_string(grn5EvaluationRK4(ind4, &ctx)) << "\n";
-    //clearContext(&ctx);
-
-    //initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
-    //cout << to_string(grn5EvaluationLSODA(ind4, &ctx)) << "\n";
-    //clearContext(&ctx);
+    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
+    cout << to_string(grn5EvaluationLSODA(ind3, &ctx)) << "\n";
+    clearContext(&ctx);
 
 
-    //initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 4);
-    //cout << to_string(grn5EvaluationRK4(ind, &ctx)) << "\n";
-    //clearContext(&ctx);
+    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 10);
+    cout << to_string(grn5EvaluationRK4(ind4, &ctx)) << "\n";
+    clearContext(&ctx);
 
-    //initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
-    //cout << to_string(grn5EvaluationLSODA(ind, &ctx)) << "\n";
-    //clearContext(&ctx);
+    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
+    cout << to_string(grn5EvaluationLSODA(ind4, &ctx)) << "\n";
+    clearContext(&ctx);
 
 
-    //initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 4);
-    //cout << to_string(grn5EvaluationRK4(ind2, &ctx)) << "\n";
-    //clearContext(&ctx);
+    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 10);
+    cout << to_string(grn5EvaluationRK4(ind, &ctx)) << "\n";
+    clearContext(&ctx);
 
-    //initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
-    //cout << to_string(grn5EvaluationLSODA(ind2, &ctx)) << "\n";
-    //clearContext(&ctx);
+    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
+    cout << to_string(grn5EvaluationLSODA(ind, &ctx)) << "\n";
+    clearContext(&ctx);
+
+
+    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 10);
+    cout << to_string(grn5EvaluationRK4(ind2, &ctx)) << "\n";
+    clearContext(&ctx);
+
+    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
+    cout << to_string(grn5EvaluationLSODA(ind2, &ctx)) << "\n";
+    clearContext(&ctx);
 }
 
 void testGRN10LSODARK4(){
