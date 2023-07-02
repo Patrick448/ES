@@ -9,12 +9,14 @@ extern "C"
 #endif
 
 #include "lsoda.h"
+#include "algModes.h"
 
 #ifdef __cplusplus
 }
 #endif
 
 using namespace std;
+using namespace algModes;
 
 int GRNEDOHelpers::twoBody5VarLSODA(double t, double *y, double *ydot, void *_data)
 {
@@ -246,12 +248,33 @@ double GRNEDOHelpers::difference(double *actual, double **expected, int numVaria
     return difTotal;
 }
 
+void GRNEDOHelpers::setMode(appContext* ctx, int mode){
+    if(mode == TRAINING_MODE){
+        ctx->setStart = ctx->trainingSetStart;
+        ctx->setEnd = ctx->trainingSetEnd;
+        ctx->nSteps = ctx->trainingSteps;
+    } else if(mode == VALIDATION_MODE){
+        ctx->setStart = ctx->validationSetStart;
+        ctx->setEnd = ctx->validationSetEnd;
+        ctx->nSteps = ctx->validationSteps;
+    }else if(mode == TEST_MODE){
+        ctx->setStart = ctx->testSetStart;
+        ctx->setEnd = ctx->testSetEnd;
+        ctx->nSteps = ctx->testSteps;
+    }else{
+        ctx->setStart = 0;
+        ctx->setEnd = ctx->dataSetSize - 1;
+        ctx->nSteps = (ctx->dataSetSize - 1)*ctx->granularity;
+    }
+}
+
 void GRNEDOHelpers::initializeGRN5Context(appContext* ctx, int mode, int granularity)
 {
     //appContext *ctx = new appContext;
-    ctx->TRAINING_MODE = 0;
+    /*ctx->TRAINING_MODE = 0;
     ctx->TEST_MODE = 2;
     ctx->VALIDATION_MODE = 1;
+    ctx->SINGLE_SET_MODE = 3;*/
     ctx->IND_SIZE = 19;      // Tamanho do indivíduo (quantidade de coeficientes)
     ctx->MIN_K = 0.1;        // Menor valor que K pode assumir
     ctx->MAX_K = 1;          // Maior valor que K pode assumir
@@ -264,32 +287,37 @@ void GRNEDOHelpers::initializeGRN5Context(appContext* ctx, int mode, int granula
     ctx->TAU_SIZE = 5;
     ctx->N_SIZE = 7;
     ctx->K_SIZE = 7;
+    ctx->granularity = granularity;
     ctx->nVariables = 5;
     ctx->nSteps = 49;
     ctx->dataSetSize = 50;
     ctx->trainingSetStart = 0;
-    ctx->trainingSetEnd = 49;
+    ctx->trainingSetEnd = 29;
     ctx->trainingSteps = granularity*49;
-    ctx->validationSetStart = 20;
-    ctx->validationSetEnd = 34;
+    ctx->validationSetStart = 30;
+    ctx->validationSetEnd = 39;
     ctx->validationSteps = granularity*15;
-    ctx->testSetStart = 35;
+    ctx->testSetStart = 40;
     ctx->testSetEnd = 49;
     ctx->testSteps = granularity*15;
     ctx->mode = mode;
 
-    if(mode == ctx->TRAINING_MODE){
+    if(mode == TRAINING_MODE){
         ctx->setStart = ctx->trainingSetStart;
         ctx->setEnd = ctx->trainingSetEnd;
         ctx->nSteps = ctx->trainingSteps;
-    } else if(mode == ctx->VALIDATION_MODE){
+    } else if(mode == VALIDATION_MODE){
         ctx->setStart = ctx->validationSetStart;
         ctx->setEnd = ctx->validationSetEnd;
         ctx->nSteps = ctx->validationSteps;
-    }else{
+    }else if(mode == TEST_MODE){
         ctx->setStart = ctx->testSetStart;
         ctx->setEnd = ctx->testSetEnd;
         ctx->nSteps = ctx->testSteps;
+    }else{
+        ctx->setStart = 0;
+        ctx->setEnd = ctx->dataSetSize - 1;
+        ctx->nSteps = (ctx->dataSetSize - 1)*ctx->granularity;
     }
 
     ctx->maxValues = new double[ctx->nVariables];
@@ -322,9 +350,10 @@ void GRNEDOHelpers::initializeGRN5Context(appContext* ctx, int mode, int granula
 void GRNEDOHelpers::initializeGRN10Context(appContext* ctx, int mode, int granularity)
 {
 
-    ctx->TRAINING_MODE = 0;
+    /*ctx->TRAINING_MODE = 0;
     ctx->TEST_MODE = 2;
     ctx->VALIDATION_MODE = 1;
+    ctx->SINGLE_SET_MODE = 3;*/
     ctx->IND_SIZE = 40;      // Tamanho do indivíduo (quantidade de coeficientes)
     ctx->MIN_K = 0.1;        // Menor valor que K pode assumir
     ctx->MAX_K = 1;          // Maior valor que K pode assumir
@@ -337,6 +366,7 @@ void GRNEDOHelpers::initializeGRN10Context(appContext* ctx, int mode, int granul
     ctx->TAU_SIZE = 10;
     ctx->N_SIZE = 15;
     ctx->K_SIZE = 15;
+    ctx->granularity = granularity;
     ctx->nVariables = 10;
     ctx->nSteps = 49;
     ctx->dataSetSize = 50;
@@ -351,18 +381,22 @@ void GRNEDOHelpers::initializeGRN10Context(appContext* ctx, int mode, int granul
     ctx->testSteps = granularity*15;
     ctx->mode = mode;
 
-    if(mode == ctx->TRAINING_MODE){
+    if(mode == TRAINING_MODE){
         ctx->setStart = ctx->trainingSetStart;
         ctx->setEnd = ctx->trainingSetEnd;
         ctx->nSteps = ctx->trainingSteps;
-    } else if(mode == ctx->VALIDATION_MODE){
+    } else if(mode == VALIDATION_MODE){
         ctx->setStart = ctx->validationSetStart;
         ctx->setEnd = ctx->validationSetEnd;
         ctx->nSteps = ctx->validationSteps;
-    }else{
+    }else if(mode == TEST_MODE){
         ctx->setStart = ctx->testSetStart;
         ctx->setEnd = ctx->testSetEnd;
         ctx->nSteps = ctx->testSteps;
+    }else{
+        ctx->setStart = 0;
+        ctx->setEnd = ctx->dataSetSize - 1;
+        ctx->nSteps = (ctx->dataSetSize - 1)*ctx->granularity;
     }
 
     ctx->maxValues = new double[ctx->nVariables];

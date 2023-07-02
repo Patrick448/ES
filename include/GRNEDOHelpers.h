@@ -30,6 +30,7 @@ namespace GRNEDOHelpers{
     double grn5EvaluationRK4(void *ind, void* data);
     double grn10EvaluationLSODA(void *ind, void *data);
     double grn10EvaluationRK4(void *ind, void* data);
+    void setMode(appContext* ctx, int mode);
 
 
 

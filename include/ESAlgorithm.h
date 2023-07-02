@@ -56,8 +56,10 @@ public:
     void runPopulationalNonIsotropicES(int seed, double sigmaVariation, int maxIterations, int numParents, int numOffspring);
     void clear();
     void setSigmaBounds(double min, double max);
+    void reevaluateAllNoCounter();
+    double getReevaluationByIndexNoCounter(int i);
 
-};
+    };
 
 
 #endif //ES_ESALGORITHM_H

@@ -4,10 +4,10 @@
 
 #ifndef ES_APPCTX_H
 #define ES_APPCTX_H
+
+
  struct appContext {
-    int TRAINING_MODE;
-    int TEST_MODE;
-    int VALIDATION_MODE;
+
     int mode;
     int IND_SIZE;        // Tamanho do indivíduo (quantidade de coeficientes)
     double MIN_K;        // Menor valor que K pode assumir
@@ -22,7 +22,7 @@
     int N_SIZE;
     int K_SIZE;
     double *maxValues;
-
+    int granularity;
     int nVariables;
     int nSteps;
     int dataSetSize;

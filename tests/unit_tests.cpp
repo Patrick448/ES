@@ -12,10 +12,12 @@
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 #include "GRNEDOHelpers.h"
+#include "algModes.h"
+using namespace algModes;
 using namespace GRNEDOHelpers;
 
 //____________________________________________________________________________//
-
+/*
 // most frequently you implement test cases as a free functions with automatic registration
 BOOST_AUTO_TEST_CASE( test1 )
 {
@@ -35,7 +37,7 @@ BOOST_AUTO_TEST_CASE( test2 )
 
         BOOST_CHECK_EQUAL( i, 0 );
 }
-
+*/
 BOOST_AUTO_TEST_CASE( test_ind_5_var_lsoda )
 {
     appContext ctx{};
@@ -49,7 +51,7 @@ BOOST_AUTO_TEST_CASE( test_ind_5_var_lsoda )
                        10.935884810737809, 24.595975874929724, 2.8109199678182635,
                        4.922623602327875};
 
-    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
+    initializeGRN5Context(&ctx, SINGLE_SET_MODE, 1);
     double eval = grn5EvaluationLSODA(ind0, &ctx);
     clearContext(&ctx);
 
@@ -71,10 +73,53 @@ BOOST_AUTO_TEST_CASE( test_ind_5_var_rk4 )
                        10.935884810737809, 24.595975874929724, 2.8109199678182635,
                        4.922623602327875};
 
-    initializeGRN5Context(&ctx, ctx.TRAINING_MODE, 1);
+    initializeGRN5Context(&ctx, SINGLE_SET_MODE, 1);
     double eval = grn5EvaluationRK4(ind0, &ctx);
     clearContext(&ctx);
 
     BOOST_CHECK_CLOSE_FRACTION( eval, 26.92, 0.001 );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_ind_10_var_lsoda )
+{
+    appContext ctx{};
+
+    //esse indivíduo deveria ter fitness ~26
+    double ind0[40] = {1.73,2,0.81,0.11, 1.23, 1.78,
+                       1.14, 1.04, 3.47, 3.21, 0.45,
+                       0.56, 0.99, 0.77, 0.71, 0.66,
+                       0.46, 0.48, 0.66, 0.99, 0.85,
+                       0.61, 0.55, 0.46, 0.17, 20,
+                       9, 24, 12, 2, 2, 6, 4, 7,
+                       24, 2, 7, 21, 20, 3};
+
+    initializeGRN10Context(&ctx, SINGLE_SET_MODE, 1);
+    double eval = grn10EvaluationLSODA(ind0, &ctx);
+    clearContext(&ctx);
+
+    BOOST_CHECK_CLOSE_FRACTION( eval, 56.71, 0.001 );
+
+}
+
+
+BOOST_AUTO_TEST_CASE( test_ind_10_var_rk4 )
+{
+    appContext ctx{};
+
+    //esse indivíduo deveria ter fitness ~26
+    double ind0[40] = {1.73,2,0.81,0.11, 1.23, 1.78,
+                       1.14, 1.04, 3.47, 3.21, 0.45,
+                       0.56, 0.99, 0.77, 0.71, 0.66,
+                       0.46, 0.48, 0.66, 0.99, 0.85,
+                       0.61, 0.55, 0.46, 0.17, 20,
+                       9, 24, 12, 2, 2, 6, 4, 7,
+                       24, 2, 7, 21, 20, 3};
+
+    initializeGRN10Context(&ctx, SINGLE_SET_MODE, 10);
+    double eval = grn10EvaluationRK4(ind0, &ctx);
+    clearContext(&ctx);
+
+    BOOST_CHECK_CLOSE_FRACTION( eval, 56.71, 0.001 );
 
 }

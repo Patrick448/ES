@@ -56,6 +56,28 @@ double ESAlgorithm::evaluate(Individual* ind){
     this->evaluationsCounter++;
     return eval;
 }
+
+bool compareIndividuals(Individual* a, Individual* b){
+    return a->getEvaluation() < b->getEvaluation();
+}
+
+void ESAlgorithm::reevaluateAllNoCounter(){
+    for(Individual* ind: this->population){
+        double eval =this->evaluationFunction(ind->getDimensions(), this->context);
+        ind->setEvaluation(eval);
+    }
+    sort(this->population.begin(), this->population.end(), compareIndividuals);
+
+}
+
+
+double ESAlgorithm::getReevaluationByIndexNoCounter(int i){
+    Individual* ind = this->population[i];
+    double eval =this->evaluationFunction(ind->getDimensions(), this->context);
+
+    return eval;
+}
+
 void ESAlgorithm::setNumDimensions(int val){
     this->numDimensions = val;
 }
@@ -241,9 +263,6 @@ void ESAlgorithm::run1Plus1ES(int seed, double initialSigma, double c, int n,  i
 
 }
 
-bool compareIndividuals(Individual* a, Individual* b){
-    return a->getEvaluation() < b->getEvaluation();
-}
 
 /// deletes individuals from start to end (all inclusive)
 void deleteIndividuals(vector<Individual*> &vec, int start, int end){
