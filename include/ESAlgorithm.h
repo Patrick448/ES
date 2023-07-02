@@ -47,18 +47,18 @@ public:
     void createPopulation(int seed, int numIndividuals);
     double getBound(int index, int which);
     void setAlgorithmType(int type);
-    void run1Plus1ES(int seed, double initialSigma, double c, int n,  int maxIterations);
+    void run1Plus1ES(int seed, double initialSigma, double c, int n,  int maxEvals);
     double getMinSigma();
     double getMaxSigma();
     void validate(Individual* ind);
     string populationToCSVString();
-    void runPopulationalIsotropicES(int seed, double sigmaVariation, int maxIterations, int numParents, int numOffspring);
-    void runPopulationalNonIsotropicES(int seed, double sigmaVariation, int maxIterations, int numParents, int numOffspring);
+    void runPopulationalIsotropicES(int seed, double sigmaVariation, int maxEvals, int numParents, int numOffspring);
+    void runPopulationalNonIsotropicES(int seed, double sigmaVariation, int maxEvals, int numParents, int numOffspring);
     void clear();
     void setSigmaBounds(double min, double max);
     void reevaluateAllNoCounter();
     double getReevaluationByIndexNoCounter(int i);
-
+    int getEvaluations();
     };
 
 

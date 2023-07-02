@@ -159,7 +159,9 @@ void ESAlgorithm::setSigmaBounds(double min, double max) {
     this->maxSigma = max;
 }
 
-
+int ESAlgorithm::getEvaluations() {
+    return this->evaluationsCounter;
+}
 
 void ESAlgorithm::validate(Individual* ind){
 
@@ -192,12 +194,12 @@ double validatedSigma(double actual, double min, double max){
     return actual;
 }
 
-void ESAlgorithm::run1Plus1ES(int seed, double initialSigma, double c, int n,  int maxIterations){
+void ESAlgorithm::run1Plus1ES(int seed, double initialSigma, double c, int n,  int maxEvals){
     this->clear();
     double sigma = initialSigma;
     this->evaluationsCounter = 0;
     vector<int> successHistory;
-    successHistory.reserve(maxIterations);
+    successHistory.reserve(maxEvals);
     default_random_engine re(seed);
 
     Individual* ind = new Individual(this->numDimensions);
@@ -216,7 +218,7 @@ void ESAlgorithm::run1Plus1ES(int seed, double initialSigma, double c, int n,  i
 
 
     //algorithm iterations
-    for(int i=0; i < maxIterations; i++){
+    for(int i=0; i < maxEvals-1; i++){
         normal_distribution<double> normal(0, pow(sigma, 2.0));
 
         Individual* newInd = new Individual(this->numDimensions);
@@ -266,16 +268,21 @@ void ESAlgorithm::run1Plus1ES(int seed, double initialSigma, double c, int n,  i
 
 /// deletes individuals from start to end (all inclusive)
 void deleteIndividuals(vector<Individual*> &vec, int start, int end){
+
+    if(start >= end){
+        return;
+    }
+
     for(int i=start; i<=end; i++){
         delete vec[i];
     }
     vec.erase(vec.begin()+start, vec.begin()+end+1);
 }
 
-void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, int maxIterations, int numParents, int numOffspring){
+void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, int maxEvals, int numParents, int numOffspring){
     this->clear();
-    vector<int> successHistory;
-    successHistory.reserve(maxIterations);
+    //vector<int> successHistory;
+    //successHistory.reserve(maxIterations);
     default_random_engine re(seed);
     uniform_real_distribution<double> unifSigmaDistribution(this->getMinSigma(),this->getMaxSigma());
 
@@ -304,8 +311,7 @@ void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, in
 
     //algorithm iterations
     this->population.reserve(this->population.size() + numOffspring);
-    for(int i=0; i < maxIterations; i++){
-
+    while(true){
         //mutate parents and generate offspring
         for(int j=0; j<numParents; j++){
             for(int k=0; k< ceil((double)numOffspring/(double)numParents); k++){
@@ -324,6 +330,10 @@ void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, in
                 this->evaluate(newInd);
                 this->population.push_back(newInd);
 
+                if(this->getEvaluations() >= maxEvals){
+                    return;
+                }
+
             }
         }
 
@@ -334,10 +344,10 @@ void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, in
 }
 
 
-void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation, int maxIterations, int numParents, int numOffspring){
+void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation, int maxEvals, int numParents, int numOffspring){
     this->clear();
-    vector<int> successHistory;
-    successHistory.reserve(maxIterations);
+    //vector<int> successHistory;
+    //successHistory.reserve(maxIterations);
     default_random_engine re(seed);
     uniform_real_distribution<double> unifSigmaDistribution(this->getMinSigma(),this->getMaxSigma());
 
@@ -366,8 +376,7 @@ void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation,
 
     //algorithm iterations
     this->population.reserve(this->population.size() + numOffspring);
-    for(int i=0; i < maxIterations; i++){
-
+    while(true){
         //mutate parents and generate offspring
         for(int j=0; j<numParents; j++){
             for(int k=0; k< ceil((double)numOffspring/(double)numParents); k++){
@@ -387,6 +396,10 @@ void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation,
                 this->validate(newInd);
                 this->evaluate(newInd);
                 this->population.push_back(newInd);
+
+                if(this->getEvaluations() >= maxEvals){
+                    return;
+                }
 
             }
         }

@@ -220,7 +220,7 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName)
 
         cout << "2"
              << "\n";
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxGenerations, numParents, numOffspring);
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
         results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[1][i] < bestIndsEval[1])
         {
@@ -230,7 +230,7 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName)
 
         cout << "3"
              << "\n";
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxGenerations, numParents, numOffspring);
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
         results[2][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[2][i] < bestIndsEval[2])
         {
@@ -240,7 +240,7 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName)
 
         cout << "4"
              << "\n";
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxGenerations*2, numParents/2, numOffspring/2);
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxEvals, numParents/2, numOffspring/2);
         results[3][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[3][i] < bestIndsEval[3])
         {
@@ -250,7 +250,7 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName)
 
         cout << "5"
              << "\n";
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxGenerations*2, numParents/2, numOffspring/2);
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxEvals, numParents/2, numOffspring/2);
         results[4][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[4][i] < bestIndsEval[4])
         {
@@ -405,7 +405,7 @@ void runCECComparisonExperiment(string grnMode, string evalMode)
         cout << "2"
              << "\n";
         setMode(&ctx, TRAINING_MODE);
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxGenerations, numParents, numOffspring);
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
         setMode(&ctx, VALIDATION_MODE);
         esAlgorithm.reevaluateAllNoCounter();
         bestIndEval = esAlgorithm.getPopulation()[0]->getEvaluation();
@@ -421,7 +421,7 @@ void runCECComparisonExperiment(string grnMode, string evalMode)
         cout << "3"
              << "\n";
         setMode(&ctx, TRAINING_MODE);
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxGenerations, numParents, numOffspring);
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
         setMode(&ctx, VALIDATION_MODE);
         esAlgorithm.reevaluateAllNoCounter();
         bestIndEval = esAlgorithm.getPopulation()[0]->getEvaluation();
@@ -468,7 +468,7 @@ void runCECComparisonExperiment2(string grnMode, string evalMode, string expName
     double (*func)(void*,void*);
 
     //one plus one
-    int maxEvals =  105*100;
+    int maxEvals =  105*10000;
 
     //firt part populational algorithms
     int numParents = 15;
@@ -476,9 +476,9 @@ void runCECComparisonExperiment2(string grnMode, string evalMode, string expName
     int numRuns = 3;
 
     if(grnMode == "grn5"){
-        maxEvals =  105*10000;
-        numParents = 15;
-        numOffspring = 105;
+        //maxEvals =  105*10000;
+        //numParents = 15;
+        //numOffspring = 105;
 
         if(evalMode == "lsoda"){
             func = &grn5EvaluationLSODA;
@@ -490,9 +490,9 @@ void runCECComparisonExperiment2(string grnMode, string evalMode, string expName
         }
     }
     else {
-        maxEvals =  105*10000;
-        numParents = 15;
-        numOffspring = 105;
+        //maxEvals =  105*10000;
+        //numParents = 15;
+        //numOffspring = 105;
 
         if(evalMode == "lsoda"){
             func = &grn10EvaluationLSODA;
@@ -512,7 +512,6 @@ void runCECComparisonExperiment2(string grnMode, string evalMode, string expName
     esAlgorithm.setEvaluationFunction(func);
     esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
     esAlgorithm.setContext(&ctx);
-
 
     // inicializa limites de tau, k e n
     int cont = 0;
@@ -566,26 +565,29 @@ void runCECComparisonExperiment2(string grnMode, string evalMode, string expName
             bestIndsEval[0] = results[0][i];
             bestInds[0] = esAlgorithm.getPopulation().back()->toCSVString();
         }
+        cout << "Evals: " << esAlgorithm.getEvaluations() << "\n";
 
         cout << "2"
              << "\n";
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxGenerations, numParents, numOffspring);
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
         results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[1][i] < bestIndsEval[1])
         {
             bestIndsEval[1] = results[1][i];
             bestInds[1] = esAlgorithm.getPopulation()[0]->toCSVString();
         }
+        cout << "Evals: " << esAlgorithm.getEvaluations() << "\n";
 
         cout << "3"
              << "\n";
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxGenerations, numParents, numOffspring);
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
         results[2][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[2][i] < bestIndsEval[2])
         {
             bestIndsEval[2] = results[2][i];
             bestInds[2] = esAlgorithm.getPopulation()[0]->toCSVString();
         }
+        cout << "Evals: " << esAlgorithm.getEvaluations() << "\n";
 
         //temporização
         auto end = chrono::high_resolution_clock::now();
@@ -1021,7 +1023,6 @@ int main()
 
     //runGRN10ESComparisonExperiment();
     //return 0;
-
 
     return 0;
 }
