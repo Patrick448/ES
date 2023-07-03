@@ -468,7 +468,7 @@ void runCECComparisonExperiment2(string grnMode, string evalMode, string expName
     double (*func)(void*,void*);
 
     //one plus one
-    int maxEvals =  105*10000;
+    int maxEvals =  105*1000;
 
     //firt part populational algorithms
     int numParents = 15;
