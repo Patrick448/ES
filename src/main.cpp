@@ -8,7 +8,7 @@
 #include "appCtx.h"
 #include "GRNEDOHelpers.h"
 #include "algModes.h"
-//#include <pagmo/algorithms/cmaes.hpp>
+#include <pagmo/algorithms/cmaes.hpp>
 
 
 #ifdef __cplusplus
