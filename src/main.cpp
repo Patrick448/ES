@@ -117,19 +117,17 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName)
     double (*func)(void*,void*);
 
     //one plus one
-    int maxEvals = 200;
+    int maxEvals = 200000;
 
     //firt part populational algorithms
     int numParents = 10;
     int numOffspring = 20;
     int numRuns = 3;
 
-
     if(grnMode == "grn5"){
-        maxEvals = 2000;
+        maxEvals = 200000;
         numParents = 10;
         numOffspring = 20;
-
 
         if(evalMode == "lsoda"){
             func = &grn5EvaluationLSODA;
@@ -141,9 +139,9 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName)
         }
     }
     else {
-        maxEvals = 2000;
-        numParents = 10;
-        numOffspring = 20;
+        maxEvals = 200000;
+        numParents = 20;
+        numOffspring = 40;
 
         if(evalMode == "lsoda"){
             func = &grn10EvaluationLSODA;
@@ -154,7 +152,6 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName)
             initializeGRN10Context(&ctx, SINGLE_SET_MODE, 10);
         }
     }
-
 
     int maxGenerations = maxEvals / numOffspring;
     string experimentId = grnMode + "-" + evalMode + "-" + to_string(numRuns) + "runs-"+ to_string(maxEvals) + "evals";
@@ -240,7 +237,7 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName)
 
         cout << "4"
              << "\n";
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxEvals, numParents/2, numOffspring/2);
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
         results[3][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[3][i] < bestIndsEval[3])
         {
@@ -250,7 +247,7 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName)
 
         cout << "5"
              << "\n";
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxEvals, numParents/2, numOffspring/2);
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
         results[4][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         if (results[4][i] < bestIndsEval[4])
         {
@@ -937,47 +934,47 @@ void testGRN5LSODARK4(){
                        13.671514,23.013432,8.502602,25.000000,
                        1.420259,1.262061};
 
-    initializeGRN5Context(&ctx, TRAINING_MODE, 10);
+    initializeGRN5Context(&ctx, SINGLE_SET_MODE, 10);
     cout << to_string(grn5EvaluationRK4(ind0, &ctx)) << "\n";
     clearContext(&ctx);
 
-    initializeGRN5Context(&ctx, TRAINING_MODE, 1);
+    initializeGRN5Context(&ctx, SINGLE_SET_MODE, 1);
     cout << to_string(grn5EvaluationLSODA(ind0, &ctx)) << "\n";
     clearContext(&ctx);
 
 
-    initializeGRN5Context(&ctx, TRAINING_MODE, 10);
+    initializeGRN5Context(&ctx, SINGLE_SET_MODE, 10);
     cout << to_string(grn5EvaluationRK4(ind3, &ctx)) << "\n";
     clearContext(&ctx);
 
-    initializeGRN5Context(&ctx, TRAINING_MODE, 1);
+    initializeGRN5Context(&ctx, SINGLE_SET_MODE, 1);
     cout << to_string(grn5EvaluationLSODA(ind3, &ctx)) << "\n";
     clearContext(&ctx);
 
 
-    initializeGRN5Context(&ctx, TRAINING_MODE, 10);
+    initializeGRN5Context(&ctx, SINGLE_SET_MODE, 10);
     cout << to_string(grn5EvaluationRK4(ind4, &ctx)) << "\n";
     clearContext(&ctx);
 
-    initializeGRN5Context(&ctx, TRAINING_MODE, 1);
+    initializeGRN5Context(&ctx, SINGLE_SET_MODE, 1);
     cout << to_string(grn5EvaluationLSODA(ind4, &ctx)) << "\n";
     clearContext(&ctx);
 
 
-    initializeGRN5Context(&ctx, TRAINING_MODE, 10);
+    initializeGRN5Context(&ctx, SINGLE_SET_MODE, 10);
     cout << to_string(grn5EvaluationRK4(ind, &ctx)) << "\n";
     clearContext(&ctx);
 
-    initializeGRN5Context(&ctx, TRAINING_MODE, 1);
+    initializeGRN5Context(&ctx, SINGLE_SET_MODE, 1);
     cout << to_string(grn5EvaluationLSODA(ind, &ctx)) << "\n";
     clearContext(&ctx);
 
 
-    initializeGRN5Context(&ctx, TRAINING_MODE, 10);
+    initializeGRN5Context(&ctx, SINGLE_SET_MODE, 10);
     cout << to_string(grn5EvaluationRK4(ind2, &ctx)) << "\n";
     clearContext(&ctx);
 
-    initializeGRN5Context(&ctx, TRAINING_MODE, 1);
+    initializeGRN5Context(&ctx, SINGLE_SET_MODE, 1);
     cout << to_string(grn5EvaluationLSODA(ind2, &ctx)) << "\n";
     clearContext(&ctx);
 }
@@ -1014,7 +1011,13 @@ int main()
     //return 0;
     //testGRN5LSODARK4();
     //testGRN10LSODARK4();
-    //return 0;
+    runESComparisonExperiment("grn5", "lsoda", "exp14");
+    runESComparisonExperiment("grn5", "rk4", "exp14");
+
+    runESComparisonExperiment("grn10", "lsoda", "exp14");
+    runESComparisonExperiment("grn10", "rk4", "exp14");
+    return 0;
+
     cout << "GRN 5" << endl;
     runCECComparisonExperiment2("grn5", "rk4","exp13");
 
