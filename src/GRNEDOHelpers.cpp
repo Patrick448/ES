@@ -507,7 +507,11 @@ double GRNEDOHelpers::lsodaWrapper(int dydt(double t, double *y, double *ydot, v
             // outputToFile("problematicInds.txt", vectorToString(appCtx->individual, 0, appCtx->IND_SIZE-1) + "\n", true);
             //cout << vectorToString(appCtx->individual, 0, appCtx->IND_SIZE-1)<<endl;
             //printf("error istate = %d\n", ctx.state);
-
+            for(int i=0; i<appCtx->nVariables; i++) {
+                int outIndex = appCtx->nVariables * iout + i;
+                _yout[outIndex] = INFINITY;
+            }
+            break;
 
             //cout << y[0] << endl;
             //cout << y[1] << endl;

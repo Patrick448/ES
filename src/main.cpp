@@ -9,7 +9,7 @@
 #include "GRNEDOHelpers.h"
 #include "algModes.h"
 #include <pagmo/algorithms/cmaes.hpp>
-
+#include "GRNCoefProblem.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -25,6 +25,7 @@ extern "C"
 using namespace std;
 using namespace GRNEDOHelpers;
 using namespace algModes;
+using namespace pagmo;
 /*
 int IND_SIZE;        // Tamanho do indivíduo (quantidade de coeficientes)
 double MIN_K;        // Menor valor que K pode assumir
@@ -111,7 +112,7 @@ void outputToFile(string path, string text, bool append)
 }
 
 
-void runESComparisonExperiment(string grnMode, string evalMode, string expName)
+void runESComparisonExperiment(string grnMode, string evalMode, string expName, string outputDir)
 {
     appContext ctx{};
     double (*func)(void*,void*);
@@ -122,7 +123,7 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName)
     //firt part populational algorithms
     int numParents = 10;
     int numOffspring = 20;
-    int numRuns = 3;
+    int numRuns = 30;
 
     if(grnMode == "grn5"){
         maxEvals = 200000;
@@ -259,7 +260,7 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName)
         //temporização
         auto end = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<std::chrono::seconds>(end - beg);
-        outputToFile("../results/" + experimentGroup + "/" + experimentId+" -time.csv", to_string(duration.count()) + ",", true);
+        outputToFile(outputDir + experimentGroup + "/" + experimentId+" -time.csv", to_string(duration.count()) + ",", true);
         cout << "Elapsed Time: " << duration.count() << "\n";
     }
 
@@ -274,8 +275,8 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName)
     string bestIndividuals =
             bestInds[0] + "\n" + bestInds[1] + "\n" + bestInds[2] + "\n" + bestInds[3] + "\n" + bestInds[4];
 
-    outputToFile("../results/" + experimentGroup + "/"+experimentId+".csv", csvOutput, false);
-    outputToFile("../results/" + experimentGroup + "/"+experimentId+"-best.csv", bestIndividuals, false);
+    outputToFile(outputDir + experimentGroup + "/"+experimentId+".csv", csvOutput, false);
+    outputToFile(outputDir + experimentGroup + "/"+experimentId+"-best.csv", bestIndividuals, false);
 
     delete[] results[0];
     delete[] results[1];
@@ -1003,29 +1004,62 @@ void testGRN10LSODARK4(){
 
 }
 
-int main()
+void testCMAES(){
+    appContext ctx{};
+    initializeGRN5Context(&ctx, SINGLE_SET_MODE, 1);
+    GRNCoefProblem problem = GRNCoefProblem(&ctx);
+    population pop = population(problem, 20, 0);
+    cmaes alg = cmaes(1, -1, -1, -1, -1, 0.5, 1e-6, 1e-6, false, false, 0);
+    alg.evolve(pop);
+
+}
+
+int main(int argc, char** argv)
 {
-    //todo: mudar critério de parada de todos os ES para número de avaliações ao invés de gerações
-    //runCECComparisonExperiment2("grn5", "rk4","exp12");
-    //runCECComparisonExperiment("grn5", "rk4");
-    //return 0;
-    //testGRN5LSODARK4();
-    //testGRN10LSODARK4();
-    runESComparisonExperiment("grn5", "lsoda", "exp14");
-    runESComparisonExperiment("grn5", "rk4", "exp14");
-
-    runESComparisonExperiment("grn10", "lsoda", "exp14");
-    runESComparisonExperiment("grn10", "rk4", "exp14");
+    testCMAES();
     return 0;
 
-    cout << "GRN 5" << endl;
-    runCECComparisonExperiment2("grn5", "rk4","exp13");
+    string grnMode;
+    string evalMode;
 
-    cout << "GRN 10" << endl;
-    runCECComparisonExperiment2("grn10", "lsoda", "exp13");
+    if(strcmp(argv[1], "all") == 0){
+        cout << "ALL" << endl;
+        //runESComparisonExperiment("grn5", "lsoda", "exp15", "../results/");
+        //runESComparisonExperiment("grn5", "rk4", "exp15", "../results/");
 
-    //runGRN10ESComparisonExperiment();
-    //return 0;
+        runESComparisonExperiment("grn10", "lsoda", "exp15", "../results/");
+        runESComparisonExperiment("grn10", "rk4", "exp15","../results/");
+    }
+
+    if(strcmp(argv[1], "grn5") == 0){
+        cout << "GRN 5" << endl;
+        grnMode = "grn5";
+    }else if(strcmp(argv[1], "grn10") == 0) {
+        cout << "GRN 10" << endl;
+        grnMode = "grn10";
+    }
+
+    if(strcmp(argv[2], "lsoda") == 0) {
+        cout << "LSODA" << endl;
+        evalMode = "lsoda";
+    }else if(strcmp(argv[2], "rk4") == 0) {
+        cout << "RK4" << endl;
+        evalMode = "rk4";
+    }
+
+
+    runESComparisonExperiment(grnMode, evalMode, "exp15", "../results/");
 
     return 0;
+//
+//    cout << "GRN 5" << endl;
+//    runCECComparisonExperiment2("grn5", "rk4","exp13");
+//
+//    cout << "GRN 10" << endl;
+//    runCECComparisonExperiment2("grn10", "lsoda", "exp13");
+//
+//    //runGRN10ESComparisonExperiment();
+//    //return 0;
+//
+//    return 0;
 }
