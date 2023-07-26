@@ -16,7 +16,7 @@ find_package(pagmo REQUIRED)
 
 include_directories(include)
 include_directories(liblsoda/src)
-
+include_directories(LD_LIBRARY_PATH)
 # Create a target out of the library compilation result
 add_custom_target(lsoda_target
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/liblsoda/src

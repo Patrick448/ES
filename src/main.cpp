@@ -1016,8 +1016,8 @@ void testCMAES(){
 
 int main(int argc, char** argv)
 {
-    testCMAES();
-    return 0;
+    //testCMAES();
+    //return 0;
 
     string grnMode;
     string evalMode;
@@ -1027,7 +1027,7 @@ int main(int argc, char** argv)
         //runESComparisonExperiment("grn5", "lsoda", "exp15", "../results/");
         //runESComparisonExperiment("grn5", "rk4", "exp15", "../results/");
 
-        runESComparisonExperiment("grn10", "lsoda", "exp15", "../results/");
+        //runESComparisonExperiment("grn10", "lsoda", "exp15", "../results/");
         runESComparisonExperiment("grn10", "rk4", "exp15","../results/");
     }
 
