@@ -8,8 +8,8 @@
 #include "appCtx.h"
 #include "GRNEDOHelpers.h"
 #include "algModes.h"
-#include <pagmo/algorithms/cmaes.hpp>
-#include "GRNCoefProblem.h"
+//#include <pagmo/algorithms/cmaes.hpp>
+//#include "GRNCoefProblem.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -25,7 +25,7 @@ extern "C"
 using namespace std;
 using namespace GRNEDOHelpers;
 using namespace algModes;
-using namespace pagmo;
+//using namespace pagmo;
 /*
 int IND_SIZE;        // Tamanho do indivíduo (quantidade de coeficientes)
 double MIN_K;        // Menor valor que K pode assumir
@@ -1003,7 +1003,7 @@ void testGRN10LSODARK4(){
     clearContext(&ctx);
 
 }
-
+/*
 void testCMAES(){
     appContext ctx{};
     initializeGRN5Context(&ctx, SINGLE_SET_MODE, 1);
@@ -1013,7 +1013,7 @@ void testCMAES(){
     alg.evolve(pop);
 
 }
-
+*/
 int main(int argc, char** argv)
 {
     //testCMAES();

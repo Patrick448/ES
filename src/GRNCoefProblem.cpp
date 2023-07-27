@@ -4,7 +4,7 @@
 
 #include "GRNCoefProblem.h"
 
-
+/*
 GRNCoefProblem::GRNCoefProblem(appContext *context) {
     this->context = context;
 }
@@ -52,3 +52,4 @@ void GRNCoefProblem::setEvaluationFunction(double (*evaluationFunction)(void*, v
     this->evaluationFunction = evaluationFunction;
 }
 
+*/

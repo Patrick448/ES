@@ -11,8 +11,8 @@ file(GLOB source_c src/*.c)
 #
 # sudo apt install libboost1.74-all-dev
 #
-find_package(Boost COMPONENTS system filesystem unit_test_framework REQUIRED)
-find_package(pagmo REQUIRED)
+#find_package(Boost COMPONENTS system filesystem unit_test_framework REQUIRED)
+#find_package(pagmo REQUIRED)
 
 include_directories(include)
 include_directories(liblsoda/src)
@@ -33,10 +33,10 @@ set_target_properties(liblsoda
     INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/liblsoda/src)
 
 add_executable(ES ${source_cpp} ${source_c} src/GRNEDOHelpers.cpp)
-target_link_libraries(ES PUBLIC liblsoda Pagmo::pagmo)
+target_link_libraries(ES PUBLIC liblsoda)
 
 add_executable(test include/GRNEDOHelpers.h src/GRNEDOHelpers.cpp src/read.cpp src/rk4.c tests/unit_tests.cpp)
-target_link_libraries(test PUBLIC liblsoda Pagmo::pagmo
+target_link_libraries(test PUBLIC liblsoda
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
