@@ -114,6 +114,7 @@ void outputToFile(string path, string text, bool append)
 
 void runESComparisonExperiment(string grnMode, string evalMode, string expName, string outputDir)
 {
+
     appContext ctx{};
     double (*func)(void*,void*);
 
@@ -136,7 +137,7 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName, 
         }
         else {
             func = &grn5EvaluationRK4;
-            initializeGRN5Context(&ctx, SINGLE_SET_MODE, 10);
+            initializeGRN5Context(&ctx, SINGLE_SET_MODE, 20);
         }
     }
     else {
@@ -150,13 +151,14 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName, 
         }
         else {
             func = &grn10EvaluationRK4;
-            initializeGRN10Context(&ctx, SINGLE_SET_MODE, 10);
+            initializeGRN10Context(&ctx, SINGLE_SET_MODE, 20);
         }
     }
 
     int maxGenerations = maxEvals / numOffspring;
     string experimentId = grnMode + "-" + evalMode + "-" + to_string(numRuns) + "runs-"+ to_string(maxEvals) + "evals";
     string experimentGroup = expName;
+
 
     ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
     esAlgorithm.setEvaluationFunction(func);
@@ -205,6 +207,7 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName, 
         auto beg = chrono::high_resolution_clock::now();
 
         cout << "Run " << to_string(i) << "\n";
+        outputToFile("output.txt", "Run " + to_string(i) + "\n", true);
 
         cout << "1"
              << "\n";
@@ -1022,6 +1025,7 @@ int main(int argc, char** argv)
     string grnMode;
     string evalMode;
 
+
     if(strcmp(argv[1], "all") == 0){
         cout << "ALL" << endl;
         //runESComparisonExperiment("grn5", "lsoda", "exp15", "../results/");
@@ -1029,6 +1033,7 @@ int main(int argc, char** argv)
 
         //runESComparisonExperiment("grn10", "lsoda", "exp15", "../results/");
         runESComparisonExperiment("grn10", "rk4", "exp15","../results/");
+        runESComparisonExperiment("grn5", "rk4", "exp15", "../results/");
     }
 
     if(strcmp(argv[1], "grn5") == 0){
