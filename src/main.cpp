@@ -93,7 +93,7 @@ double **expectedResult;
 
 };*/
 
-
+/// helper for outputting text to file
 void outputToFile(string path, string text, bool append)
 {
     ofstream outputf;
@@ -111,7 +111,11 @@ void outputToFile(string path, string text, bool append)
     outputf.close();
 }
 
-
+/// Runs an experiment.
+/// @param grnMode: grn5 or grn10
+/// @param evalMode: lsoda or rk4
+/// @param expName: name of the experiment (names the folder where the results will be stored)
+/// @param outputDir: path to the output directory where the the expName folder will be created
 void runESComparisonExperiment(string grnMode, string evalMode, string expName, string outputDir)
 {
     appContext ctx{};
@@ -867,13 +871,6 @@ void runGRN10ESComparisonExperiment()
     clearContext(&ctx);
 }
 
-int fex(double t, double *y, double *ydot, void *data)
-{
-    ydot[0] = 1.0E4 * y[1] * y[2] - .04E0 * y[0];
-    ydot[2] = 3.0E7 * y[1] * y[1];
-    ydot[1] = -1.0 * (ydot[0] + ydot[2]);
-    return (0);
-}
 
 void test(){
     double ind_5[] = {1.25, 4, 1.02, 1.57, 3.43, 0.72, 0.5, 0.45, 0.51, 0.52, 13, 4, 3, 4, 16};
