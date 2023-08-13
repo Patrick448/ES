@@ -112,6 +112,8 @@ void outputToFile(string path, string text, bool append)
 }
 
 /// Runs an experiment.
+/// todo: parametrize the number of runs and the number of evaluations
+/// todo: remove unnecessary experiments
 /// @param grnMode: grn5 or grn10
 /// @param evalMode: lsoda or rk4
 /// @param expName: name of the experiment (names the folder where the results will be stored)

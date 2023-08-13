@@ -11,6 +11,7 @@
 
 using namespace pagmo;
 
+/// Class that represents the Problem to be solved by Pagmo (as required by the library)
 class GRNCoefProblem {
 private:
     appContext *context;
