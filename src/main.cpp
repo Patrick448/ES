@@ -474,7 +474,7 @@ void runCECComparisonExperiment2(string grnMode, string evalMode, string expName
     //firt part populational algorithms
     int numParents = 15;
     int numOffspring = 105;
-    int numRuns = 2;
+    int numRuns = 30;
 
     if(grnMode == "grn5"){
         //maxEvals =  105*10000;
@@ -554,6 +554,7 @@ void runCECComparisonExperiment2(string grnMode, string evalMode, string expName
         auto beg = chrono::high_resolution_clock::now();
 
         cout << "Run " << to_string(i) << "\n";
+        outputToFile("output.txt", "Run " + to_string(i) + "\n", true);
 
         cout << "1"
              << "\n";
@@ -1038,7 +1039,7 @@ int main(int argc, char** argv)
     else if(strcmp(argv[1], "cec") == 0){
         cout << "Running CEC experiment" << endl;
         runCECComparisonExperiment2("grn5", "lsoda", "exp16", "../results/");
-        //runCECComparisonExperiment2("grn10", "lsoda", "exp16", "../results/");
+        runCECComparisonExperiment2("grn10", "lsoda", "exp16", "../results/");
         return 0;
     }
     else if(strcmp(argv[1], "grn5") == 0){
