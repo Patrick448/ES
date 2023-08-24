@@ -463,7 +463,7 @@ void runCECComparisonExperiment(string grnMode, string evalMode)
     clearContext(&ctx);
 }
 
-void runCECComparisonExperiment2(string grnMode, string evalMode, string expName)
+void runCECComparisonExperiment2(string grnMode, string evalMode, string expName, string outputDir)
 {
     appContext ctx{};
     double (*func)(void*,void*);
@@ -474,7 +474,7 @@ void runCECComparisonExperiment2(string grnMode, string evalMode, string expName
     //firt part populational algorithms
     int numParents = 15;
     int numOffspring = 105;
-    int numRuns = 3;
+    int numRuns = 2;
 
     if(grnMode == "grn5"){
         //maxEvals =  105*10000;
@@ -593,7 +593,7 @@ void runCECComparisonExperiment2(string grnMode, string evalMode, string expName
         //temporização
         auto end = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<std::chrono::seconds>(end - beg);
-        outputToFile("../results/" + experimentGroup + "/" + experimentId+" -time.csv", to_string(duration.count()) + ",", true);
+        outputToFile(outputDir  + experimentGroup + "/" + experimentId+" -time.csv", to_string(duration.count()) + ",", true);
         cout << "Elapsed Time: " << duration.count() << "\n";
     }
 
@@ -608,8 +608,8 @@ void runCECComparisonExperiment2(string grnMode, string evalMode, string expName
     string bestIndividuals =
             bestInds[0] + "\n" + bestInds[1] + "\n" + bestInds[2];
 
-    outputToFile("../results/" + experimentGroup + "/"+experimentId+".csv", csvOutput, false);
-    outputToFile("../results/" + experimentGroup + "/"+experimentId+"-best.csv", bestIndividuals, false);
+    outputToFile(outputDir +  experimentGroup + "/"+experimentId+".csv", csvOutput, false);
+    outputToFile(outputDir +  experimentGroup + "/"+experimentId+"-best.csv", bestIndividuals, false);
 
     delete[] results[0];
     delete[] results[1];
@@ -1035,8 +1035,13 @@ int main(int argc, char** argv)
         runESComparisonExperiment("grn10", "rk4", "exp15","../results/");
         runESComparisonExperiment("grn5", "rk4", "exp15", "../results/");
     }
-
-    if(strcmp(argv[1], "grn5") == 0){
+    else if(strcmp(argv[1], "cec") == 0){
+        cout << "Running CEC experiment" << endl;
+        runCECComparisonExperiment2("grn5", "lsoda", "exp16", "../results/");
+        //runCECComparisonExperiment2("grn10", "lsoda", "exp16", "../results/");
+        return 0;
+    }
+    else if(strcmp(argv[1], "grn5") == 0){
         cout << "GRN 5" << endl;
         grnMode = "grn5";
     }else if(strcmp(argv[1], "grn10") == 0) {
@@ -1056,15 +1061,5 @@ int main(int argc, char** argv)
     runESComparisonExperiment(grnMode, evalMode, "exp15", "../results/");
 
     return 0;
-//
-//    cout << "GRN 5" << endl;
-//    runCECComparisonExperiment2("grn5", "rk4","exp13");
-//
-//    cout << "GRN 10" << endl;
-//    runCECComparisonExperiment2("grn10", "lsoda", "exp13");
-//
-//    //runGRN10ESComparisonExperiment();
-//    //return 0;
-//
-//    return 0;
+
 }
