@@ -1015,8 +1015,8 @@ void testCMAES(){
 
 int main(int argc, char** argv)
 {
-    //testCMAES();
-    //return 0;
+    testCMAES();
+    return 0;
 
     string grnMode;
     string evalMode;
