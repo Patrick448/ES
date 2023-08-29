@@ -9,6 +9,10 @@
 #include "GRNEDOHelpers.h"
 #include "algModes.h"
 #include <pagmo/algorithms/cmaes.hpp>
+#include <pagmo/algorithm.hpp>
+#include <pagmo/population.hpp>
+#include <pagmo/problem.hpp>
+#include <pagmo/utils/constrained.hpp>
 #include "GRNCoefProblem.h"
 
 #ifdef __cplusplus
@@ -1007,10 +1011,13 @@ void testCMAES(){
     appContext ctx{};
     initializeGRN5Context(&ctx, SINGLE_SET_MODE, 1);
     GRNCoefProblem problem = GRNCoefProblem(&ctx);
-    population pop = population(problem, 20, 0);
-    cmaes alg = cmaes(1, -1, -1, -1, -1, 0.5, 1e-6, 1e-6, false, false, 0);
-    alg.evolve(pop);
-
+    problem.setEvaluationFunction(grn5EvaluationLSODA);
+    population pop = population(problem, 200, 0);
+    cmaes alg = cmaes(1000, -1, -1, -1, -1, 0.5, 1e-6, 1e-6, true, true, 0);
+    alg.set_verbosity(100);
+    population newPop = alg.evolve(pop);
+    cout << "Best fitness: " << newPop.champion_f()[0]<< endl;
+    cout << vectorToString(newPop.champion_x().data(),0, 18);
 }
 
 int main(int argc, char** argv)
