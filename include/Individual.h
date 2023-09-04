@@ -20,6 +20,7 @@ private:
 
 public:
     Individual(int numDimensions);
+    Individual(int numDimensions, double *dimensions);
     ~Individual();
     void setEvaluation(double val);
     double getEvaluation();

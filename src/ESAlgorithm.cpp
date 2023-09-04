@@ -8,7 +8,14 @@
 //#include <iostream>
 //#include <vector>
 //#include <algorithm>
+
 #include "dependencies.h"
+#include "GRNCoefProblem.h"
+#include <pagmo/algorithms/cmaes.hpp>
+#include <pagmo/algorithm.hpp>
+#include <pagmo/population.hpp>
+#include <pagmo/problem.hpp>
+#include <pagmo/utils/constrained.hpp>
 
 int ESAlgorithm::UPPER_OPEN=0;
 int ESAlgorithm::UPPER_CLOSED=1;
@@ -19,6 +26,8 @@ int ESAlgorithm::LOWER=5;
 int ESAlgorithm::ONE_PLUS_ONE=6;
 int ESAlgorithm::ISOTROPIC=7;
 int ESAlgorithm::NON_ISOTROPIC=8;
+
+using namespace pagmo;
 
 ESAlgorithm::ESAlgorithm(int numDimensions){
     this->numDimensions = numDimensions;
@@ -50,12 +59,15 @@ vector<Individual*> ESAlgorithm::getPopulation(){
 void ESAlgorithm::addIndividual(Individual* individual){
     this->population.push_back(individual);
 }
+
 double ESAlgorithm::evaluate(Individual* ind){
     double eval =this->evaluationFunction(ind->getDimensions(), this->context);
     ind->setEvaluation(eval);
     this->evaluationsCounter++;
     return eval;
 }
+
+
 
 bool compareIndividuals(Individual* a, Individual* b){
     return a->getEvaluation() < b->getEvaluation();
@@ -235,6 +247,7 @@ void ESAlgorithm::run1Plus1ES(int seed, double initialSigma, double c, int n,  i
             ind = newInd;
             successHistory.push_back(1);
             this->population.push_back(newInd);
+            this->bestIndividual = newInd;
 
         }else{
             successHistory.push_back(0);
@@ -279,6 +292,8 @@ void deleteIndividuals(vector<Individual*> &vec, int start, int end){
     vec.erase(vec.begin()+start, vec.begin()+end+1);
 }
 
+
+//todo: set best individual at the end
 void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, int maxEvals, int numParents, int numOffspring){
     this->clear();
     //vector<int> successHistory;
@@ -343,7 +358,7 @@ void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, in
 
 }
 
-
+//todo: set best individual at the end
 void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation, int maxEvals, int numParents, int numOffspring){
     this->clear();
     //vector<int> successHistory;
@@ -410,6 +425,25 @@ void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation,
 
 }
 
+void ESAlgorithm::runCMAES(int seed,int maxEvals, int populationSize){
+    this->clear();
+    int generations = maxEvals / populationSize;
+    GRNCoefProblem problem = GRNCoefProblem((appContext*)this->context);
+    problem.setEvaluationFunction(this->evaluationFunction);
+    pagmo::population pop = pagmo::population(problem, populationSize, 0);
+    cmaes alg = cmaes(generations, -1, -1, -1, -1, 0.5, 1e-6, 1e-6, false, true, seed);
+    alg.set_verbosity(100);
+    pagmo::population newPop = alg.evolve(pop);
+    cout << "Best fitness: " << newPop.champion_f()[0]<< endl;
+
+    //todo: ver o que fazer com esse vazamento de memória
+    this->bestIndividual = new Individual(this->numDimensions, newPop.champion_x().data());
+    this->evaluate(this->bestIndividual);
+}
+
+Individual* ESAlgorithm::getBestIndividual(){
+    return this->bestIndividual;
+}
 
 string ESAlgorithm::populationToCSVString(){
     string popString = "";

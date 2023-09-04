@@ -470,18 +470,17 @@ void runCECComparisonExperiment(string grnMode, string evalMode)
     clearContext(&ctx);
 }
 
-void runCECComparisonExperiment2(string grnMode, string evalMode, string expName)
+void runCECComparisonExperiment2(string grnMode, string evalMode, string expName, string outputDir)
 {
     appContext ctx{};
     double (*func)(void*,void*);
 
-    //one plus one
-    int maxEvals =  105*1000;
+    int maxEvals =  105*10000;
 
     //firt part populational algorithms
     int numParents = 15;
     int numOffspring = 105;
-    int numRuns = 3;
+    int numRuns = 30;
 
     if(grnMode == "grn5"){
         //maxEvals =  105*10000;
@@ -561,6 +560,7 @@ void runCECComparisonExperiment2(string grnMode, string evalMode, string expName
         auto beg = chrono::high_resolution_clock::now();
 
         cout << "Run " << to_string(i) << "\n";
+        outputToFile("output.txt", "Run " + to_string(i) + "\n", true);
 
         cout << "1"
              << "\n";
@@ -600,7 +600,7 @@ void runCECComparisonExperiment2(string grnMode, string evalMode, string expName
         //temporização
         auto end = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<std::chrono::seconds>(end - beg);
-        outputToFile("../results/" + experimentGroup + "/" + experimentId+" -time.csv", to_string(duration.count()) + ",", true);
+        outputToFile(outputDir  + experimentGroup + "/" + experimentId+" -time.csv", to_string(duration.count()) + ",", true);
         cout << "Elapsed Time: " << duration.count() << "\n";
     }
 
@@ -615,8 +615,175 @@ void runCECComparisonExperiment2(string grnMode, string evalMode, string expName
     string bestIndividuals =
             bestInds[0] + "\n" + bestInds[1] + "\n" + bestInds[2];
 
-    outputToFile("../results/" + experimentGroup + "/"+experimentId+".csv", csvOutput, false);
-    outputToFile("../results/" + experimentGroup + "/"+experimentId+"-best.csv", bestIndividuals, false);
+    outputToFile(outputDir +  experimentGroup + "/"+experimentId+".csv", csvOutput, false);
+    outputToFile(outputDir +  experimentGroup + "/"+experimentId+"-best.csv", bestIndividuals, false);
+
+    delete[] results[0];
+    delete[] results[1];
+    delete[] results[2];
+    delete[] results;
+    clearContext(&ctx);
+}
+
+
+void runCMAESComparisonExperimentTrainingTest(string grnMode, string evalMode, string expName, string outputDir)
+{
+    appContext ctx{};
+    double (*func)(void*,void*);
+
+    int maxEvals =  105*10000;
+
+    //firt part populational algorithms
+    int numParents = 15;
+    int numOffspring = 105;
+    int numRuns = 30;
+
+    if(grnMode == "grn5"){
+        //maxEvals =  105*10000;
+        //numParents = 15;
+        //numOffspring = 105;
+
+        if(evalMode == "lsoda"){
+            func = &grn5EvaluationLSODA;
+            initializeGRN5Context(&ctx, TRAINING_MODE, 1);
+        }
+        else {
+            func = &grn5EvaluationRK4;
+            initializeGRN5Context(&ctx, TRAINING_MODE, 20);
+        }
+    }
+    else {
+        //maxEvals =  105*10000;
+        //numParents = 15;
+        //numOffspring = 105;
+
+        if(evalMode == "lsoda"){
+            func = &grn10EvaluationLSODA;
+            initializeGRN10Context(&ctx, TRAINING_MODE, 1);
+        }
+        else {
+            func = &grn10EvaluationRK4;
+            initializeGRN10Context(&ctx, TRAINING_MODE, 20);
+        }
+    }
+
+    int maxGenerations = maxEvals / numOffspring;
+    string experimentId = grnMode + "-" + evalMode + "-" + to_string(numRuns) + "runs-"+ to_string(maxEvals) + "evals";
+    string experimentGroup = expName;
+
+    ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
+    esAlgorithm.setEvaluationFunction(func);
+    esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
+    esAlgorithm.setContext(&ctx);
+
+    // inicializa limites de tau, k e n
+    int cont = 0;
+    for (int i = 0; i < ctx.TAU_SIZE; i++)
+    {
+        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+    for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
+    {
+        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+    for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
+    {
+        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+
+
+    /*todo: usar representação contígua para essa matriz
+     * e, para calcular posição, usar
+     * #define R(i,j) results[i*5 + j]
+     */
+
+    double **results = new double *[3];
+    results[0] = new double[numRuns];
+    results[1] = new double[numRuns];
+    results[2] = new double[numRuns];
+
+    vector<string> bestInds(3);
+    vector<double> bestIndsEval(3, DBL_MAX);
+
+    for (int i = 0; i < numRuns; i++)
+    {
+        auto beg = chrono::high_resolution_clock::now();
+
+        cout << "Run " << to_string(i) << "\n";
+        outputToFile("output.txt", "Run " + to_string(i) + "\n", true);
+
+        cout << "1"
+             << "\n";
+
+        esAlgorithm.run1Plus1ES(i, 0.5, 0.817, 10, maxEvals);
+        GRNEDOHelpers::setMode(&ctx, TEST_MODE);
+        esAlgorithm.evaluate(esAlgorithm.getPopulation().back());
+        results[0][i] = esAlgorithm.getPopulation().back()->getEvaluation();
+        GRNEDOHelpers::setMode(&ctx, TRAINING_MODE);
+
+        if (results[0][i] < bestIndsEval[0])
+        {
+            bestIndsEval[0] = results[0][i];
+            bestInds[0] = esAlgorithm.getPopulation().back()->toCSVString();
+        }
+        cout << "Evals: " << esAlgorithm.getEvaluations() << "\n";
+
+        cout << "2"
+             << "\n";
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
+        GRNEDOHelpers::setMode(&ctx, TEST_MODE);
+        esAlgorithm.evaluate(esAlgorithm.getPopulation()[0]);
+        results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        GRNEDOHelpers::setMode(&ctx, TRAINING_MODE);
+
+        if (results[1][i] < bestIndsEval[1])
+        {
+            bestIndsEval[1] = results[1][i];
+            bestInds[1] = esAlgorithm.getPopulation()[0]->toCSVString();
+        }
+        cout << "Evals: " << esAlgorithm.getEvaluations() << "\n";
+
+        cout << "3"
+             << "\n";
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
+        GRNEDOHelpers::setMode(&ctx, TEST_MODE);
+        esAlgorithm.evaluate(esAlgorithm.getPopulation()[0]);
+        results[2][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        GRNEDOHelpers::setMode(&ctx, TRAINING_MODE);
+
+        if (results[2][i] < bestIndsEval[2])
+        {
+            bestIndsEval[2] = results[2][i];
+            bestInds[2] = esAlgorithm.getPopulation()[0]->toCSVString();
+        }
+        cout << "Evals: " << esAlgorithm.getEvaluations() << "\n";
+
+        //temporização
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<std::chrono::seconds>(end - beg);
+        outputToFile(outputDir  + experimentGroup + "/" + experimentId+"-train-test-time.csv", to_string(duration.count()) + ",", true);
+        cout << "Elapsed Time: " << duration.count() << "\n";
+    }
+
+    //todo: modificar para refletir os parâmetros da execução
+    string csvOutput = "1+1,15+105-i,15+105-ni\n";
+
+    for (int j = 0; j < numRuns; j++)
+    {
+        csvOutput += to_string(results[0][j]) + "," + to_string(results[1][j]) + "," + to_string(results[2][j])  + "\n";
+    }
+
+    string bestIndividuals =
+            bestInds[0] + "\n" + bestInds[1] + "\n" + bestInds[2];
+
+    outputToFile(outputDir +  experimentGroup + "/"+experimentId+"-train-test.csv", csvOutput, false);
+    outputToFile(outputDir +  experimentGroup + "/"+experimentId+"-train-test-best.csv", bestIndividuals, false);
 
     delete[] results[0];
     delete[] results[1];

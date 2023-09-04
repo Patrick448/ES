@@ -292,12 +292,12 @@ void GRNEDOHelpers::initializeGRN5Context(appContext* ctx, int mode, int granula
     ctx->nSteps = 49;
     ctx->dataSetSize = 50;
     ctx->trainingSetStart = 0;
-    ctx->trainingSetEnd = 29;
+    ctx->trainingSetEnd = 34;
     ctx->trainingSteps = granularity*29;
     ctx->validationSetStart = 30;
     ctx->validationSetEnd = 39;
     ctx->validationSteps = granularity*15;
-    ctx->testSetStart = 40;
+    ctx->testSetStart = 35;
     ctx->testSetEnd = 49;
     ctx->testSteps = granularity*15;
     ctx->mode = mode;

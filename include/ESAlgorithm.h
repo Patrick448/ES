@@ -22,6 +22,7 @@ private:
     double minSigma;
     double maxSigma;
     void *context;
+    Individual* bestIndividual;
 
 public:
     static int UPPER_OPEN;
@@ -59,7 +60,9 @@ public:
     void reevaluateAllNoCounter();
     double getReevaluationByIndexNoCounter(int i);
     int getEvaluations();
-    };
+    void runCMAES(int seed,int maxEvals, int populationSizes);
+    Individual* getBestIndividual();
+    }
 
 
 #endif //ES_ESALGORITHM_H

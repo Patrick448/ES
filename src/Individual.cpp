@@ -13,6 +13,15 @@ Individual::Individual(int numDimensions) {
     this->sigmas = new double[numDimensions];
 }
 
+Individual::Individual(int numDimensions, double *dimensions) {
+    this->numDimensions = numDimensions;
+    this->dimensions = new double[numDimensions];
+
+    for(int i=0; i< numDimensions; i++){
+        this->dimensions[i] = dimensions[i];
+    }
+}
+
 Individual::~Individual() {
     delete [] this->dimensions;
     delete [] this->sigmas;
