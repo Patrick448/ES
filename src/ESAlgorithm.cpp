@@ -425,20 +425,46 @@ void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation,
 
 }
 
+//todo: remover
+double ESAlgorithm::evaluationIncrementCounterWrapper(void *ind, void * context){
+
+    this->evaluationsCounter++;
+    return this->evaluationFunction(ind, context);
+}
+
 void ESAlgorithm::runCMAES(int seed,int maxEvals, int populationSize){
     this->clear();
-    int generations = maxEvals / populationSize;
-    GRNCoefProblem problem = GRNCoefProblem((appContext*)this->context);
-    problem.setEvaluationFunction(this->evaluationFunction);
-    pagmo::population pop = pagmo::population(problem, populationSize, 0);
-    cmaes alg = cmaes(generations, -1, -1, -1, -1, 0.5, 1e-6, 1e-6, false, true, seed);
-    alg.set_verbosity(100);
-    pagmo::population newPop = alg.evolve(pop);
-    cout << "Best fitness: " << newPop.champion_f()[0]<< endl;
+    this->bestIndividual = new Individual(this->numDimensions);
+    this->bestIndividual->setEvaluation(DBL_MAX);
+    int maxGenerations, newSeed;
+    srand(seed);
 
-    //todo: ver o que fazer com esse vazamento de memória
-    this->bestIndividual = new Individual(this->numDimensions, newPop.champion_x().data());
-    this->evaluate(this->bestIndividual);
+
+    while(this->evaluationsCounter < maxEvals){
+        newSeed = rand();
+        maxGenerations = (maxEvals - this->evaluationsCounter - populationSize)/populationSize;
+        GRNCoefProblem problem = GRNCoefProblem((appContext*)this->context);
+        problem.setEvaluationFunction(this->evaluationFunction);
+        pagmo::population pop = pagmo::population(problem, populationSize, 0);
+        cmaes alg = cmaes(maxGenerations, -1, -1, -1, -1, 0.5, 1e-6, 1e-6, false, true, newSeed);
+        alg.set_verbosity(100);
+        pagmo::population newPop = alg.evolve(pop);
+
+
+        this->evaluationsCounter += pop.get_problem().get_fevals() + newPop.get_problem().get_fevals();
+        cout << "Best fitness: " << newPop.champion_f()[0]<< endl;
+        cout << "Evaluations: " << this->evaluationsCounter << endl;
+        cout << "Seed: " << newSeed << endl;
+
+        //todo: ver o que fazer com esse vazamento de memória
+        Individual *newIndividual = new Individual(this->numDimensions, newPop.champion_x().data());
+        this->evaluate(newIndividual);
+
+        if(newIndividual->getEvaluation() < this->bestIndividual->getEvaluation()){
+            delete this->bestIndividual;
+            this->bestIndividual = newIndividual;
+        }
+    }
 }
 
 Individual* ESAlgorithm::getBestIndividual(){

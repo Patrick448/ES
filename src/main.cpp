@@ -636,7 +636,7 @@ void runCMAESComparisonExperimentTrainingTest(string grnMode, string evalMode, s
     //firt part populational algorithms
     int numParents = 15;
     int numOffspring = 105;
-    int numRuns = 30;
+    int numRuns = 3;
 
     if(grnMode == "grn5"){
         //maxEvals =  105*10000;
@@ -721,10 +721,10 @@ void runCMAESComparisonExperimentTrainingTest(string grnMode, string evalMode, s
         cout << "1"
              << "\n";
 
-        esAlgorithm.run1Plus1ES(i, 0.5, 0.817, 10, maxEvals);
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
         GRNEDOHelpers::setMode(&ctx, TEST_MODE);
-        esAlgorithm.evaluate(esAlgorithm.getPopulation().back());
-        results[0][i] = esAlgorithm.getPopulation().back()->getEvaluation();
+        esAlgorithm.evaluate(esAlgorithm.getPopulation()[0]);
+        results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
         GRNEDOHelpers::setMode(&ctx, TRAINING_MODE);
 
         if (results[0][i] < bestIndsEval[0])
@@ -772,7 +772,7 @@ void runCMAESComparisonExperimentTrainingTest(string grnMode, string evalMode, s
     }
 
     //todo: modificar para refletir os parâmetros da execução
-    string csvOutput = "1+1,15+105-i,15+105-ni\n";
+    string csvOutput = "15+105-i,15+105-ni, CMAES\n";
 
     for (int j = 0; j < numRuns; j++)
     {
@@ -1179,23 +1179,35 @@ void testCMAES(){
     initializeGRN5Context(&ctx, SINGLE_SET_MODE, 1);
     GRNCoefProblem problem = GRNCoefProblem(&ctx);
     problem.setEvaluationFunction(grn5EvaluationLSODA);
-    population pop = population(problem, 200, 0);
-    cmaes alg = cmaes(1000, -1, -1, -1, -1, 0.5, 1e-6, 1e-6, true, true, 0);
+    population pop = population(problem, 20, 0);
+    cmaes alg = cmaes(10000, -1, -1, -1, -1, 0.5, 1e-6, 1e-6, true, true, 0);
     alg.set_verbosity(100);
     population newPop = alg.evolve(pop);
+    cout << "Total evaluations: " <<newPop.get_problem().get_fevals()<< "\n";
     cout << "Best fitness: " << newPop.champion_f()[0]<< endl;
     cout << vectorToString(newPop.champion_x().data(),0, 18);
 }
 
+void testCMAES2(){
+    appContext ctx{};
+    initializeGRN5Context(&ctx, SINGLE_SET_MODE, 1);
+    ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
+    esAlgorithm.setEvaluationFunction(grn5EvaluationLSODA);
+    //esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
+    esAlgorithm.setContext(&ctx);
+    esAlgorithm.runCMAES(0, 1050000, 20);
+
+}
+
 int main(int argc, char** argv)
 {
-    testCMAES();
+    testCMAES2();
     return 0;
 
     string grnMode;
     string evalMode;
 
-    if(strcmp(argv[1], "all") == 0){
+   /* if(strcmp(argv[1], "all") == 0){
         cout << "ALL" << endl;
         //runESComparisonExperiment("grn5", "lsoda", "exp15", "../results/");
         //runESComparisonExperiment("grn5", "rk4", "exp15", "../results/");
@@ -1218,10 +1230,11 @@ int main(int argc, char** argv)
     }else if(strcmp(argv[2], "rk4") == 0) {
         cout << "RK4" << endl;
         evalMode = "rk4";
-    }
+    }*/
 
 
-    runESComparisonExperiment(grnMode, evalMode, "exp15", "../results/");
+    runCMAESComparisonExperimentTrainingTest("grn5", "lsoda", "exp17", "../results/");
+   // runCMAESComparisonExperimentTrainingTest("grn10", "lsoda", "exp17", "../results/");
 
     return 0;
 //

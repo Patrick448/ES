@@ -62,7 +62,8 @@ public:
     int getEvaluations();
     void runCMAES(int seed,int maxEvals, int populationSizes);
     Individual* getBestIndividual();
-    }
+    double evaluationIncrementCounterWrapper(void *ind, void * context);
+    };
 
 
 #endif //ES_ESALGORITHM_H
