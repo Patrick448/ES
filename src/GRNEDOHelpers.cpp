@@ -222,8 +222,6 @@ double GRNEDOHelpers::difference(double *actual, double **expected, int numVaria
 //todo: melhorar vetores, padronizar o formato e melhorar os acessos
 double GRNEDOHelpers::difference(double *actual, double **expected, int numVariables, int start, int end, int numSteps)
 {
-    // todo: testar função e remover essa linha
-    // double *dif = new double [numVariables];
     double difTotal = 0.0;
     int numElements = end - start + 1;
 
@@ -231,15 +229,20 @@ double GRNEDOHelpers::difference(double *actual, double **expected, int numVaria
 
     for (int i = 0; i < numVariables; i++)
     {
-        // dif[i] = 0;
         for (int j = start; j <= end; j++)
         {
-            //  dif[i] += fabs(actual[i][j] - expected[i][j]);
-            // if(i==3)continue;
-            difTotal += fabs(actual[j*jump* numVariables + i] - expected[i][j]);
-        }
-    }
+            int index = jump*j* numVariables + i;
+            difTotal += fabs(actual[index] - expected[i][j]);
+            cout << "(" << j << "," << i << ")"<< " - ";
+            cout <<  index << " - ";
+            cout << actual[index] << " \n";
 
+            //cout << actual[j*jump* numVariables + i]<< " ";
+        }
+
+      //  cout << endl;
+    }
+   // cout << endl;
     if (isnan(difTotal))
     {
         return DBL_MAX;
@@ -291,9 +294,11 @@ void GRNEDOHelpers::initializeGRN5Context(appContext* ctx, int mode, int granula
     ctx->nVariables = 5;
     ctx->nSteps = 49;
     ctx->dataSetSize = 50;
+    ctx->fullSetStart = 0;
+    ctx->fullSetEnd = 49;
     ctx->trainingSetStart = 0;
     ctx->trainingSetEnd = 34;
-    ctx->trainingSteps = granularity*29;
+    ctx->trainingSteps = granularity*35;
     ctx->validationSetStart = 30;
     ctx->validationSetEnd = 39;
     ctx->validationSteps = granularity*15;
@@ -343,6 +348,14 @@ void GRNEDOHelpers::initializeGRN5Context(appContext* ctx, int mode, int granula
 
     ctx->tspan[0] = ctx->vectors[0][ctx->setStart];
     ctx->tspan[1] = ctx->vectors[0][ctx->setEnd];
+
+
+    /////////////////////////////
+
+    /*ctx->nSteps = 49;
+    ctx->tspan[0] = 0.0;
+    ctx->tspan[1] = 72.0;*/
+
     //ctx->trainingTSpan[0] = 0.0;
     //ctx->trainingTSpan[1] = (ctx->tspan[1]/ctx->nSteps)*ctx->trainingSteps;
 }
@@ -714,8 +727,9 @@ double GRNEDOHelpers::grn5EvaluationLSODA(void *ind, void* data)
     double* _ind = (double *)ind;
     ctx->individual = _ind;
     lsodaWrapper(twoBody5VarLSODA, ctx, ctx->yout);
+    double eval = difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
 
-    return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
+    return eval;
 
 }
 

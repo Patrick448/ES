@@ -26,6 +26,8 @@
     int nVariables;
     int nSteps;
     int dataSetSize;
+    int fullSetStart;
+    int fullSetEnd;
     int trainingSteps;
     int testSteps;
     int validationSteps;

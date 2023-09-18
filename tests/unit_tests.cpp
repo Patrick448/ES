@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE( test_ind_10_var_lsoda )
 {
     appContext ctx{};
 
-    //esse indivíduo deveria ter fitness ~26
+    //esse indivíduo deveria ter fitness ~56
     double ind0[40] = {1.73,2,0.81,0.11, 1.23, 1.78,
                        1.14, 1.04, 3.47, 3.21, 0.45,
                        0.56, 0.99, 0.77, 0.71, 0.66,
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE( test_ind_10_var_rk4 )
 {
     appContext ctx{};
 
-    //esse indivíduo deveria ter fitness ~26
+    //esse indivíduo deveria ter fitness ~56
     double ind0[40] = {1.73,2,0.81,0.11, 1.23, 1.78,
                        1.14, 1.04, 3.47, 3.21, 0.45,
                        0.56, 0.99, 0.77, 0.71, 0.66,

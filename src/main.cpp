@@ -631,7 +631,7 @@ void runCMAESComparisonExperimentTrainingTest(string grnMode, string evalMode, s
     appContext ctx{};
     double (*func)(void*,void*);
 
-    int maxEvals =  105*10000;
+    int maxEvals =  105*100;
 
     //firt part populational algorithms
     int numParents = 15;
@@ -721,7 +721,7 @@ void runCMAESComparisonExperimentTrainingTest(string grnMode, string evalMode, s
         cout << "1"
              << "\n";
 
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
+        esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
         GRNEDOHelpers::setMode(&ctx, TEST_MODE);
         esAlgorithm.evaluate(esAlgorithm.getPopulation()[0]);
         results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
@@ -736,7 +736,7 @@ void runCMAESComparisonExperimentTrainingTest(string grnMode, string evalMode, s
 
         cout << "2"
              << "\n";
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
+        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
         GRNEDOHelpers::setMode(&ctx, TEST_MODE);
         esAlgorithm.evaluate(esAlgorithm.getPopulation()[0]);
         results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
@@ -751,10 +751,10 @@ void runCMAESComparisonExperimentTrainingTest(string grnMode, string evalMode, s
 
         cout << "3"
              << "\n";
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
+        esAlgorithm.runCMAES(0, maxEvals, 20);
         GRNEDOHelpers::setMode(&ctx, TEST_MODE);
-        esAlgorithm.evaluate(esAlgorithm.getPopulation()[0]);
-        results[2][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        esAlgorithm.evaluate(esAlgorithm.getBestIndividual());
+        results[2][i] = esAlgorithm.getBestIndividual()->getEvaluation();
         GRNEDOHelpers::setMode(&ctx, TRAINING_MODE);
 
         if (results[2][i] < bestIndsEval[2])
@@ -772,7 +772,7 @@ void runCMAESComparisonExperimentTrainingTest(string grnMode, string evalMode, s
     }
 
     //todo: modificar para refletir os parâmetros da execução
-    string csvOutput = "15+105-i,15+105-ni, CMAES\n";
+    string csvOutput = "15+105-i,15+105-ni,CMAES\n";
 
     for (int j = 0; j < numRuns; j++)
     {
@@ -1188,24 +1188,51 @@ void testCMAES(){
     cout << vectorToString(newPop.champion_x().data(),0, 18);
 }
 
+void testTestSet(){
+    appContext context{};
+
+    initializeGRN5Context(&context, SINGLE_SET_MODE, 1);
+    appContext* ctx = &context;
+    //GRNEDOHelpers::setMode(&ctx, TEST_MODE);
+
+    //appContext* ctx = (appContext*)(data);
+    double ind[] = {  1.2163355099083872, 1.1264485098219865, 2.973714367061704,
+                      2.952143123315177, 2.998260518457365, 0.5687249950503857,
+                      0.4580723119903261, 0.46214892372246563, 0.6182568295500336,
+                      0.5213082492659304, 0.7708877748759901, 0.1497642024548283,
+                      4.254757908429968, 3.759370669969996, 4.784173526119725,
+                      10.935884810737809, 24.595975874929724, 2.8109199678182635,
+                      4.922623602327875};
+    //double* _ind = (double *)ind;
+    ctx->individual = reinterpret_cast<double *>(&ind);
+    lsodaWrapper(twoBody5VarLSODA, ctx, ctx->yout);
+    double eval = difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
+
+    cout << eval << endl;
+
+}
+
 void testCMAES2(){
     appContext ctx{};
-    initializeGRN5Context(&ctx, SINGLE_SET_MODE, 1);
+    initializeGRN5Context(&ctx, TRAINING_MODE, 1);
     ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
     esAlgorithm.setEvaluationFunction(grn5EvaluationLSODA);
     //esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
     esAlgorithm.setContext(&ctx);
-    esAlgorithm.runCMAES(0, 1050000, 20);
+    esAlgorithm.runCMAES(0, 100000, 20);
+    GRNEDOHelpers::setMode(&ctx, TEST_MODE);
+    esAlgorithm.evaluate(esAlgorithm.getBestIndividual());
 
+    cout << "Best fitness: " << esAlgorithm.getBestIndividual()->getEvaluation() << endl;
 }
 
 int main(int argc, char** argv)
 {
-    testCMAES2();
+    testTestSet();
     return 0;
 
-    string grnMode;
-    string evalMode;
+   // string grnMode;
+   // string evalMode;
 
    /* if(strcmp(argv[1], "all") == 0){
         cout << "ALL" << endl;
