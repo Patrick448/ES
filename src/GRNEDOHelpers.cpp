@@ -224,7 +224,8 @@ double GRNEDOHelpers::difference(double *actual, double **expected, int numVaria
 {
     double difTotal = 0.0;
     int numElements = end - start + 1;
-
+   // printGRNVector(expected, numVariables, 50);
+  //  cout << "\n\n" << endl;
     int jump = numSteps / (numElements-1);
 
     for (int i = 0; i < numVariables; i++)
@@ -233,16 +234,16 @@ double GRNEDOHelpers::difference(double *actual, double **expected, int numVaria
         {
             int index = jump*j* numVariables + i;
             difTotal += fabs(actual[index] - expected[i][j]);
-            cout << "(" << j << "," << i << ")"<< " - ";
-            cout <<  index << " - ";
-            cout << actual[index] << " \n";
+            //cout << "(" << j << "," << i << ")"<< " - ";
+            //cout <<  index << " - ";
+           // cout << actual[index] << ",";
 
             //cout << actual[j*jump* numVariables + i]<< " ";
         }
 
       //  cout << endl;
     }
-   // cout << endl;
+    //cout << endl;
     if (isnan(difTotal))
     {
         return DBL_MAX;
@@ -296,6 +297,7 @@ void GRNEDOHelpers::initializeGRN5Context(appContext* ctx, int mode, int granula
     ctx->dataSetSize = 50;
     ctx->fullSetStart = 0;
     ctx->fullSetEnd = 49;
+    ctx->totalSteps = granularity*49;
     ctx->trainingSetStart = 0;
     ctx->trainingSetEnd = 34;
     ctx->trainingSteps = granularity*35;
@@ -326,7 +328,7 @@ void GRNEDOHelpers::initializeGRN5Context(appContext* ctx, int mode, int granula
     }
 
     ctx->maxValues = new double[ctx->nVariables];
-    ctx->yout = new double[(ctx->nSteps + 1) * ctx->nVariables];
+    ctx->yout = new double[(ctx->totalSteps + 1) * ctx->nVariables];
     ctx->vectors = new double *[ctx->nVariables + 1];
     for (int i = 0; i < ctx->nVariables + 1; i++)
     {
@@ -334,20 +336,23 @@ void GRNEDOHelpers::initializeGRN5Context(appContext* ctx, int mode, int granula
     }
 
     readGRNFileToVectors("GRN5.txt", ctx->nVariables + 1, ctx->vectors);
-    getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->setStart, ctx->setEnd);
+    getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->trainingSetStart, ctx->trainingSetEnd);
+
 
 
     ctx->y_0 = new double[ctx->nVariables];
     ctx->expectedResult = &ctx->vectors[1];
+    //printGRNVector(ctx->expectedResult, ctx->nVariables, ctx->dataSetSize);
+    //cout << "\n\n";
     //todo: verificar se o y_0 está correto para
     // o caso de inicio fora do zero
     for (int i = 0; i < ctx->nVariables; i++)
     {
-        ctx->y_0[i] = ctx->vectors[i + 1][ctx->setStart];
+        ctx->y_0[i] = ctx->vectors[i + 1][ctx->fullSetStart];
     }
 
-    ctx->tspan[0] = ctx->vectors[0][ctx->setStart];
-    ctx->tspan[1] = ctx->vectors[0][ctx->setEnd];
+    ctx->tspan[0] = ctx->vectors[0][ctx->fullSetStart];
+    ctx->tspan[1] = ctx->vectors[0][ctx->fullSetEnd];
 
 
     /////////////////////////////
@@ -383,6 +388,9 @@ void GRNEDOHelpers::initializeGRN10Context(appContext* ctx, int mode, int granul
     ctx->nVariables = 10;
     ctx->nSteps = 49;
     ctx->dataSetSize = 50;
+    ctx->fullSetStart = 0;
+    ctx->fullSetEnd = 49;
+    ctx->totalSteps = 49*granularity;
     ctx->trainingSetStart = 0;
     ctx->trainingSetEnd = 49;
     ctx->trainingSteps = granularity*49;
@@ -413,7 +421,7 @@ void GRNEDOHelpers::initializeGRN10Context(appContext* ctx, int mode, int granul
     }
 
     ctx->maxValues = new double[ctx->nVariables];
-    ctx->yout = new double[(ctx->nSteps + 1) * ctx->nVariables];
+    ctx->yout = new double[(ctx->totalSteps + 1) * ctx->nVariables];
     ctx->vectors = new double *[ctx->nVariables + 1];
     for (int i = 0; i < ctx->nVariables + 1; i++)
     {
@@ -421,7 +429,7 @@ void GRNEDOHelpers::initializeGRN10Context(appContext* ctx, int mode, int granul
     }
 
     readGRNFileToVectors("GRN10.txt", ctx->nVariables + 1, ctx->vectors);
-    getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->setStart, ctx->setEnd);
+    getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->trainingSetStart, ctx->trainingSetEnd);
 
 
     ctx->y_0 = new double[ctx->nVariables];
@@ -430,11 +438,11 @@ void GRNEDOHelpers::initializeGRN10Context(appContext* ctx, int mode, int granul
     // o caso de inicio fora do zero
     for (int i = 0; i < ctx->nVariables; i++)
     {
-        ctx->y_0[i] = ctx->vectors[i + 1][ctx->setStart];
+        ctx->y_0[i] = ctx->vectors[i + 1][ctx->fullSetStart];
     }
 
-    ctx->tspan[0] = ctx->vectors[0][ctx->setStart];
-    ctx->tspan[1] = ctx->vectors[0][ctx->setEnd];
+    ctx->tspan[0] = ctx->vectors[0][ctx->fullSetStart];
+    ctx->tspan[1] = ctx->vectors[0][ctx->fullSetEnd];
 
 }
 
@@ -476,7 +484,7 @@ double GRNEDOHelpers::lsodaWrapper(int dydt(double t, double *y, double *ydot, v
     }
 
     t = 0.0E0;
-    dt = (appCtx->tspan[1] - appCtx->tspan[0]) / (double)(appCtx->nSteps);
+    dt = (appCtx->tspan[1] - appCtx->tspan[0]) / (double)(appCtx->totalSteps);
     tout = dt;
 
     struct lsoda_opt_t opt = {0};
@@ -497,7 +505,7 @@ double GRNEDOHelpers::lsodaWrapper(int dydt(double t, double *y, double *ydot, v
 
     lsoda_prepare(&ctx, &opt);
 
-    for (iout =1; iout <= appCtx->nSteps; iout++)
+    for (iout =1; iout <= appCtx->totalSteps; iout++)
     {
         lsoda(&ctx, y, &t, tout);
         //printf(" at t= %12.4e y= %14.6e %14.6e %14.6e %14.6e %14.6e\n", t, y[0], y[1], y[2], y[3], y[4]);
@@ -663,9 +671,10 @@ string GRNEDOHelpers::vectorToString(double *vec, int start, int end)
 
 void GRNEDOHelpers::printGRNVector(double **vec, int rows, int cols)
 {
+    //todo: parece que rows e cols estão invertidos, ver se renomeio as variáveis na assinatura
     for(int j = 0; j < cols; j++){
         for(int i = 0; i < rows; i++){
-            cout << vec[i][j] << "\t";
+            cout << vec[i][j] << ",";
         }
         cout << "\n";
     }
@@ -727,6 +736,7 @@ double GRNEDOHelpers::grn5EvaluationLSODA(void *ind, void* data)
     double* _ind = (double *)ind;
     ctx->individual = _ind;
     lsodaWrapper(twoBody5VarLSODA, ctx, ctx->yout);
+
     double eval = difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
 
     return eval;
@@ -738,8 +748,8 @@ double GRNEDOHelpers::grn5EvaluationRK4(void *ind, void* data)
 {   appContext* ctx = (appContext*)(data);
     double* _ind = (double *)ind;
     ctx->individual = _ind;
-    double *t = new double [ctx->nSteps+1];
-    rk4(twoBody5VarLSODA, ctx->tspan, ctx->y_0, ctx->nSteps, ctx->nVariables, t, _ind, ctx);
+    double *t = new double [ctx->totalSteps+1];
+    rk4(twoBody5VarLSODA, ctx->tspan, ctx->y_0, ctx->totalSteps, ctx->nVariables, t, _ind, ctx);
     delete [] t;
     return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
 
@@ -761,8 +771,8 @@ double GRNEDOHelpers::grn10EvaluationRK4(void *ind, void* data)
 {   appContext* ctx = (appContext*)(data);
     double* _ind = (double *)ind;
     ctx->individual = _ind;
-    double *t = new double [ctx->nSteps+1];
-    rk4(twoBody10VarLSODA, ctx->tspan, ctx->y_0, ctx->nSteps, ctx->nVariables, t, _ind, ctx);
+    double *t = new double [ctx->totalSteps+1];
+    rk4(twoBody10VarLSODA, ctx->tspan, ctx->y_0, ctx->totalSteps, ctx->nVariables, t, _ind, ctx);
     delete [] t;
     return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
 

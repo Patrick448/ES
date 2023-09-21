@@ -631,12 +631,12 @@ void runCMAESComparisonExperimentTrainingTest(string grnMode, string evalMode, s
     appContext ctx{};
     double (*func)(void*,void*);
 
-    int maxEvals =  105*100;
+    int maxEvals =  105*10000;
 
     //firt part populational algorithms
     int numParents = 15;
     int numOffspring = 105;
-    int numRuns = 3;
+    int numRuns = 30;
 
     if(grnMode == "grn5"){
         //maxEvals =  105*10000;
@@ -721,37 +721,39 @@ void runCMAESComparisonExperimentTrainingTest(string grnMode, string evalMode, s
         cout << "1"
              << "\n";
 
-        esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
-        GRNEDOHelpers::setMode(&ctx, TEST_MODE);
-        esAlgorithm.evaluate(esAlgorithm.getPopulation()[0]);
-        results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
-        GRNEDOHelpers::setMode(&ctx, TRAINING_MODE);
+       // esAlgorithm.runPopulationalIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
+       // GRNEDOHelpers::setMode(&ctx, TEST_MODE);
+       // esAlgorithm.evaluate(esAlgorithm.getPopulation()[0]);
+        //results[0][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        results[0][i] = 0.0;
+        //GRNEDOHelpers::setMode(&ctx, TRAINING_MODE);
 
         if (results[0][i] < bestIndsEval[0])
         {
-            bestIndsEval[0] = results[0][i];
-            bestInds[0] = esAlgorithm.getPopulation().back()->toCSVString();
+           // bestIndsEval[0] = results[0][i];
+           // bestInds[0] = esAlgorithm.getPopulation().back()->toCSVString();
         }
-        cout << "Evals: " << esAlgorithm.getEvaluations() << "\n";
+        //cout << "Evals: " << esAlgorithm.getEvaluations() << "\n";
 
         cout << "2"
              << "\n";
-        esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
-        GRNEDOHelpers::setMode(&ctx, TEST_MODE);
-        esAlgorithm.evaluate(esAlgorithm.getPopulation()[0]);
-        results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
-        GRNEDOHelpers::setMode(&ctx, TRAINING_MODE);
+        //esAlgorithm.runPopulationalNonIsotropicES(i, 0.5, maxEvals, numParents, numOffspring);
+        //GRNEDOHelpers::setMode(&ctx, TEST_MODE);
+       // esAlgorithm.evaluate(esAlgorithm.getPopulation()[0]);
+        //results[1][i] = esAlgorithm.getPopulation()[0]->getEvaluation();
+        results[1][i] = 0.0;
+       // GRNEDOHelpers::setMode(&ctx, TRAINING_MODE);
 
         if (results[1][i] < bestIndsEval[1])
         {
-            bestIndsEval[1] = results[1][i];
-            bestInds[1] = esAlgorithm.getPopulation()[0]->toCSVString();
+            //bestIndsEval[1] = results[1][i];
+            //bestInds[1] = esAlgorithm.getPopulation()[0]->toCSVString();
         }
-        cout << "Evals: " << esAlgorithm.getEvaluations() << "\n";
+        //cout << "Evals: " << esAlgorithm.getEvaluations() << "\n";
 
         cout << "3"
              << "\n";
-        esAlgorithm.runCMAES(0, maxEvals, 20);
+        esAlgorithm.runCMAES(i, maxEvals, 40);
         GRNEDOHelpers::setMode(&ctx, TEST_MODE);
         esAlgorithm.evaluate(esAlgorithm.getBestIndividual());
         results[2][i] = esAlgorithm.getBestIndividual()->getEvaluation();
@@ -760,7 +762,7 @@ void runCMAESComparisonExperimentTrainingTest(string grnMode, string evalMode, s
         if (results[2][i] < bestIndsEval[2])
         {
             bestIndsEval[2] = results[2][i];
-            bestInds[2] = esAlgorithm.getPopulation()[0]->toCSVString();
+            bestInds[2] = esAlgorithm.getBestIndividual()->toCSVString();
         }
         cout << "Evals: " << esAlgorithm.getEvaluations() << "\n";
 
@@ -1191,7 +1193,7 @@ void testCMAES(){
 void testTestSet(){
     appContext context{};
 
-    initializeGRN5Context(&context, SINGLE_SET_MODE, 1);
+    initializeGRN5Context(&context, TEST_MODE, 1);
     appContext* ctx = &context;
     //GRNEDOHelpers::setMode(&ctx, TEST_MODE);
 
@@ -1204,10 +1206,14 @@ void testTestSet(){
                       10.935884810737809, 24.595975874929724, 2.8109199678182635,
                       4.922623602327875};
     //double* _ind = (double *)ind;
-    ctx->individual = reinterpret_cast<double *>(&ind);
+    /*ctx->individual = reinterpret_cast<double *>(&ind);
     lsodaWrapper(twoBody5VarLSODA, ctx, ctx->yout);
     double eval = difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
+*/
 
+   double eval = grn5EvaluationLSODA(ind, ctx);
+    //printGRNVector(ctx->expectedResult, 5, 50);
+    //cout << "\n\n";
     cout << eval << endl;
 
 }
@@ -1228,8 +1234,8 @@ void testCMAES2(){
 
 int main(int argc, char** argv)
 {
-    testTestSet();
-    return 0;
+    //testTestSet();
+   // return 0;
 
    // string grnMode;
    // string evalMode;

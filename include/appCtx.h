@@ -28,6 +28,7 @@
     int dataSetSize;
     int fullSetStart;
     int fullSetEnd;
+    int totalSteps;
     int trainingSteps;
     int testSteps;
     int validationSteps;

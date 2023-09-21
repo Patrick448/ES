@@ -447,7 +447,7 @@ void ESAlgorithm::runCMAES(int seed,int maxEvals, int populationSize){
         problem.setEvaluationFunction(this->evaluationFunction);
         pagmo::population pop = pagmo::population(problem, populationSize, newSeed);
         cmaes alg = cmaes(maxGenerations, -1, -1, -1, -1, 0.5, 1e-6, 1e-6, false, true, newSeed);
-        alg.set_verbosity(20);
+        //alg.set_verbosity(20);
         pagmo::population newPop = alg.evolve(pop);
 
 
