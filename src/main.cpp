@@ -794,6 +794,104 @@ void runCMAESComparisonExperimentTrainingTest(string grnMode, string evalMode, s
     clearContext(&ctx);
 }
 
+void runExperimentRound(string grnMode, string evalMode, string algName, int maxEvals, int seed)
+{
+    appContext ctx{};
+    double (*func)(void*,void*);
+
+    //int maxEvals =  105*10000;
+
+    //firt part populational algorithms
+    int numParents = 15;
+    int numOffspring = 105;
+
+    if(grnMode == "grn5"){
+        //maxEvals =  105*10000;
+        //numParents = 15;
+        //numOffspring = 105;
+
+        if(evalMode == "lsoda"){
+            func = &grn5EvaluationLSODA;
+            initializeGRN5Context(&ctx, TRAINING_MODE, 1);
+        }
+        else {
+            func = &grn5EvaluationRK4;
+            initializeGRN5Context(&ctx, TRAINING_MODE, 20);
+        }
+    }
+    else {
+        //maxEvals =  105*10000;
+        //numParents = 15;
+        //numOffspring = 105;
+
+        if(evalMode == "lsoda"){
+            func = &grn10EvaluationLSODA;
+            initializeGRN10Context(&ctx, TRAINING_MODE, 1);
+        }
+        else {
+            func = &grn10EvaluationRK4;
+            initializeGRN10Context(&ctx, TRAINING_MODE, 20);
+        }
+    }
+
+    int maxGenerations = maxEvals / numOffspring;
+
+    ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
+    esAlgorithm.setEvaluationFunction(func);
+    esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
+    esAlgorithm.setContext(&ctx);
+
+    // inicializa limites de tau, k e n
+    int cont = 0;
+    for (int i = 0; i < ctx.TAU_SIZE; i++)
+    {
+        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+    for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
+    {
+        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+    for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
+    {
+        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        cont = i;
+    }
+
+
+    //string resultCsv = "seed,eval,time,numEvals,ind\n";
+    string resultCsv = "";
+    auto beg = chrono::high_resolution_clock::now();
+    Individual *bestInd = nullptr;
+    double  bestEval = 0;
+
+    //cout << "Running " << "\n";
+
+    esAlgorithm.runCMAES(seed, maxEvals, 40);
+    GRNEDOHelpers::setMode(&ctx, TEST_MODE);
+    esAlgorithm.evaluate(esAlgorithm.getBestIndividual());
+    bestInd = esAlgorithm.getBestIndividual();
+    GRNEDOHelpers::setMode(&ctx, TRAINING_MODE);
+
+    //cout << "Evals: " << esAlgorithm.getEvaluations() << "\n";
+
+    //temporização
+    auto end = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<std::chrono::seconds>(end - beg);
+    //cout << "Elapsed Time: " << duration.count() << "\n";
+    resultCsv += to_string(seed) +","
+            + to_string(bestInd->getEvaluation()) + ","
+            + to_string(duration.count()) + ","
+            + to_string(esAlgorithm.getEvaluations()) + ",["
+            + bestInd->toCSVString()+ "]";
+
+    cout << resultCsv << endl;
+
+    clearContext(&ctx);
+}
 
 void runGRN5ESComparisonExperiment(string evalMode, string experimentId)
 {
@@ -1234,11 +1332,43 @@ void testCMAES2(){
 
 int main(int argc, char** argv)
 {
-    //testTestSet();
-   // return 0;
 
-   // string grnMode;
-   // string evalMode;
+
+    string grnMode;
+    string evalMode;
+    string algName;
+
+    if (argc == 6) {
+        if(strcmp(argv[1], "grn5") == 0){
+            grnMode = "grn5";
+        }else if(strcmp(argv[1], "grn10") == 0) {
+            grnMode = "grn10";
+        }else{
+            cout << "Invalid GRN mode" << endl;
+        }
+
+        if(strcmp(argv[2], "lsoda") == 0) {
+            evalMode = "lsoda";
+        }else if(strcmp(argv[2], "rk4") == 0) {
+            evalMode = "rk4";
+        }else{
+            cout << "Invalid evaluation mode" << endl;
+        }
+
+        if(strcmp(argv[3], "cmaes") == 0) {
+            algName = "cmaes";
+        }else  {
+            cout << "Invalid algorithm name" << endl;
+        }
+
+        int maxEvals = atoi(argv[4]);
+        int seed = atoi(argv[5]);
+        runExperimentRound(grnMode, evalMode, algName, maxEvals, seed);
+    }
+
+    //runExperimentRound("grn5", "lsoda", "cmaes", 1000, 0);
+    return 0;
+
 
    /* if(strcmp(argv[1], "all") == 0){
         cout << "ALL" << endl;
@@ -1249,21 +1379,7 @@ int main(int argc, char** argv)
         runESComparisonExperiment("grn10", "rk4", "exp15","../results/");
     }
 
-    if(strcmp(argv[1], "grn5") == 0){
-        cout << "GRN 5" << endl;
-        grnMode = "grn5";
-    }else if(strcmp(argv[1], "grn10") == 0) {
-        cout << "GRN 10" << endl;
-        grnMode = "grn10";
-    }
-
-    if(strcmp(argv[2], "lsoda") == 0) {
-        cout << "LSODA" << endl;
-        evalMode = "lsoda";
-    }else if(strcmp(argv[2], "rk4") == 0) {
-        cout << "RK4" << endl;
-        evalMode = "rk4";
-    }*/
+    */
 
 
     runCMAESComparisonExperimentTrainingTest("grn5", "lsoda", "exp17", "../results/");

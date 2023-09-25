@@ -452,10 +452,10 @@ void ESAlgorithm::runCMAES(int seed,int maxEvals, int populationSize){
 
 
         this->evaluationsCounter += pop.get_problem().get_fevals() + newPop.get_problem().get_fevals();
-        cout<< "Generations left: " << (maxEvals - this->evaluationsCounter)/populationSize << endl;
-        cout << "Best fitness: " << newPop.champion_f()[0]<< endl;
-        cout << "Evaluations: " << this->evaluationsCounter << endl;
-        cout << "Seed: " << newSeed << endl;
+        //cout<< "Generations left: " << (maxEvals - this->evaluationsCounter)/populationSize << endl;
+       // cout << "Best fitness: " << newPop.champion_f()[0]<< endl;
+       // cout << "Evaluations: " << this->evaluationsCounter << endl;
+       // cout << "Seed: " << newSeed << endl;
 
         //todo: ver o que fazer com esse vazamento de memória
         Individual *newIndividual = new Individual(this->numDimensions, newPop.champion_x().data());
