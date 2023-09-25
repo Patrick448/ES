@@ -1,7 +1,7 @@
 #!/bin/bash
-for i in {0..30}
+for i in {0..29}
 do
-   ./build/ES grn5 lsoda cmaes 10500 $i >> output.txt &
+   ./build/ES grn5 lsoda cmaes 1050000 $i >> output.txt &
 done
 
 exit
