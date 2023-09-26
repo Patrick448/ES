@@ -870,7 +870,17 @@ void runExperimentRound(string grnMode, string evalMode, string algName, int max
 
     //cout << "Running " << "\n";
 
-    esAlgorithm.runCMAES(seed, maxEvals, 40);
+    if(algName=="cmaes"){
+        esAlgorithm.runCMAES(seed, maxEvals, 40);
+    }else if(algName=="es-i"){
+        esAlgorithm.runPopulationalIsotropicES(seed, 0.5, maxEvals, 15, 105);
+    }else if(algName=="es-ni"){
+        esAlgorithm.runPopulationalNonIsotropicES(seed, 0.5, maxEvals, 15, 105);
+    }
+    else if(algName=="1+1"){
+        esAlgorithm.run1Plus1ES(seed, 0.5, 0.817, 10, maxEvals);
+    }
+
     GRNEDOHelpers::setMode(&ctx, TEST_MODE);
     esAlgorithm.evaluate(esAlgorithm.getBestIndividual());
     bestInd = esAlgorithm.getBestIndividual();

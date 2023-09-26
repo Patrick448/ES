@@ -47,10 +47,12 @@ ESAlgorithm::~ESAlgorithm(){
 
 void ESAlgorithm::clear() {
     this->evaluationsCounter=0;
+
     for(Individual* i: this->population){
         delete i;
     }
     this->population.clear();
+
 }
 
 vector<Individual*> ESAlgorithm::getPopulation(){
@@ -356,6 +358,8 @@ void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, in
         deleteIndividuals(this->population, numParents, this->population.size()-1);
     }
 
+    this->bestIndividual = this->population[0];
+
 }
 
 //todo: set best individual at the end
@@ -422,6 +426,8 @@ void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation,
         sort(this->population.begin(), this->population.end(), compareIndividuals);
         deleteIndividuals(this->population, numParents, this->population.size()-1);
     }
+
+    this->bestIndividual = this->population[0];
 
 }
 
