@@ -1348,6 +1348,10 @@ int main(int argc, char** argv)
     string evalMode;
     string algName;
 
+/*    runExperimentRound("grn5", "lsoda", "es-ni", 105000, 0);
+    runExperimentRound("grn5", "lsoda", "es-i", 105000, 0);
+    return 0;*/
+
     if (argc == 6) {
         if(strcmp(argv[1], "grn5") == 0){
             grnMode = "grn5";

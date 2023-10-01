@@ -302,6 +302,7 @@ void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, in
     //successHistory.reserve(maxIterations);
     default_random_engine re(seed);
     uniform_real_distribution<double> unifSigmaDistribution(this->getMinSigma(),this->getMaxSigma());
+    bool stop = false;
 
     for(int i=0; i<numParents; i++){
         Individual* ind = new Individual(this->numDimensions);
@@ -328,9 +329,9 @@ void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, in
 
     //algorithm iterations
     this->population.reserve(this->population.size() + numOffspring);
-    while(true){
+    while(!stop){
         //mutate parents and generate offspring
-        for(int j=0; j<numParents; j++){
+        for(int j=0; j<numParents && !stop; j++){
             for(int k=0; k< ceil((double)numOffspring/(double)numParents); k++){
                 Individual* newInd = new Individual(this->numDimensions);
                 double newSigma = population[j]->getGlobalSigma() * exp(normal1(re));
@@ -348,7 +349,9 @@ void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, in
                 this->population.push_back(newInd);
 
                 if(this->getEvaluations() >= maxEvals){
-                    return;
+                    stop = true;
+                    break;
+                    //return;
                 }
 
             }
@@ -369,6 +372,7 @@ void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation,
     //successHistory.reserve(maxIterations);
     default_random_engine re(seed);
     uniform_real_distribution<double> unifSigmaDistribution(this->getMinSigma(),this->getMaxSigma());
+    bool stop = false;
 
     for(int i=0; i<numParents; i++){
         Individual* ind = new Individual(this->numDimensions);
@@ -395,9 +399,9 @@ void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation,
 
     //algorithm iterations
     this->population.reserve(this->population.size() + numOffspring);
-    while(true){
+    while(!stop){
         //mutate parents and generate offspring
-        for(int j=0; j<numParents; j++){
+        for(int j=0; j<numParents && !stop; j++){
             for(int k=0; k< ceil((double)numOffspring/(double)numParents); k++){
                 Individual* newInd = new Individual(this->numDimensions);
 
@@ -417,7 +421,9 @@ void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation,
                 this->population.push_back(newInd);
 
                 if(this->getEvaluations() >= maxEvals){
-                    return;
+                    stop = true;
+                    break;
+                    //return;
                 }
 
             }
