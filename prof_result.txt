@@ -1,0 +1,340 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  Ts/call  Ts/call  name    
+ 79.31      0.69     0.69                             GRNEDOHelpers::twoBody5VarLSODA(double, double*, double*, void*)
+ 20.69      0.87     0.18                             _init
+  0.00      0.87     0.00    10002     0.00     0.00  GRNEDOHelpers::lsodaWrapper(int (*)(double, double*, double*, void*), appContext*, double*)
+  0.00      0.87     0.00    10002     0.00     0.00  GRNEDOHelpers::grn5EvaluationLSODA(void*, void*)
+  0.00      0.87     0.00    10000     0.00     0.00  GRNCoefProblem::fitness(std::vector<double, std::allocator<double> > const&) const
+  0.00      0.87     0.00      200     0.00     0.00  void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&)
+  0.00      0.87     0.00       50     0.00     0.00  doubleVectorFromText(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >)
+  0.00      0.87     0.00       20     0.00     0.00  GRNEDOHelpers::grn10EvaluationRK4(void*, void*)
+  0.00      0.87     0.00       19     0.00     0.00  ESAlgorithm::setBounds(int, double, double, int, int)
+  0.00      0.87     0.00        8     0.00     0.00  Individual::toCSVString[abi:cxx11]()
+  0.00      0.87     0.00        3     0.00     0.00  Individual::getEvaluation()
+  0.00      0.87     0.00        3     0.00     0.00  Individual::setEvaluation(double)
+  0.00      0.87     0.00        2     0.00     0.00  Individual::getDimensions()
+  0.00      0.87     0.00        2     0.00     0.00  ESAlgorithm::getBestIndividual()
+  0.00      0.87     0.00        2     0.00     0.00  GRNEDOHelpers::setMode(appContext*, int)
+  0.00      0.87     0.00        2     0.00     0.00  pagmo::detail::prob_inner<GRNCoefProblem>::~prob_inner()
+  0.00      0.87     0.00        2     0.00     0.00  GRNCoefProblem::get_bounds() const
+  0.00      0.87     0.00        2     0.00     0.00  std::vector<double, std::allocator<double> >::_M_default_append(unsigned long)
+  0.00      0.87     0.00        2     0.00     0.00  std::vector<int, std::allocator<int> >::_M_default_append(unsigned long)
+  0.00      0.87     0.00        2     0.00     0.00  std::__cxx11::to_string(int)
+  0.00      0.87     0.00        1     0.00     0.00  runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int)
+  0.00      0.87     0.00        1     0.00     0.00  readGRNFileToVectors(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, double**)
+  0.00      0.87     0.00        1     0.00     0.00  Individual::Individual(int)
+  0.00      0.87     0.00        1     0.00     0.00  Individual::Individual(int, double*)
+  0.00      0.87     0.00        1     0.00     0.00  Individual::~Individual()
+  0.00      0.87     0.00        1     0.00     0.00  ESAlgorithm::setContext(void*)
+  0.00      0.87     0.00        1     0.00     0.00  ESAlgorithm::getEvaluations()
+  0.00      0.87     0.00        1     0.00     0.00  ESAlgorithm::setSigmaBounds(double, double)
+  0.00      0.87     0.00        1     0.00     0.00  ESAlgorithm::setEvaluationFunction(double (*)(void*, void*))
+  0.00      0.87     0.00        1     0.00     0.00  ESAlgorithm::evaluate(Individual*)
+  0.00      0.87     0.00        1     0.00     0.00  ESAlgorithm::runCMAES(int, int, int)
+  0.00      0.87     0.00        1     0.00     0.00  ESAlgorithm::ESAlgorithm(int)
+  0.00      0.87     0.00        1     0.00     0.00  ESAlgorithm::~ESAlgorithm()
+  0.00      0.87     0.00        1     0.00     0.00  GRNEDOHelpers::clearContext(appContext*)
+  0.00      0.87     0.00        1     0.00     0.00  GRNEDOHelpers::initializeGRN5Context(appContext*, int, int)
+  0.00      0.87     0.00        1     0.00     0.00  GRNCoefProblem::setEvaluationFunction(double (*)(void*, void*))
+  0.00      0.87     0.00        1     0.00     0.00  GRNCoefProblem::GRNCoefProblem(appContext*)
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2022 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 1.15% of 0.87 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     79.3    0.69    0.00                 GRNEDOHelpers::twoBody5VarLSODA(double, double*, double*, void*) [1]
+-----------------------------------------------
+                                                 <spontaneous>
+[2]     20.7    0.18    0.00                 _init [2]
+-----------------------------------------------
+                0.00    0.00   10002/10002       GRNEDOHelpers::grn5EvaluationLSODA(void*, void*) [19]
+[18]     0.0    0.00    0.00   10002         GRNEDOHelpers::lsodaWrapper(int (*)(double, double*, double*, void*), appContext*, double*) [18]
+-----------------------------------------------
+                0.00    0.00       1/10002       ESAlgorithm::evaluate(Individual*) [45]
+                0.00    0.00       1/10002       ESAlgorithm::runCMAES(int, int, int) [46]
+                0.00    0.00   10000/10002       GRNCoefProblem::fitness(std::vector<double, std::allocator<double> > const&) const [20]
+[19]     0.0    0.00    0.00   10002         GRNEDOHelpers::grn5EvaluationLSODA(void*, void*) [19]
+                0.00    0.00   10002/10002       GRNEDOHelpers::lsodaWrapper(int (*)(double, double*, double*, void*), appContext*, double*) [18]
+-----------------------------------------------
+                0.00    0.00   10000/10000       pagmo::detail::prob_inner<GRNCoefProblem>::fitness(std::vector<double, std::allocator<double> > const&) const [143]
+[20]     0.0    0.00    0.00   10000         GRNCoefProblem::fitness(std::vector<double, std::allocator<double> > const&) const [20]
+                0.00    0.00   10000/10002       GRNEDOHelpers::grn5EvaluationLSODA(void*, void*) [19]
+-----------------------------------------------
+                0.00    0.00     200/200         doubleVectorFromText(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) [22]
+[21]     0.0    0.00    0.00     200         void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) [21]
+-----------------------------------------------
+                0.00    0.00      50/50          readGRNFileToVectors(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, double**) [37]
+[22]     0.0    0.00    0.00      50         doubleVectorFromText(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) [22]
+                0.00    0.00     200/200         void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) [21]
+-----------------------------------------------
+                0.00    0.00      20/20          Individual::toCSVString[abi:cxx11]() [25]
+[23]     0.0    0.00    0.00      20         GRNEDOHelpers::grn10EvaluationRK4(void*, void*) [23]
+-----------------------------------------------
+                0.00    0.00      19/19          runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+[24]     0.0    0.00    0.00      19         ESAlgorithm::setBounds(int, double, double, int, int) [24]
+-----------------------------------------------
+                0.00    0.00       2/8           runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+                0.00    0.00       6/8           main [11]
+[25]     0.0    0.00    0.00       8         Individual::toCSVString[abi:cxx11]() [25]
+                0.00    0.00      20/20          GRNEDOHelpers::grn10EvaluationRK4(void*, void*) [23]
+-----------------------------------------------
+                0.00    0.00       1/3           runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+                0.00    0.00       2/3           ESAlgorithm::runCMAES(int, int, int) [46]
+[26]     0.0    0.00    0.00       3         Individual::getEvaluation() [26]
+-----------------------------------------------
+                0.00    0.00       1/3           ESAlgorithm::evaluate(Individual*) [45]
+                0.00    0.00       2/3           ESAlgorithm::runCMAES(int, int, int) [46]
+[27]     0.0    0.00    0.00       3         Individual::setEvaluation(double) [27]
+-----------------------------------------------
+                0.00    0.00       1/2           ESAlgorithm::evaluate(Individual*) [45]
+                0.00    0.00       1/2           ESAlgorithm::runCMAES(int, int, int) [46]
+[28]     0.0    0.00    0.00       2         Individual::getDimensions() [28]
+-----------------------------------------------
+                0.00    0.00       2/2           runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+[29]     0.0    0.00    0.00       2         ESAlgorithm::getBestIndividual() [29]
+-----------------------------------------------
+                0.00    0.00       2/2           runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+[30]     0.0    0.00    0.00       2         GRNEDOHelpers::setMode(appContext*, int) [30]
+-----------------------------------------------
+                0.00    0.00       2/2           ESAlgorithm::runCMAES(int, int, int) [46]
+[31]     0.0    0.00    0.00       2         pagmo::detail::prob_inner<GRNCoefProblem>::~prob_inner() [31]
+-----------------------------------------------
+                0.00    0.00       2/2           pagmo::detail::prob_inner<GRNCoefProblem>::get_bounds() const [129]
+[32]     0.0    0.00    0.00       2         GRNCoefProblem::get_bounds() const [32]
+-----------------------------------------------
+                0.00    0.00       2/2           ESAlgorithm::ESAlgorithm(int) [47]
+[33]     0.0    0.00    0.00       2         std::vector<double, std::allocator<double> >::_M_default_append(unsigned long) [33]
+-----------------------------------------------
+                0.00    0.00       2/2           ESAlgorithm::ESAlgorithm(int) [47]
+[34]     0.0    0.00    0.00       2         std::vector<int, std::allocator<int> >::_M_default_append(unsigned long) [34]
+-----------------------------------------------
+                0.00    0.00       2/2           runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+[35]     0.0    0.00    0.00       2         std::__cxx11::to_string(int) [35]
+-----------------------------------------------
+                0.00    0.00       1/1           main [11]
+[36]     0.0    0.00    0.00       1         runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+                0.00    0.00      19/19          ESAlgorithm::setBounds(int, double, double, int, int) [24]
+                0.00    0.00       2/2           GRNEDOHelpers::setMode(appContext*, int) [30]
+                0.00    0.00       2/2           ESAlgorithm::getBestIndividual() [29]
+                0.00    0.00       2/8           Individual::toCSVString[abi:cxx11]() [25]
+                0.00    0.00       2/2           std::__cxx11::to_string(int) [35]
+                0.00    0.00       1/1           GRNEDOHelpers::initializeGRN5Context(appContext*, int, int) [50]
+                0.00    0.00       1/1           ESAlgorithm::setEvaluationFunction(double (*)(void*, void*)) [44]
+                0.00    0.00       1/1           ESAlgorithm::ESAlgorithm(int) [47]
+                0.00    0.00       1/1           ESAlgorithm::setSigmaBounds(double, double) [43]
+                0.00    0.00       1/1           ESAlgorithm::setContext(void*) [41]
+                0.00    0.00       1/1           ESAlgorithm::runCMAES(int, int, int) [46]
+                0.00    0.00       1/1           ESAlgorithm::evaluate(Individual*) [45]
+                0.00    0.00       1/1           ESAlgorithm::getEvaluations() [42]
+                0.00    0.00       1/3           Individual::getEvaluation() [26]
+                0.00    0.00       1/1           GRNEDOHelpers::clearContext(appContext*) [49]
+                0.00    0.00       1/1           ESAlgorithm::~ESAlgorithm() [48]
+-----------------------------------------------
+                0.00    0.00       1/1           GRNEDOHelpers::initializeGRN5Context(appContext*, int, int) [50]
+[37]     0.0    0.00    0.00       1         readGRNFileToVectors(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, double**) [37]
+                0.00    0.00      50/50          doubleVectorFromText(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) [22]
+-----------------------------------------------
+                0.00    0.00       1/1           ESAlgorithm::runCMAES(int, int, int) [46]
+[38]     0.0    0.00    0.00       1         Individual::Individual(int) [38]
+-----------------------------------------------
+                0.00    0.00       1/1           ESAlgorithm::runCMAES(int, int, int) [46]
+[39]     0.0    0.00    0.00       1         Individual::Individual(int, double*) [39]
+-----------------------------------------------
+                0.00    0.00       1/1           ESAlgorithm::runCMAES(int, int, int) [46]
+[40]     0.0    0.00    0.00       1         Individual::~Individual() [40]
+-----------------------------------------------
+                0.00    0.00       1/1           runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+[41]     0.0    0.00    0.00       1         ESAlgorithm::setContext(void*) [41]
+-----------------------------------------------
+                0.00    0.00       1/1           runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+[42]     0.0    0.00    0.00       1         ESAlgorithm::getEvaluations() [42]
+-----------------------------------------------
+                0.00    0.00       1/1           runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+[43]     0.0    0.00    0.00       1         ESAlgorithm::setSigmaBounds(double, double) [43]
+-----------------------------------------------
+                0.00    0.00       1/1           runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+[44]     0.0    0.00    0.00       1         ESAlgorithm::setEvaluationFunction(double (*)(void*, void*)) [44]
+-----------------------------------------------
+                0.00    0.00       1/1           runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+[45]     0.0    0.00    0.00       1         ESAlgorithm::evaluate(Individual*) [45]
+                0.00    0.00       1/10002       GRNEDOHelpers::grn5EvaluationLSODA(void*, void*) [19]
+                0.00    0.00       1/2           Individual::getDimensions() [28]
+                0.00    0.00       1/3           Individual::setEvaluation(double) [27]
+-----------------------------------------------
+                0.00    0.00       1/1           runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+[46]     0.0    0.00    0.00       1         ESAlgorithm::runCMAES(int, int, int) [46]
+                0.00    0.00       2/3           Individual::setEvaluation(double) [27]
+                0.00    0.00       2/3           Individual::getEvaluation() [26]
+                0.00    0.00       2/2           pagmo::detail::prob_inner<GRNCoefProblem>::~prob_inner() [31]
+                0.00    0.00       1/1           Individual::Individual(int) [38]
+                0.00    0.00       1/1           GRNCoefProblem::GRNCoefProblem(appContext*) [52]
+                0.00    0.00       1/1           GRNCoefProblem::setEvaluationFunction(double (*)(void*, void*)) [51]
+                0.00    0.00       1/1           Individual::Individual(int, double*) [39]
+                0.00    0.00       1/2           Individual::getDimensions() [28]
+                0.00    0.00       1/10002       GRNEDOHelpers::grn5EvaluationLSODA(void*, void*) [19]
+                0.00    0.00       1/1           Individual::~Individual() [40]
+-----------------------------------------------
+                0.00    0.00       1/1           runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+[47]     0.0    0.00    0.00       1         ESAlgorithm::ESAlgorithm(int) [47]
+                0.00    0.00       2/2           std::vector<int, std::allocator<int> >::_M_default_append(unsigned long) [34]
+                0.00    0.00       2/2           std::vector<double, std::allocator<double> >::_M_default_append(unsigned long) [33]
+-----------------------------------------------
+                0.00    0.00       1/1           runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+[48]     0.0    0.00    0.00       1         ESAlgorithm::~ESAlgorithm() [48]
+-----------------------------------------------
+                0.00    0.00       1/1           runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+[49]     0.0    0.00    0.00       1         GRNEDOHelpers::clearContext(appContext*) [49]
+-----------------------------------------------
+                0.00    0.00       1/1           runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [36]
+[50]     0.0    0.00    0.00       1         GRNEDOHelpers::initializeGRN5Context(appContext*, int, int) [50]
+                0.00    0.00       1/1           readGRNFileToVectors(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, double**) [37]
+-----------------------------------------------
+                0.00    0.00       1/1           ESAlgorithm::runCMAES(int, int, int) [46]
+[51]     0.0    0.00    0.00       1         GRNCoefProblem::setEvaluationFunction(double (*)(void*, void*)) [51]
+-----------------------------------------------
+                0.00    0.00       1/1           ESAlgorithm::runCMAES(int, int, int) [46]
+[52]     0.0    0.00    0.00       1         GRNCoefProblem::GRNCoefProblem(appContext*) [52]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2022 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [36] runExperimentRound(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int) [29] ESAlgorithm::getBestIndividual() [30] GRNEDOHelpers::setMode(appContext*, int)
+  [22] doubleVectorFromText(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) [44] ESAlgorithm::setEvaluationFunction(double (*)(void*, void*)) [51] GRNCoefProblem::setEvaluationFunction(double (*)(void*, void*))
+  [37] readGRNFileToVectors(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, double**) [45] ESAlgorithm::evaluate(Individual*) [52] GRNCoefProblem::GRNCoefProblem(appContext*)
+  [25] Individual::toCSVString[abi:cxx11]() [46] ESAlgorithm::runCMAES(int, int, int) [31] pagmo::detail::prob_inner<GRNCoefProblem>::~prob_inner()
+  [28] Individual::getDimensions() [24] ESAlgorithm::setBounds(int, double, double, int, int) [32] GRNCoefProblem::get_bounds() const
+  [26] Individual::getEvaluation() [47] ESAlgorithm::ESAlgorithm(int) [20] GRNCoefProblem::fitness(std::vector<double, std::allocator<double> > const&) const
+  [27] Individual::setEvaluation(double) [48] ESAlgorithm::~ESAlgorithm() [33] std::vector<double, std::allocator<double> >::_M_default_append(unsigned long)
+  [38] Individual::Individual(int) [49] GRNEDOHelpers::clearContext(appContext*) [21] void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&)
+  [39] Individual::Individual(int, double*) [18] GRNEDOHelpers::lsodaWrapper(int (*)(double, double*, double*, void*), appContext*, double*) [34] std::vector<int, std::allocator<int> >::_M_default_append(unsigned long)
+  [40] Individual::~Individual() [1] GRNEDOHelpers::twoBody5VarLSODA(double, double*, double*, void*) [35] std::__cxx11::to_string(int)
+  [41] ESAlgorithm::setContext(void*) [23] GRNEDOHelpers::grn10EvaluationRK4(void*, void*) [2] _init
+  [42] ESAlgorithm::getEvaluations() [19] GRNEDOHelpers::grn5EvaluationLSODA(void*, void*)
+  [43] ESAlgorithm::setSigmaBounds(double, double) [50] GRNEDOHelpers::initializeGRN5Context(appContext*, int, int)
