@@ -16,6 +16,7 @@
 #include <pagmo/population.hpp>
 #include <pagmo/problem.hpp>
 #include <pagmo/utils/constrained.hpp>
+#include <pagmo/algorithms/de.hpp>
 
 int ESAlgorithm::UPPER_OPEN=0;
 int ESAlgorithm::UPPER_CLOSED=1;
@@ -468,6 +469,43 @@ void ESAlgorithm::runCMAES(int seed,int maxEvals, int populationSize){
        // cout << "Best fitness: " << newPop.champion_f()[0]<< endl;
        // cout << "Evaluations: " << this->evaluationsCounter << endl;
        // cout << "Seed: " << newSeed << endl;
+
+        //todo: ver o que fazer com esse vazamento de memória
+        Individual *newIndividual = new Individual(this->numDimensions, newPop.champion_x().data());
+        this->evaluate(newIndividual);
+
+        if(newIndividual->getEvaluation() < this->bestIndividual->getEvaluation()){
+            delete this->bestIndividual;
+            this->bestIndividual = newIndividual;
+        }
+    }
+}
+
+
+void ESAlgorithm::runDE(int seed,int maxEvals, int populationSize){
+    this->clear();
+    this->bestIndividual = new Individual(this->numDimensions);
+    this->bestIndividual->setEvaluation(DBL_MAX);
+    int maxGenerations, newSeed;
+    srand(seed);
+
+
+    while(this->evaluationsCounter < maxEvals){
+        newSeed = rand();
+        maxGenerations = (maxEvals - this->evaluationsCounter - populationSize)/populationSize;
+        GRNCoefProblem problem = GRNCoefProblem((appContext*)this->context);
+        problem.setEvaluationFunction(this->evaluationFunction);
+        pagmo::population pop = pagmo::population(problem, populationSize, newSeed);
+        pagmo::de alg = pagmo::de(maxGenerations, 0.8, 0.9, 2u, 1e-6, 1e-6, newSeed);
+        //alg.set_verbosity(20);
+        pagmo::population newPop = alg.evolve(pop);
+
+
+        this->evaluationsCounter += pop.get_problem().get_fevals() + newPop.get_problem().get_fevals();
+        //cout<< "Generations left: " << (maxEvals - this->evaluationsCounter)/populationSize << endl;
+        // cout << "Best fitness: " << newPop.champion_f()[0]<< endl;
+        // cout << "Evaluations: " << this->evaluationsCounter << endl;
+        // cout << "Seed: " << newSeed << endl;
 
         //todo: ver o que fazer com esse vazamento de memória
         Individual *newIndividual = new Individual(this->numDimensions, newPop.champion_x().data());

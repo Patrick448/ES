@@ -879,8 +879,9 @@ void runExperimentRound(string grnMode, string evalMode, string algName, int max
     }
     else if(algName=="1+1"){
         esAlgorithm.run1Plus1ES(seed, 0.5, 0.817, 10, maxEvals);
+    }else if(algName=="de") {
+        esAlgorithm.runDE(seed, maxEvals, 40);
     }
-
     GRNEDOHelpers::setMode(&ctx, TEST_MODE);
     esAlgorithm.evaluate(esAlgorithm.getBestIndividual());
     bestInd = esAlgorithm.getBestIndividual();
@@ -1484,7 +1485,7 @@ int main(int argc, char** argv)
             cout << "Invalid evaluation mode" << endl;
         }
 
-        if(strcmp(argv[3], "cmaes") == 0 || strcmp(argv[3], "es-i") == 0 || strcmp(argv[3], "es-ni") == 0) {
+        if(strcmp(argv[3], "cmaes") == 0 || strcmp(argv[3], "es-i") == 0 || strcmp(argv[3], "es-ni"  ) == 0 || strcmp(argv[3], "de")==0) {
             algName = argv[3];
         }else  {
             cout << "Invalid algorithm name" << endl;

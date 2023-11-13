@@ -61,6 +61,7 @@ public:
     double getReevaluationByIndexNoCounter(int i);
     int getEvaluations();
     void runCMAES(int seed,int maxEvals, int populationSizes);
+    void runDE(int seed,int maxEvals, int populationSizes);
     Individual* getBestIndividual();
     double evaluationIncrementCounterWrapper(void *ind, void * context);
     };
