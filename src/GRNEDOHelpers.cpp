@@ -373,12 +373,12 @@ void GRNEDOHelpers::initializeGRN10Context(appContext* ctx, int mode, int granul
     ctx->VALIDATION_MODE = 1;
     ctx->SINGLE_SET_MODE = 3;*/
     ctx->IND_SIZE = 40;      // Tamanho do indivíduo (quantidade de coeficientes)
-    ctx->MIN_K = 0.1;        // Menor valor que K pode assumir
+    ctx->MIN_K = 0.01; //0.1        // Menor valor que K pode assumir
     ctx->MAX_K = 1;          // Maior valor que K pode assumir
     ctx->MIN_N = 1;          // Menor valor que N pode assumir
-    ctx->MAX_N = 25;         // Maior valor que N pode assumir
+    ctx->MAX_N = 30; //25        // Maior valor que N pode assumir
     ctx->MIN_TAU = 0.1;      // Menor valor que TAU pode assumir
-    ctx->MAX_TAU = 5;        // Maior valor que TAU pode assumir
+    ctx->MAX_TAU = 6;//6        // Maior valor que TAU pode assumir
     ctx->MIN_STRATEGY = 0.1; // Menor valor que a estratégia pode assumir
     ctx->MAX_STRATEGY = 10;  // Maior valor que a estratégia pode assumir
     ctx->TAU_SIZE = 10;
