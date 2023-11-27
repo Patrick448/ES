@@ -881,6 +881,8 @@ void runExperimentRound(string grnMode, string evalMode, string algName, int max
         esAlgorithm.run1Plus1ES(seed, 0.5, 0.817, 10, maxEvals);
     }else if(algName=="de") {
         esAlgorithm.runDE(seed, maxEvals, 40);
+    }else if(algName=="sade") {
+        esAlgorithm.runSADE(seed, maxEvals, 40);
     }
     GRNEDOHelpers::setMode(&ctx, TEST_MODE);
     esAlgorithm.evaluate(esAlgorithm.getBestIndividual());

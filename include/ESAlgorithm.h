@@ -62,6 +62,7 @@ public:
     int getEvaluations();
     void runCMAES(int seed,int maxEvals, int populationSizes);
     void runDE(int seed,int maxEvals, int populationSizes);
+    void runSADE(int seed,int maxEvals, int populationSize);
     Individual* getBestIndividual();
     double evaluationIncrementCounterWrapper(void *ind, void * context);
     };
