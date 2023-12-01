@@ -1487,7 +1487,11 @@ int main(int argc, char** argv)
             cout << "Invalid evaluation mode" << endl;
         }
 
-        if(strcmp(argv[3], "cmaes") == 0 || strcmp(argv[3], "es-i") == 0 || strcmp(argv[3], "es-ni"  ) == 0 || strcmp(argv[3], "de")==0) {
+        if(strcmp(argv[3], "cmaes") == 0 ||
+        strcmp(argv[3], "es-i") == 0 ||
+        strcmp(argv[3], "es-ni"  ) == 0 ||
+        strcmp(argv[3], "de")==0 ||
+        strcmp(argv[3], "sade")==0) {
             algName = argv[3];
         }else  {
             cout << "Invalid algorithm name" << endl;
