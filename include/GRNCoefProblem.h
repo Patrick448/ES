@@ -24,7 +24,6 @@ public:
     std::pair<vector_double, vector_double> get_bounds() const;
     void setEvaluationFunction(double (*evaluationFunction)(void*, void*));
 
-
 };
 
 #endif //ES_GRNCOEFPROBLEM_H

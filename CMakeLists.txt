@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.16.3)
 project(ES)
 
 set(CMAKE_CXX_STANDARD 14)
-SET(CMAKE_CXX_FLAGS "-O3")
-SET(CMAKE_C_FLAGS "-O3")
+#SET(CMAKE_CXX_FLAGS "-O3")
+#SET(CMAKE_C_FLAGS "-O3")
 file(GLOB source_cpp src/*.cpp)
 file(GLOB source_h include/*.h)
 file(GLOB source_c src/*.c)
@@ -35,7 +35,14 @@ set_target_properties(liblsoda
 add_executable(ES ${source_cpp} ${source_c} src/GRNEDOHelpers.cpp)
 target_link_libraries(ES PUBLIC liblsoda Pagmo::pagmo)
 
-add_executable(test include/GRNEDOHelpers.h src/GRNEDOHelpers.cpp src/read.cpp src/rk4.c tests/unit_tests.cpp)
+add_executable(test
+        include/GRNSeries.h
+        src/GRNSeries.cpp
+        include/GRNEDOHelpers.h
+        src/GRNEDOHelpers.cpp
+        src/read.cpp
+        src/rk4.c
+        tests/unit_tests.cpp)
 target_link_libraries(test PUBLIC liblsoda Pagmo::pagmo
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}

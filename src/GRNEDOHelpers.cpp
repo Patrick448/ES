@@ -338,8 +338,6 @@ void GRNEDOHelpers::initializeGRN5Context(appContext* ctx, int mode, int granula
     readGRNFileToVectors("GRN5.txt", ctx->nVariables + 1, ctx->vectors);
     getMaxValues(ctx->vectors, ctx->maxValues, ctx->nVariables, ctx->trainingSetStart, ctx->trainingSetEnd);
 
-
-
     ctx->y_0 = new double[ctx->nVariables];
     ctx->expectedResult = &ctx->vectors[1];
     //printGRNVector(ctx->expectedResult, ctx->nVariables, ctx->dataSetSize);
@@ -354,15 +352,6 @@ void GRNEDOHelpers::initializeGRN5Context(appContext* ctx, int mode, int granula
     ctx->tspan[0] = ctx->vectors[0][ctx->fullSetStart];
     ctx->tspan[1] = ctx->vectors[0][ctx->fullSetEnd];
 
-
-    /////////////////////////////
-
-    /*ctx->nSteps = 49;
-    ctx->tspan[0] = 0.0;
-    ctx->tspan[1] = 72.0;*/
-
-    //ctx->trainingTSpan[0] = 0.0;
-    //ctx->trainingTSpan[1] = (ctx->tspan[1]/ctx->nSteps)*ctx->trainingSteps;
 }
 
 void GRNEDOHelpers::initializeGRN10Context(appContext* ctx, int mode, int granularity)

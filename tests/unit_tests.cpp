@@ -13,6 +13,7 @@
 #include <boost/test/unit_test.hpp>
 #include "GRNEDOHelpers.h"
 #include "algModes.h"
+#include "GRNSeries.h"
 using namespace algModes;
 using namespace GRNEDOHelpers;
 
@@ -124,23 +125,35 @@ BOOST_AUTO_TEST_CASE( test_ind_10_var_rk4 )
 
 }
 
-/*BOOST_AUTO_TEST_CASE( test_cmaes )
+BOOST_AUTO_TEST_CASE( test_GRNSeries_should_return_correct_number_of_rows_and_columns )
 {
-    appContext ctx{};
+    GRNSeries series = GRNSeries();
+    series.initializeMatrix("testGRN.txt");
+    BOOST_CHECK_EQUAL(series.getNumTimeSteps(), 2 );
+    BOOST_CHECK_EQUAL(series.getNumColumns(), 3 );
+}
 
-    //esse indivíduo deveria ter fitness ~26
-    double ind0[40] = {1.73,2,0.81,0.11, 1.23, 1.78,
-                       1.14, 1.04, 3.47, 3.21, 0.45,
-                       0.56, 0.99, 0.77, 0.71, 0.66,
-                       0.46, 0.48, 0.66, 0.99, 0.85,
-                       0.61, 0.55, 0.46, 0.17, 20,
-                       9, 24, 12, 2, 2, 6, 4, 7,
-                       24, 2, 7, 21, 20, 3};
+BOOST_AUTO_TEST_CASE(test_GRNSeries_should_return_correct_vector){
+    GRNSeries series = GRNSeries();
+    series.loadFromFile("testGRN.txt");
+    double **vectors = series.getVectors();
 
-    initializeGRN10Context(&ctx, SINGLE_SET_MODE, 10);
-    double eval = grn10EvaluationRK4(ind0, &ctx);
-    clearContext(&ctx);
+    BOOST_CHECK_CLOSE_FRACTION( vectors[0][0], 0.0, 0.001 );
+    BOOST_CHECK_CLOSE_FRACTION( vectors[1][0], 0.7095, 0.001 );
+    BOOST_CHECK_CLOSE_FRACTION( vectors[2][0], 0.1767, 0.001 );
+    BOOST_CHECK_CLOSE_FRACTION( vectors[0][1], 1.4694, 0.001 );
+    BOOST_CHECK_CLOSE_FRACTION( vectors[1][1], 1.1517, 0.001 );
+    BOOST_CHECK_CLOSE_FRACTION( vectors[2][1], 0.3415, 0.001 );
 
-    BOOST_CHECK_CLOSE_FRACTION( eval, 56.71, 0.001 );
+}
 
-}*/
+BOOST_AUTO_TEST_CASE(test_GRNSeries_should_return_correct_max_values){
+    GRNSeries series = GRNSeries("testGRN.txt");
+    double *maxValues = series.getMaxValues();
+
+    BOOST_CHECK_CLOSE_FRACTION( maxValues[0], 1.1517, 0.001 );
+    BOOST_CHECK_CLOSE_FRACTION( maxValues[1], 0.3415, 0.001 );
+
+}
+
+
