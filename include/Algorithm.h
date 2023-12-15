@@ -2,12 +2,13 @@
 // Created by patri on 27/01/2023.
 //
 
-#ifndef ES_ESALGORITHM_H
-#define ES_ESALGORITHM_H
+#ifndef ES_ALGORITHM_H
+#define ES_ALGORITHM_H
 #include <vector>
 #include "Individual.h"
+
 using namespace std;
-class ESAlgorithm {
+class Algorithm {
 
 private:
     vector<Individual*> population;
@@ -35,8 +36,8 @@ public:
     static int ISOTROPIC;
     static int NON_ISOTROPIC;
 
-    ESAlgorithm(int numDimensions);
-    ~ESAlgorithm();
+    Algorithm(int numDimensions);
+    ~Algorithm();
     vector<Individual*> getPopulation();
     void addIndividual(Individual* individual);
     double evaluate(Individual* ind);
@@ -68,4 +69,4 @@ public:
     };
 
 
-#endif //ES_ESALGORITHM_H
+#endif //ES_ALGORITHM_H

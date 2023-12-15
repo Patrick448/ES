@@ -32,10 +32,12 @@ namespace GRNEDOHelpers{
     /// same as initializeGRN5Context, but for the 10 variable model.
     /// @see initializeGRN5Context
     void initializeGRN10Context(appContext* ctx, int mode, int granularity);
+    void initializeGRNContext(appContext* ctx, int granularity, int numVariables, int numTau, int numN, int numK, int setStart, int setEnd, double** vectors, double * maxValues);
 
     /// clears the context of the problem, deallocating memory.
     /// should always be called at some point after initializing the context.
     void clearContext(appContext* ctx);
+    void clearContext2Test(appContext* ctx);
 
     /// numerical integration of the given model using the LSODA algorithm.
     /// todo: rename to something more descriptive, like LSODAIntegration

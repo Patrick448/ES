@@ -64,7 +64,8 @@ int GRNEDOHelpers::twoBody10VarLSODA(double t, double *y, double *ydot, void *_d
 
     appContext *ctx = (appContext *)_data;
     double* data = ctx->individual;
-    double* maxValues = ctx->maxValues;    double *tau = &data[0];
+    double* maxValues = ctx->maxValues;
+    double *tau = &data[0];
 
     double *k = &data[ctx->TAU_SIZE];
     double *n = &data[ctx->TAU_SIZE + ctx->N_SIZE];
@@ -272,6 +273,46 @@ void GRNEDOHelpers::setMode(appContext* ctx, int mode){
     }
 }
 
+void GRNEDOHelpers::initializeGRNContext(appContext* ctx, int granularity, int numVariables, int numTau, int numN, int numK, int setStart, int setEnd, double** vectors, double * maxValues)
+{
+    ctx->IND_SIZE = numVariables;      // Tamanho do indivíduo (quantidade de coeficientes)
+    ctx->MIN_K = 0.01; //0.1        // Menor valor que K pode assumir
+    ctx->MAX_K = 1;          // Maior valor que K pode assumir
+    ctx->MIN_N = 1;          // Menor valor que N pode assumir
+    ctx->MAX_N = 30; //25        // Maior valor que N pode assumir
+    ctx->MIN_TAU = 0.1;      // Menor valor que TAU pode assumir
+    ctx->MAX_TAU = 6;//5       // Maior valor que TAU pode assumir
+    ctx->MIN_STRATEGY = 0.1; // Menor valor que a estratégia pode assumir
+    ctx->MAX_STRATEGY = 10;  // Maior valor que a estratégia pode assumir
+    ctx->TAU_SIZE = numTau;
+    ctx->N_SIZE = numN;
+    ctx->K_SIZE = numK;
+    ctx->granularity = granularity;
+    ctx->nVariables = numVariables;
+    ctx->totalSteps = granularity*49;
+    ctx->setStart = setStart;
+    ctx->setEnd = setEnd;
+    ctx->nSteps = setEnd - setStart + 1;
+    ctx->maxValues = maxValues;
+    ctx->yout = new double[(ctx->totalSteps + 1) * ctx->nVariables];
+    ctx->vectors = vectors;
+
+    ctx->y_0 = new double[ctx->nVariables];
+    ctx->expectedResult = &ctx->vectors[1];
+
+    //todo: verificar se o y_0 está correto para
+    // o caso de inicio fora do zero
+    for (int i = 0; i < ctx->nVariables; i++)
+    {
+        ctx->y_0[i] = ctx->vectors[i + 1][ctx->setStart];
+    }
+
+    ctx->tspan[0] = ctx->vectors[0][ctx->setStart];
+    ctx->tspan[1] = ctx->vectors[0][ctx->setEnd];
+
+}
+
+
 void GRNEDOHelpers::initializeGRN5Context(appContext* ctx, int mode, int granularity)
 {
     //appContext *ctx = new appContext;
@@ -448,6 +489,12 @@ void GRNEDOHelpers::clearContext(appContext* ctx)
     }
 
     delete [] ctx->vectors;
+}
+void GRNEDOHelpers::clearContext2Test(appContext* ctx)
+{
+    delete[] ctx->yout;
+    delete[] ctx->y_0;
+
 }
 
 double GRNEDOHelpers::lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), appContext *appCtx, double *_yout)

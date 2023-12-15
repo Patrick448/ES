@@ -18,7 +18,7 @@
 #include <float.h>
 
 
-#include "ESAlgorithm.h"
+#include "Algorithm.h"
 #include "read.h"
 #include "ode.h"
 #include "rk4.h"

@@ -19,19 +19,19 @@
 #include <pagmo/algorithms/de.hpp>
 #include <pagmo/algorithms/sade.hpp>
 
-int ESAlgorithm::UPPER_OPEN=0;
-int ESAlgorithm::UPPER_CLOSED=1;
-int ESAlgorithm::LOWER_OPEN=2;
-int ESAlgorithm::LOWER_CLOSED=3;
-int ESAlgorithm::UPPER=4;
-int ESAlgorithm::LOWER=5;
-int ESAlgorithm::ONE_PLUS_ONE=6;
-int ESAlgorithm::ISOTROPIC=7;
-int ESAlgorithm::NON_ISOTROPIC=8;
+int Algorithm::UPPER_OPEN=0;
+int Algorithm::UPPER_CLOSED=1;
+int Algorithm::LOWER_OPEN=2;
+int Algorithm::LOWER_CLOSED=3;
+int Algorithm::UPPER=4;
+int Algorithm::LOWER=5;
+int Algorithm::ONE_PLUS_ONE=6;
+int Algorithm::ISOTROPIC=7;
+int Algorithm::NON_ISOTROPIC=8;
 
 using namespace pagmo;
 
-ESAlgorithm::ESAlgorithm(int numDimensions){
+Algorithm::Algorithm(int numDimensions){
     this->numDimensions = numDimensions;
     this->upperBounds.resize(numDimensions);
     this->lowerBounds.resize(numDimensions);
@@ -43,11 +43,11 @@ ESAlgorithm::ESAlgorithm(int numDimensions){
     this->minSigma = -DBL_MAX;
 
 }
-ESAlgorithm::~ESAlgorithm(){
+Algorithm::~Algorithm(){
     this->clear();
 }
 
-void ESAlgorithm::clear() {
+void Algorithm::clear() {
     this->evaluationsCounter=0;
 
     for(Individual* i: this->population){
@@ -57,14 +57,14 @@ void ESAlgorithm::clear() {
 
 }
 
-vector<Individual*> ESAlgorithm::getPopulation(){
+vector<Individual*> Algorithm::getPopulation(){
     return this->population;
 }
-void ESAlgorithm::addIndividual(Individual* individual){
+void Algorithm::addIndividual(Individual* individual){
     this->population.push_back(individual);
 }
 
-double ESAlgorithm::evaluate(Individual* ind){
+double Algorithm::evaluate(Individual* ind){
     double eval =this->evaluationFunction(ind->getDimensions(), this->context);
     ind->setEvaluation(eval);
     this->evaluationsCounter++;
@@ -77,7 +77,7 @@ bool compareIndividuals(Individual* a, Individual* b){
     return a->getEvaluation() < b->getEvaluation();
 }
 
-void ESAlgorithm::reevaluateAllNoCounter(){
+void Algorithm::reevaluateAllNoCounter(){
     for(Individual* ind: this->population){
         double eval =this->evaluationFunction(ind->getDimensions(), this->context);
         ind->setEvaluation(eval);
@@ -87,22 +87,22 @@ void ESAlgorithm::reevaluateAllNoCounter(){
 }
 
 
-double ESAlgorithm::getReevaluationByIndexNoCounter(int i){
+double Algorithm::getReevaluationByIndexNoCounter(int i){
     Individual* ind = this->population[i];
     double eval =this->evaluationFunction(ind->getDimensions(), this->context);
 
     return eval;
 }
 
-void ESAlgorithm::setNumDimensions(int val){
+void Algorithm::setNumDimensions(int val){
     this->numDimensions = val;
 }
 
-int ESAlgorithm::getNumDimensions(){
+int Algorithm::getNumDimensions(){
     return this->numDimensions;
 }
 
-void ESAlgorithm::setBounds(int index, double lower, double upper, int lowerBoundType, int upperBoundType){
+void Algorithm::setBounds(int index, double lower, double upper, int lowerBoundType, int upperBoundType){
     this->lowerBounds[index] = lower;
     this->upperBounds[index] = upper;
 
@@ -110,11 +110,11 @@ void ESAlgorithm::setBounds(int index, double lower, double upper, int lowerBoun
     this->upperBoundTypes[index] = upperBoundType;
 }
 
-void ESAlgorithm::setEvaluationFunction(double (*evaluationFunction)(void*, void*)){
+void Algorithm::setEvaluationFunction(double (*evaluationFunction)(void*, void*)){
     this->evaluationFunction = evaluationFunction;
 }
 
-void ESAlgorithm::createPopulation(int seed, int numIndividuals) {
+void Algorithm::createPopulation(int seed, int numIndividuals) {
 
     default_random_engine re(seed);
 
@@ -125,8 +125,8 @@ void ESAlgorithm::createPopulation(int seed, int numIndividuals) {
         Individual* ind = new Individual(this->numDimensions);
 
         for(int j=0; j<this->numDimensions; j++){
-            uniform_real_distribution<double> unif(this->getBound(j, ESAlgorithm::LOWER),
-                                                   this->getBound(j, ESAlgorithm::UPPER));
+            uniform_real_distribution<double> unif(this->getBound(j, Algorithm::LOWER),
+                                                   this->getBound(j, Algorithm::UPPER));
             double newDim = unif(re);
             ind->setDimension(j, newDim);
         }
@@ -137,15 +137,15 @@ void ESAlgorithm::createPopulation(int seed, int numIndividuals) {
     }
 }
 
-double ESAlgorithm::getBound(int index, int which){
-    if(which==ESAlgorithm::UPPER){
-        if(this->upperBoundTypes[index]==ESAlgorithm::UPPER_CLOSED){
+double Algorithm::getBound(int index, int which){
+    if(which == Algorithm::UPPER){
+        if(this->upperBoundTypes[index] == Algorithm::UPPER_CLOSED){
             return upperBounds[index];
         }else{
             return upperBounds[index]-DBL_MIN;
         }
     }else{
-        if(this->lowerBoundTypes[index]==ESAlgorithm::LOWER_CLOSED){
+        if(this->lowerBoundTypes[index] == Algorithm::LOWER_CLOSED){
             return lowerBounds[index];
         }else{
             return lowerBounds[index]+DBL_MIN;
@@ -154,36 +154,36 @@ double ESAlgorithm::getBound(int index, int which){
 
 }
 
-void ESAlgorithm::setContext(void *ctx) {
+void Algorithm::setContext(void *ctx) {
     this->context = ctx;
 }
 
-void ESAlgorithm::setAlgorithmType(int type) {
+void Algorithm::setAlgorithmType(int type) {
     this->algorithmType=type;
 }
 
-double ESAlgorithm::getMinSigma() {
+double Algorithm::getMinSigma() {
     return this->minSigma;
 }
 
-double ESAlgorithm::getMaxSigma() {
+double Algorithm::getMaxSigma() {
     return this->maxSigma;
 }
 
-void ESAlgorithm::setSigmaBounds(double min, double max) {
+void Algorithm::setSigmaBounds(double min, double max) {
     this->minSigma = min;
     this->maxSigma = max;
 }
 
-int ESAlgorithm::getEvaluations() {
+int Algorithm::getEvaluations() {
     return this->evaluationsCounter;
 }
 
-void ESAlgorithm::validate(Individual* ind){
+void Algorithm::validate(Individual* ind){
 
     for(int i=0; i< this->numDimensions; i++){
-        double uBound = this->getBound(i, ESAlgorithm::UPPER);
-        double lBound = this->getBound(i, ESAlgorithm::LOWER);
+        double uBound = this->getBound(i, Algorithm::UPPER);
+        double lBound = this->getBound(i, Algorithm::LOWER);
         double value = ind->getDimension(i);
         int uType = this->upperBoundTypes[i];
         int lType = this->lowerBoundTypes[i];
@@ -210,7 +210,7 @@ double validatedSigma(double actual, double min, double max){
     return actual;
 }
 
-void ESAlgorithm::run1Plus1ES(int seed, double initialSigma, double c, int n,  int maxEvals){
+void Algorithm::run1Plus1ES(int seed, double initialSigma, double c, int n, int maxEvals){
     this->clear();
     double sigma = initialSigma;
     this->evaluationsCounter = 0;
@@ -221,8 +221,8 @@ void ESAlgorithm::run1Plus1ES(int seed, double initialSigma, double c, int n,  i
     Individual* ind = new Individual(this->numDimensions);
 
     for(int j=0; j<this->numDimensions; j++){
-        uniform_real_distribution<double> unif(this->getBound(j, ESAlgorithm::LOWER),
-                                               this->getBound(j, ESAlgorithm::UPPER));
+        uniform_real_distribution<double> unif(this->getBound(j, Algorithm::LOWER),
+                                               this->getBound(j, Algorithm::UPPER));
         double newDim = unif(re);
         ind->setDimension(j, newDim);
     }
@@ -298,7 +298,7 @@ void deleteIndividuals(vector<Individual*> &vec, int start, int end){
 
 
 //todo: set best individual at the end
-void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, int maxEvals, int numParents, int numOffspring){
+void Algorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, int maxEvals, int numParents, int numOffspring){
     this->clear();
     //vector<int> successHistory;
     //successHistory.reserve(maxIterations);
@@ -312,8 +312,8 @@ void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, in
         ind->setGlobalSigma(newSigma);
 
         for(int j=0; j<this->numDimensions; j++){
-            uniform_real_distribution<double> unifDimDistribution(this->getBound(j, ESAlgorithm::LOWER),
-                                                   this->getBound(j, ESAlgorithm::UPPER));
+            uniform_real_distribution<double> unifDimDistribution(this->getBound(j, Algorithm::LOWER),
+                                                   this->getBound(j, Algorithm::UPPER));
 
             double newDim = unifDimDistribution(re);
             ind->setDimension(j, newDim);
@@ -368,7 +368,7 @@ void ESAlgorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, in
 }
 
 //todo: set best individual at the end
-void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation, int maxEvals, int numParents, int numOffspring){
+void Algorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation, int maxEvals, int numParents, int numOffspring){
     this->clear();
     //vector<int> successHistory;
     //successHistory.reserve(maxIterations);
@@ -380,8 +380,8 @@ void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation,
         Individual* ind = new Individual(this->numDimensions);
 
         for(int j=0; j<this->numDimensions; j++){
-            uniform_real_distribution<double> unifDimDistribution(this->getBound(j, ESAlgorithm::LOWER),
-                                                                  this->getBound(j, ESAlgorithm::UPPER));
+            uniform_real_distribution<double> unifDimDistribution(this->getBound(j, Algorithm::LOWER),
+                                                                  this->getBound(j, Algorithm::UPPER));
 
             double newDim = unifDimDistribution(re);
             double newSigma = unifSigmaDistribution(re);
@@ -440,13 +440,13 @@ void ESAlgorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation,
 }
 
 //todo: remover
-double ESAlgorithm::evaluationIncrementCounterWrapper(void *ind, void * context){
+double Algorithm::evaluationIncrementCounterWrapper(void *ind, void * context){
 
     this->evaluationsCounter++;
     return this->evaluationFunction(ind, context);
 }
 
-void ESAlgorithm::runCMAES(int seed,int maxEvals, int populationSize){
+void Algorithm::runCMAES(int seed, int maxEvals, int populationSize){
     this->clear();
     this->bestIndividual = new Individual(this->numDimensions);
     this->bestIndividual->setEvaluation(DBL_MAX);
@@ -483,7 +483,7 @@ void ESAlgorithm::runCMAES(int seed,int maxEvals, int populationSize){
 }
 
 
-void ESAlgorithm::runDE(int seed,int maxEvals, int populationSize){
+void Algorithm::runDE(int seed, int maxEvals, int populationSize){
     this->clear();
     this->bestIndividual = new Individual(this->numDimensions);
     this->bestIndividual->setEvaluation(DBL_MAX);
@@ -518,7 +518,7 @@ void ESAlgorithm::runDE(int seed,int maxEvals, int populationSize){
         }
     }
 }
-void ESAlgorithm::runSADE(int seed,int maxEvals, int populationSize){
+void Algorithm::runSADE(int seed, int maxEvals, int populationSize){
     this->clear();
     this->bestIndividual = new Individual(this->numDimensions);
     this->bestIndividual->setEvaluation(DBL_MAX);
@@ -555,11 +555,11 @@ void ESAlgorithm::runSADE(int seed,int maxEvals, int populationSize){
     }
 }
 
-Individual* ESAlgorithm::getBestIndividual(){
+Individual* Algorithm::getBestIndividual(){
     return this->bestIndividual;
 }
 
-string ESAlgorithm::populationToCSVString(){
+string Algorithm::populationToCSVString(){
     string popString = "";
     for(int i=0; i < this->population.size(); i++){
         popString += this->population[i]->toCSVString() + "\n";

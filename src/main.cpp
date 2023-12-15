@@ -14,6 +14,7 @@
 #include <pagmo/problem.hpp>
 #include <pagmo/utils/constrained.hpp>
 #include "GRNCoefProblem.h"
+#include "GRNSeries.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -168,7 +169,7 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName, 
     string experimentId = grnMode + "-" + evalMode + "-" + to_string(numRuns) + "runs-"+ to_string(maxEvals) + "evals";
     string experimentGroup = expName;
 
-    ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
+    Algorithm esAlgorithm = Algorithm(ctx.IND_SIZE);
     esAlgorithm.setEvaluationFunction(func);
     esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
     esAlgorithm.setContext(&ctx);
@@ -176,19 +177,19 @@ void runESComparisonExperiment(string grnMode, string evalMode, string expName, 
     int cont = 0;
     for (int i = 0; i < ctx.TAU_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
@@ -344,7 +345,7 @@ void runCECComparisonExperiment(string grnMode, string evalMode)
     string experimentId = grnMode + "-" + evalMode + "-" + to_string(numRuns) + "runs-"+ to_string(maxEvals) + "evals";
     string experimentGroup = "exp8";
 
-    ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
+    Algorithm esAlgorithm = Algorithm(ctx.IND_SIZE);
     esAlgorithm.setEvaluationFunction(func);
     esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
     esAlgorithm.setContext(&ctx);
@@ -354,19 +355,19 @@ void runCECComparisonExperiment(string grnMode, string evalMode)
     int cont = 0;
     for (int i = 0; i < ctx.TAU_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
@@ -515,7 +516,7 @@ void runCECComparisonExperiment2(string grnMode, string evalMode, string expName
     string experimentId = grnMode + "-" + evalMode + "-" + to_string(numRuns) + "runs-"+ to_string(maxEvals) + "evals";
     string experimentGroup = expName;
 
-    ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
+    Algorithm esAlgorithm = Algorithm(ctx.IND_SIZE);
     esAlgorithm.setEvaluationFunction(func);
     esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
     esAlgorithm.setContext(&ctx);
@@ -524,19 +525,19 @@ void runCECComparisonExperiment2(string grnMode, string evalMode, string expName
     int cont = 0;
     for (int i = 0; i < ctx.TAU_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
@@ -671,7 +672,7 @@ void runCMAESComparisonExperimentTrainingTest(string grnMode, string evalMode, s
     string experimentId = grnMode + "-" + evalMode + "-" + to_string(numRuns) + "runs-"+ to_string(maxEvals) + "evals";
     string experimentGroup = expName;
 
-    ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
+    Algorithm esAlgorithm = Algorithm(ctx.IND_SIZE);
     esAlgorithm.setEvaluationFunction(func);
     esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
     esAlgorithm.setContext(&ctx);
@@ -680,19 +681,19 @@ void runCMAESComparisonExperimentTrainingTest(string grnMode, string evalMode, s
     int cont = 0;
     for (int i = 0; i < ctx.TAU_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
@@ -836,7 +837,7 @@ void runExperimentRound(string grnMode, string evalMode, string algName, int max
 
     int maxGenerations = maxEvals / numOffspring;
 
-    ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
+    Algorithm esAlgorithm = Algorithm(ctx.IND_SIZE);
     esAlgorithm.setEvaluationFunction(func);
     esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
     esAlgorithm.setContext(&ctx);
@@ -845,19 +846,19 @@ void runExperimentRound(string grnMode, string evalMode, string algName, int max
     int cont = 0;
     for (int i = 0; i < ctx.TAU_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
@@ -906,6 +907,52 @@ void runExperimentRound(string grnMode, string evalMode, string algName, int max
     clearContext(&ctx);
 }
 
+void runExperimentRoundTest(Algorithm& esAlgorithm, GRNSeries& train, GRNSeries& test, string algName, int maxEvals, int seed)
+{
+    //string resultCsv = "seed,eval,time,numEvals,ind\n";
+    string resultCsv = "";
+    auto beg = chrono::high_resolution_clock::now();
+    Individual *bestInd = nullptr;
+    double  bestEval = 0;
+
+    if(algName=="cmaes"){
+        esAlgorithm.runCMAES(seed, maxEvals, 40);
+    }else if(algName=="es-i"){
+        esAlgorithm.runPopulationalIsotropicES(seed, 0.5, maxEvals, 15, 105);
+    }else if(algName=="es-ni"){
+        esAlgorithm.runPopulationalNonIsotropicES(seed, 0.5, maxEvals, 15, 105);
+    }
+    else if(algName=="1+1"){
+        esAlgorithm.run1Plus1ES(seed, 0.5, 0.817, 10, maxEvals);
+    }else if(algName=="de") {
+        esAlgorithm.runDE(seed, maxEvals, 40);
+    }else if(algName=="sade") {
+        esAlgorithm.runSADE(seed, maxEvals, 40);
+    }
+
+    //todo: uma função que reavalia população segundo conjunto de teste
+    //  esAlgorithm.evaluate(esAlgorithm.getBestIndividual(), test);
+
+    //GRNEDOHelpers::setMode(&ctx, TEST_MODE);
+    //esAlgorithm.evaluate(esAlgorithm.getBestIndividual());
+    bestInd = esAlgorithm.getBestIndividual();
+    //GRNEDOHelpers::setMode(&ctx, TRAINING_MODE);
+
+
+    //temporização
+    auto end = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<std::chrono::seconds>(end - beg);
+    resultCsv += to_string(seed) +","
+                 + to_string(bestInd->getEvaluation()) + ","
+                 + to_string(duration.count()) + ","
+                 + to_string(esAlgorithm.getEvaluations()) + ",["
+                 + bestInd->toCSVString()+ "]";
+
+    cout << resultCsv << endl;
+
+    //clearContext2Test(&ctx);
+}
+
 void runBoundlessExperimentRound(string grnMode, string evalMode, string algName, int maxEvals, int seed)
 {
     appContext ctx{};
@@ -952,7 +999,7 @@ void runBoundlessExperimentRound(string grnMode, string evalMode, string algName
 
     int maxGenerations = maxEvals / numOffspring;
 
-    ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
+    Algorithm esAlgorithm = Algorithm(ctx.IND_SIZE);
     esAlgorithm.setEvaluationFunction(func);
     esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
     esAlgorithm.setContext(&ctx);
@@ -962,19 +1009,19 @@ void runBoundlessExperimentRound(string grnMode, string evalMode, string algName
     int cont = 0;
     for (int i = 0; i < ctx.TAU_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
@@ -1025,7 +1072,7 @@ void runGRN5ESComparisonExperiment(string evalMode, string experimentId)
     appContext ctx{};
     initializeGRN5Context(&ctx, TRAINING_MODE, 1);
 
-    ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
+    Algorithm esAlgorithm = Algorithm(ctx.IND_SIZE);
     esAlgorithm.setEvaluationFunction(grn5EvaluationLSODA);
     esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
     esAlgorithm.setContext(&ctx);
@@ -1037,19 +1084,19 @@ void runGRN5ESComparisonExperiment(string evalMode, string experimentId)
     int cont = 0;
     for (int i = 0; i < ctx.TAU_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
@@ -1159,7 +1206,7 @@ void runGRN10ESComparisonExperiment()
     appContext ctx{};
     initializeGRN10Context(&ctx, TRAINING_MODE, 1);
 
-    ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
+    Algorithm esAlgorithm = Algorithm(ctx.IND_SIZE);
     esAlgorithm.setEvaluationFunction(grn10EvaluationLSODA);
     esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
     esAlgorithm.setContext(&ctx);
@@ -1167,19 +1214,19 @@ void runGRN10ESComparisonExperiment()
     int cont = 0;
     for (int i = 0; i < ctx.TAU_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
     {
-        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, ESAlgorithm::LOWER_CLOSED, ESAlgorithm::UPPER_CLOSED);
+        esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
@@ -1446,7 +1493,7 @@ void testTestSet(){
 void testCMAES2(){
     appContext ctx{};
     initializeGRN5Context(&ctx, TRAINING_MODE, 1);
-    ESAlgorithm esAlgorithm = ESAlgorithm(ctx.IND_SIZE);
+    Algorithm esAlgorithm = Algorithm(ctx.IND_SIZE);
     esAlgorithm.setEvaluationFunction(grn5EvaluationLSODA);
     //esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
     esAlgorithm.setContext(&ctx);
@@ -1462,13 +1509,6 @@ int main(int argc, char** argv)
     string grnMode;
     string evalMode;
     string algName;
-
-    //runBoundlessExperimentRound("grn5", "lsoda", "cmaes", 1000000, 0);
-
-    //return 0;
-/*    runExperimentRound("grn5", "lsoda", "es-ni", 105000, 0);
-    runExperimentRound("grn5", "lsoda", "es-i", 105000, 0);
-    return 0;*/
 
     if (argc == 6) {
         if(strcmp(argv[1], "grn5") == 0){
@@ -1490,8 +1530,8 @@ int main(int argc, char** argv)
         if(strcmp(argv[3], "cmaes") == 0 ||
         strcmp(argv[3], "es-i") == 0 ||
         strcmp(argv[3], "es-ni"  ) == 0 ||
-        strcmp(argv[3], "de")==0 ||
-        strcmp(argv[3], "sade")==0) {
+        strcmp(argv[3], "de") == 0 ||
+        strcmp(argv[3], "sade") == 0) {
             algName = argv[3];
         }else  {
             cout << "Invalid algorithm name" << endl;
@@ -1506,31 +1546,115 @@ int main(int argc, char** argv)
     return 0;
 
 
-   /* if(strcmp(argv[1], "all") == 0){
-        cout << "ALL" << endl;
-        //runESComparisonExperiment("grn5", "lsoda", "exp15", "../results/");
-        //runESComparisonExperiment("grn5", "rk4", "exp15", "../results/");
+}
 
-        //runESComparisonExperiment("grn10", "lsoda", "exp15", "../results/");
-        runESComparisonExperiment("grn10", "rk4", "exp15","../results/");
+int main2(int argc, char** argv)
+{
+    string grnMode;
+    string evalMode;
+    string algName;
+
+    appContext ctx{};
+    double (*func)(void*,void*);
+
+    if (argc == 6) {
+        if(strcmp(argv[1], "grn5") == 0){
+            grnMode = "grn5";
+        }else if(strcmp(argv[1], "grn10") == 0) {
+            grnMode = "grn10";
+        }else{
+            cout << "Invalid GRN mode" << endl;
+        }
+
+        if(strcmp(argv[2], "lsoda") == 0) {
+            evalMode = "lsoda";
+        }else if(strcmp(argv[2], "rk4") == 0) {
+            evalMode = "rk4";
+        }else{
+            cout << "Invalid evaluation mode" << endl;
+        }
+
+        if(strcmp(argv[3], "cmaes") == 0 ||
+           strcmp(argv[3], "es-i") == 0 ||
+           strcmp(argv[3], "es-ni"  ) == 0 ||
+           strcmp(argv[3], "de") == 0 ||
+           strcmp(argv[3], "sade") == 0) {
+            algName = argv[3];
+        }else  {
+            cout << "Invalid algorithm name" << endl;
+        }
+
+    /////////////////////////////
+
+        //todo: usar novo initialize
+        //todo: unir grn5EvaluationLSODA e grn10EvaluationLSODA em uma só função
+        //todo: fazer o mesmo para RK4
+        if(grnMode == "grn5"){
+
+            if(evalMode == "lsoda"){
+                func = &grn5EvaluationLSODA;
+                initializeGRN5Context(&ctx, TRAINING_MODE, 1);
+            }
+            else {
+                func = &grn5EvaluationRK4;
+                initializeGRN5Context(&ctx, TRAINING_MODE, 20);
+            }
+        }
+        else {
+
+            if(evalMode == "lsoda"){
+                func = &grn10EvaluationLSODA;
+                initializeGRN10Context(&ctx, TRAINING_MODE, 1);
+            }
+            else {
+                func = &grn10EvaluationRK4;
+                initializeGRN10Context(&ctx, TRAINING_MODE, 20);
+            }
+        }
+
+
+        //todo:
+        Algorithm esAlgorithm = Algorithm(ctx.IND_SIZE);
+        esAlgorithm.setEvaluationFunction(func);
+        esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
+        esAlgorithm.setContext(&ctx);
+
+        // inicializa limites de tau, k e n
+        //todo: número de taus etc são diferentes dependendo do modelo, ver como fazer
+        int cont = 0;
+        for (int i = 0; i < ctx.TAU_SIZE; i++)
+        {
+            esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
+            cont = i;
+        }
+
+        for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
+        {
+            esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
+            cont = i;
+        }
+
+        for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
+        {
+            esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
+            cont = i;
+        }
+
+
+        GRNSeries series = GRNSeries("GRN5.txt");
+        GRNSeries trainingSeries = GRNSeries(series, 0, 34);
+        GRNSeries testSeries = GRNSeries(series, 35, 49);
+        int maxEvals = atoi(argv[4]);
+        int seed = atoi(argv[5]);
+
+        //todo: falta usar de fato os conjuntos de treino e teste
+        runExperimentRoundTest(esAlgorithm, trainingSeries, testSeries, algName, maxEvals, seed);
+        clearContext2Test(&ctx);
     }
 
-    */
-
-
-    runCMAESComparisonExperimentTrainingTest("grn5", "lsoda", "exp17", "../results/");
-   // runCMAESComparisonExperimentTrainingTest("grn10", "lsoda", "exp17", "../results/");
-
+    //runExperimentRound("grn5", "lsoda", "cmaes", 1000, 0);
     return 0;
-//
-//    cout << "GRN 5" << endl;
-//    runCECComparisonExperiment2("grn5", "rk4","exp13");
-//
-//    cout << "GRN 10" << endl;
-//    runCECComparisonExperiment2("grn10", "lsoda", "exp13");
-//
-//    //runGRN10ESComparisonExperiment();
-//    //return 0;
-//
-//    return 0;
+
+
 }
+

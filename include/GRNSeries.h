@@ -18,6 +18,7 @@ private:
 public:
     GRNSeries();
     GRNSeries(string filepath);
+    GRNSeries(GRNSeries &grnSeries, int start, int end);
     ~GRNSeries();
     void loadFromFile(string filename);
     void initializeMatrix(string filepath);
@@ -29,6 +30,8 @@ public:
     int getNumTimeSteps() const;
 
     int getNumColumns() const;
+
+
 
     bool isMatrixInitialized() const;
 

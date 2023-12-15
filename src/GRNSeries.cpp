@@ -13,6 +13,26 @@ GRNSeries::GRNSeries(string filepath) {
     loadMaxValues();
 }
 
+GRNSeries::GRNSeries(GRNSeries &grnSeries, int start, int end) {
+    int timeSteps = end - start + 1;
+    this->numTimeSteps = timeSteps;
+    this->numColumns = grnSeries.getNumColumns();
+
+    this->vectors = new double*[grnSeries.getNumColumns()];
+    for(int i=0; i<grnSeries.getNumColumns(); i++){
+        this->vectors[i] = new double[timeSteps];
+    }
+    matrixInitialized = true;
+
+    for(int i=0; i<grnSeries.getNumColumns(); i++){
+        for(int j=0; j<timeSteps; j++){
+            this->vectors[i][j] = grnSeries.getVectors()[i][j+start];
+        }
+    }
+
+    loadMaxValues();
+}
+
 vector<double> extractDoubleRow(string text)
 {
     vector<double> result;
@@ -155,4 +175,6 @@ GRNSeries::~GRNSeries() {
 double *GRNSeries::getMaxValues() const {
     return maxValues;
 }
+
+
 
