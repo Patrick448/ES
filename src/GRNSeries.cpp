@@ -2,6 +2,9 @@
 // Created by patrick on 07/12/23.
 //
 #include "GRNSeries.h"
+#include <fstream>
+#include <vector>
+
 
 GRNSeries::GRNSeries() {
 
@@ -11,6 +14,7 @@ GRNSeries::GRNSeries() {
 GRNSeries::GRNSeries(string filepath) {
     loadFromFile(filepath);
     loadMaxValues();
+    initializeInitialValues();
 }
 
 GRNSeries::GRNSeries(GRNSeries &grnSeries, int start, int end) {
@@ -31,6 +35,7 @@ GRNSeries::GRNSeries(GRNSeries &grnSeries, int start, int end) {
     }
 
     loadMaxValues();
+    initializeInitialValues();
 }
 
 vector<double> extractDoubleRow(string text)
@@ -167,6 +172,7 @@ GRNSeries::~GRNSeries() {
         }
         delete[] this->vectors;
         delete[] this->maxValues;
+        delete[] this->initialValues;
     }
 
 }
@@ -174,6 +180,31 @@ GRNSeries::~GRNSeries() {
 
 double *GRNSeries::getMaxValues() const {
     return maxValues;
+}
+
+int GRNSeries::getNumVariables() const {
+    return this->numColumns - 1;
+}
+
+double GRNSeries::getStartTime() const {
+    return vectors[0][0];
+}
+
+double GRNSeries::getEndTime() const {
+    return vectors[0][this->numTimeSteps - 1];
+}
+
+void GRNSeries::initializeInitialValues() {
+    this->initialValues = new double[this->getNumVariables()];
+
+    for (int i = 0; i < this->getNumVariables(); i++)
+    {
+        this->initialValues[i] = this->vectors[i + 1][0];
+    }
+}
+
+double *GRNSeries::getInitialValues() const {
+    return this->initialValues;
 }
 
 

@@ -1548,109 +1548,106 @@ int main(int argc, char** argv)
 
 }
 
-int main2(int argc, char** argv)
-{
-    string grnMode;
-    string evalMode;
-    string algName;
-
-    appContext ctx{};
-    double (*func)(void*,void*);
-
+std::map<string, char*> parseArgs(int argc, char** argv){
+    std::map<string, char*> args;
     if (argc == 6) {
-        if(strcmp(argv[1], "grn5") == 0){
-            grnMode = "grn5";
-        }else if(strcmp(argv[1], "grn10") == 0) {
-            grnMode = "grn10";
+        if(strcmp(argv[1], "grn5") == 0 || strcmp(argv[1], "grn10") == 0){
+            args["grnMode"] = argv[1];
         }else{
             cout << "Invalid GRN mode" << endl;
         }
 
-        if(strcmp(argv[2], "lsoda") == 0) {
-            evalMode = "lsoda";
-        }else if(strcmp(argv[2], "rk4") == 0) {
-            evalMode = "rk4";
+        if(strcmp(argv[2], "lsoda") == 0 || strcmp(argv[2], "rk4") == 0) {
+            args["evalMode"] = argv[2];
         }else{
             cout << "Invalid evaluation mode" << endl;
         }
 
-        if(strcmp(argv[3], "cmaes") == 0 ||
-           strcmp(argv[3], "es-i") == 0 ||
-           strcmp(argv[3], "es-ni"  ) == 0 ||
-           strcmp(argv[3], "de") == 0 ||
+        if(strcmp(argv[3], "cmaes") == 0 || strcmp(argv[3], "es-i") == 0 ||
+           strcmp(argv[3], "es-ni"  ) == 0 ||strcmp(argv[3], "de") == 0 ||
            strcmp(argv[3], "sade") == 0) {
-            algName = argv[3];
+            args["algName"] = argv[3];
         }else  {
             cout << "Invalid algorithm name" << endl;
         }
 
-    /////////////////////////////
-
-        //todo: usar novo initialize
-        //todo: unir grn5EvaluationLSODA e grn10EvaluationLSODA em uma só função
-        //todo: fazer o mesmo para RK4
-        if(grnMode == "grn5"){
-
-            if(evalMode == "lsoda"){
-                func = &grn5EvaluationLSODA;
-                initializeGRN5Context(&ctx, TRAINING_MODE, 1);
-            }
-            else {
-                func = &grn5EvaluationRK4;
-                initializeGRN5Context(&ctx, TRAINING_MODE, 20);
-            }
-        }
-        else {
-
-            if(evalMode == "lsoda"){
-                func = &grn10EvaluationLSODA;
-                initializeGRN10Context(&ctx, TRAINING_MODE, 1);
-            }
-            else {
-                func = &grn10EvaluationRK4;
-                initializeGRN10Context(&ctx, TRAINING_MODE, 20);
-            }
-        }
-
-
-        //todo:
-        Algorithm esAlgorithm = Algorithm(ctx.IND_SIZE);
-        esAlgorithm.setEvaluationFunction(func);
-        esAlgorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
-        esAlgorithm.setContext(&ctx);
-
-        // inicializa limites de tau, k e n
-        //todo: número de taus etc são diferentes dependendo do modelo, ver como fazer
-        int cont = 0;
-        for (int i = 0; i < ctx.TAU_SIZE; i++)
-        {
-            esAlgorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
-            cont = i;
-        }
-
-        for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
-        {
-            esAlgorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
-            cont = i;
-        }
-
-        for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
-        {
-            esAlgorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
-            cont = i;
-        }
-
-
-        GRNSeries series = GRNSeries("GRN5.txt");
-        GRNSeries trainingSeries = GRNSeries(series, 0, 34);
-        GRNSeries testSeries = GRNSeries(series, 35, 49);
-        int maxEvals = atoi(argv[4]);
-        int seed = atoi(argv[5]);
-
-        //todo: falta usar de fato os conjuntos de treino e teste
-        runExperimentRoundTest(esAlgorithm, trainingSeries, testSeries, algName, maxEvals, seed);
-        clearContext2Test(&ctx);
+        args["maxEvals"] = argv[4];
+        args["seed"] = argv[5];
     }
+
+    return args;
+}
+
+int main2(int argc, char** argv)
+{
+    std::map<string, char*> args = parseArgs(argc, argv);
+    string grnMode = args["grnMode"];
+    string evalMode = args["evalMode"];
+    string algName = args["algName"];
+    int maxEvals = atoi(args["maxEvals"]);
+    int seed = atoi(argv[5]);
+
+    appContext ctx{};
+    double (*func)(void*,void*);
+
+    //todo: usar novo initialize
+    //todo: unir grn5EvaluationLSODA e grn10EvaluationLSODA em uma só função
+    //todo: fazer o mesmo para RK4
+
+    if(algName == "grn5"){
+        ctx = {.IND_SIZE = 19, .MIN_K = 0.01,.MAX_K = 1,.MIN_N = 1,.MAX_N = 30,.MIN_TAU = 0.1,.MAX_TAU = 6,
+                .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 7,.K_SIZE = 7};
+    }else{
+
+    }
+
+    if(evalMode == "lsoda"){
+        func = &grnEvaluationLSODATest;
+
+    }
+    else {
+      //  func = &grn5EvaluationRK4;
+      //  initializeGRN5Context(&ctx, TRAINING_MODE, 20);
+    }
+
+    GRNCoefProblem problem = GRNCoefProblem(19);
+
+    // inicializa limites de tau, k e n
+    //todo: número de taus etc são diferentes dependendo do modelo, ver como fazer
+    int cont = 0;
+    for (int i = 0; i < ctx.TAU_SIZE; i++)
+    {
+        problem.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU);
+        cont = i;
+    }
+
+    for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
+    {
+        problem.setBounds(i, ctx.MIN_K, ctx.MAX_K);
+        cont = i;
+    }
+
+    for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
+    {
+        problem.setBounds(i, ctx.MIN_N, ctx.MAX_N);
+        cont = i;
+    }
+
+    GRNSeries series = GRNSeries("GRN5.txt");
+    GRNSeries trainingSeries = GRNSeries(series, 0, 34);
+    GRNSeries testSeries = GRNSeries(series, 35, 49);
+
+
+    //todo:
+    Algorithm algorithm = Algorithm(problem, trainingSeries, testSeries, func);
+    //algorithm.setEvaluationFunction(func);
+    algorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
+    //algorithm.setContext(&ctx);
+
+    //todo: falta usar de fato os conjuntos de treino e teste
+    runExperimentRoundTest(algorithm, trainingSeries, testSeries, algName, maxEvals, seed);
+    clearContext2Test(&ctx);
+
 
     //runExperimentRound("grn5", "lsoda", "cmaes", 1000, 0);
     return 0;

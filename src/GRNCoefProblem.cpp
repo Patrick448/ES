@@ -52,3 +52,14 @@ void GRNCoefProblem::setEvaluationFunction(double (*evaluationFunction)(void*, v
     this->evaluationFunction = evaluationFunction;
 }
 
+GRNCoefProblem::GRNCoefProblem(int dim) {
+    this->dimension = dim;
+    this->upperBounds = vector_double(dim);
+    this->lowerBounds = vector_double(dim);
+}
+
+void GRNCoefProblem::setBounds(int index, double lower, double upper) {
+    this->upperBounds[index] = upper;
+    this->lowerBounds[index] = lower;
+}
+

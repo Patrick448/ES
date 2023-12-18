@@ -11,6 +11,8 @@
 
 #include "dependencies.h"
 #include "GRNCoefProblem.h"
+#include "Algorithm.h"
+
 #include <pagmo/algorithms/cmaes.hpp>
 #include <pagmo/algorithm.hpp>
 #include <pagmo/population.hpp>
@@ -65,7 +67,7 @@ void Algorithm::addIndividual(Individual* individual){
 }
 
 double Algorithm::evaluate(Individual* ind){
-    double eval =this->evaluationFunction(ind->getDimensions(), this->context);
+    double eval =this->evaluationFunction(ind->getParameters(), this->context);
     ind->setEvaluation(eval);
     this->evaluationsCounter++;
     return eval;
@@ -79,7 +81,7 @@ bool compareIndividuals(Individual* a, Individual* b){
 
 void Algorithm::reevaluateAllNoCounter(){
     for(Individual* ind: this->population){
-        double eval =this->evaluationFunction(ind->getDimensions(), this->context);
+        double eval =this->evaluationFunction(ind->getParameters(), this->context);
         ind->setEvaluation(eval);
     }
     sort(this->population.begin(), this->population.end(), compareIndividuals);
@@ -89,7 +91,7 @@ void Algorithm::reevaluateAllNoCounter(){
 
 double Algorithm::getReevaluationByIndexNoCounter(int i){
     Individual* ind = this->population[i];
-    double eval =this->evaluationFunction(ind->getDimensions(), this->context);
+    double eval =this->evaluationFunction(ind->getParameters(), this->context);
 
     return eval;
 }
@@ -128,7 +130,7 @@ void Algorithm::createPopulation(int seed, int numIndividuals) {
             uniform_real_distribution<double> unif(this->getBound(j, Algorithm::LOWER),
                                                    this->getBound(j, Algorithm::UPPER));
             double newDim = unif(re);
-            ind->setDimension(j, newDim);
+            ind->setParameter(j, newDim);
         }
         this->validate(ind);
         this->evaluate(ind);
@@ -189,13 +191,13 @@ void Algorithm::validate(Individual* ind){
         int lType = this->lowerBoundTypes[i];
 
         if(uType == UPPER_CLOSED && value > uBound){
-            ind->setDimension(i, uBound);
+            ind->setParameter(i, uBound);
         }else if(uType==UPPER_OPEN && value >= uBound){
-            ind->setDimension(i, uBound - DBL_MIN);
+            ind->setParameter(i, uBound - DBL_MIN);
         }else if(lType==LOWER_CLOSED && value < lBound){
-            ind->setDimension(i, lBound);
+            ind->setParameter(i, lBound);
         }else if(lType==LOWER_OPEN && value <= lBound){
-            ind->setDimension(i, lBound + DBL_MIN);
+            ind->setParameter(i, lBound + DBL_MIN);
         }
     }
 }
@@ -224,7 +226,7 @@ void Algorithm::run1Plus1ES(int seed, double initialSigma, double c, int n, int 
         uniform_real_distribution<double> unif(this->getBound(j, Algorithm::LOWER),
                                                this->getBound(j, Algorithm::UPPER));
         double newDim = unif(re);
-        ind->setDimension(j, newDim);
+        ind->setParameter(j, newDim);
     }
     this->validate(ind);
     this->evaluate(ind);
@@ -241,7 +243,7 @@ void Algorithm::run1Plus1ES(int seed, double initialSigma, double c, int n, int 
         for(int j=0; j<this->numDimensions; j++){
             double variation = normal(re);
             double newDim = ind->getDimension(j) + variation;
-            newInd->setDimension(j, newDim);
+            newInd->setParameter(j, newDim);
         }
         this->validate(newInd);
         this->evaluate(newInd);
@@ -316,7 +318,7 @@ void Algorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, int 
                                                    this->getBound(j, Algorithm::UPPER));
 
             double newDim = unifDimDistribution(re);
-            ind->setDimension(j, newDim);
+            ind->setParameter(j, newDim);
 
         }
         this->validate(ind);
@@ -343,7 +345,7 @@ void Algorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, int 
 
                 for(int d=0; d<this->numDimensions; d++){
                     double newDim = population[j]->getDimension(d) + dimMutationDistribution(re);
-                    newInd->setDimension(d, newDim);
+                    newInd->setParameter(d, newDim);
                 }
 
                 this->validate(newInd);
@@ -387,7 +389,7 @@ void Algorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation, i
             double newSigma = unifSigmaDistribution(re);
 
             ind->setSigma(j, newSigma);
-            ind->setDimension(j, newDim);
+            ind->setParameter(j, newDim);
 
         }
         this->validate(ind);
@@ -415,7 +417,7 @@ void Algorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation, i
                     double newDim = population[j]->getDimension(d) + dimMutationDistribution(re);
 
                     newInd->setSigma(d, newSigma);
-                    newInd->setDimension(d, newDim);
+                    newInd->setParameter(d, newDim);
                 }
 
                 this->validate(newInd);
@@ -565,4 +567,13 @@ string Algorithm::populationToCSVString(){
         popString += this->population[i]->toCSVString() + "\n";
     }
     return popString;
+}
+
+Algorithm::Algorithm(GRNCoefProblem &problem, GRNSeries &trainingSeries, GRNSeries &testSeries,
+                     double (*evaluationFunction)(void *, void *)) {
+    this->problem = &problem;
+    this->trainingSeries = &trainingSeries;
+    this->testSeries = &testSeries;
+    this->evaluationFunction = evaluationFunction;
+
 }

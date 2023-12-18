@@ -22,7 +22,7 @@
 #include "read.h"
 #include "ode.h"
 #include "rk4.h"
-
+#include "GRNSeries.h"
 
 
 using namespace std;

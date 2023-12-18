@@ -57,6 +57,47 @@ int GRNEDOHelpers::twoBody5VarLSODA(double t, double *y, double *ydot, void *_da
 
     return 0;
 }
+//todo: renomear para twoBody5VarModel (ou grn5VariablesModel) ou algo assim
+int GRNEDOHelpers::twoBody5VarLSODATest(double t, double *y, double *ydot, void *_individual)
+{
+
+    //appContext *ctx = (appContext *)_data;
+    Individual *individual = (Individual *)_individual;
+    double* data = individual->getParameters();
+    double* maxValues = individual->getMaxValues();
+    double *tau = &data[0];
+    double *k = &data[5];
+    double *n = &data[12];
+
+
+    ydot[0] = ((1 - (pow((y[4] / maxValues[4]), (int)n[0])) /
+                    (pow((y[4] / maxValues[4]), (int)n[0]) + pow(k[0], (int)n[0]))) -
+               (y[0] / maxValues[0])) /
+              tau[0];
+
+    ydot[1] = (((pow((y[0] / maxValues[0]), (int)n[1])) /
+                (pow((y[0] / maxValues[0]), (int)n[1]) + pow(k[1], (int)n[1]))) -
+               (y[1] / maxValues[1])) /
+              tau[1];
+
+    ydot[2] = (((pow((y[1] / maxValues[1]), (int)n[2])) /
+                (pow((y[1] / maxValues[1]), (int)n[2]) + pow(k[2], (int)n[2]))) -
+               (y[2] / maxValues[2])) /
+              tau[2];
+
+    ydot[3] = (((pow((y[2] / maxValues[2]), (int)n[3])) /
+                (pow((y[2] / maxValues[2]), (int)n[3]) + pow(k[3], (int)n[3]))) -
+               (y[3] / maxValues[3])) /
+              tau[3];
+
+    ydot[4] = ((((pow(y[1] / maxValues[1], (int)n[4]) / (pow(y[1] / maxValues[1], (int)n[4]) + pow(k[4], (int)n[4]))) * (
+            pow(y[3] / maxValues[3], (int)n[5]) / (pow(y[3] / maxValues[3], (int)n[5]) + pow(k[5], (int)n[5])))) + (
+                        (pow(y[3] / maxValues[3], (int)n[5]) / (pow(y[3] / maxValues[3], (int)n[5]) + pow(k[5], (int)n[5]))) * (
+                                pow(y[4] / maxValues[4], (int)n[6]) / (pow(y[4] / maxValues[4], (int)n[6]) + pow(k[6], (int)n[6]))))) - (
+                       y[4] / maxValues[4])) / tau[4];
+
+    return 0;
+}
 
 
 int GRNEDOHelpers::twoBody10VarLSODA(double t, double *y, double *ydot, void *_data)
@@ -220,6 +261,8 @@ double GRNEDOHelpers::difference(double *actual, double **expected, int numVaria
 
     return difTotal;
 }
+
+
 //todo: melhorar vetores, padronizar o formato e melhorar os acessos
 double GRNEDOHelpers::difference(double *actual, double **expected, int numVariables, int start, int end, int numSteps)
 {
@@ -235,6 +278,7 @@ double GRNEDOHelpers::difference(double *actual, double **expected, int numVaria
         {
             int index = jump*j* numVariables + i;
             difTotal += fabs(actual[index] - expected[i][j]);
+            cout << actual[index] <<  "\t - " << expected[i][j] << "\t = " << fabs(actual[index] - expected[i][j]) << endl;
             //cout << "(" << j << "," << i << ")"<< " - ";
             //cout <<  index << " - ";
            // cout << actual[index] << ",";
@@ -252,6 +296,32 @@ double GRNEDOHelpers::difference(double *actual, double **expected, int numVaria
 
     return difTotal;
 }
+
+//todo: melhorar vetores, padronizar o formato e melhorar os acessos
+double GRNEDOHelpers::differenceTest(double *actual, double **expected, int numElements, int numVariables, int granularity)
+{
+    double difTotal = 0.0;
+   // int numElements = end - start + 1;
+    //int jump = numSteps / (numElements-1);
+
+    for (int i = 0; i < numVariables; i++)
+    {
+        for (int j = 0; j <= numElements; j++)
+        {
+            int index = granularity*j* numVariables + i;
+            difTotal += fabs(actual[index] - expected[i][j]);
+            cout << actual[index] <<  "\t - " << expected[i][j] << "\t = " << fabs(actual[index] - expected[i][j]) << endl;
+
+        }
+    }
+    if (isnan(difTotal))
+    {
+        return DBL_MAX;
+    }
+
+    return difTotal;
+}
+
 
 void GRNEDOHelpers::setMode(appContext* ctx, int mode){
     if(mode == TRAINING_MODE){
@@ -552,12 +622,6 @@ double GRNEDOHelpers::lsodaWrapper(int dydt(double t, double *y, double *ydot, v
 
         }
 
-        //cout << "iout: " + to_string(iout) << endl;
-        //cout << "t: " + to_string(t) << endl;
-        //cout << "tout: " + to_string(tout) << endl;
-        //cout << "t=" + to_string(t) +" y="+ vectorToString(y, 0, 4) <<endl;
-        //cout << "" + to_string(t) +" "+ vectorToString(y, 0, 4) <<endl;
-
         if (ctx.state <= 0)
         { //todo: ver se devo abortar ou não.
             //todo: entender esse limite de passos e pq está sendo atingido mesmo com tamanho de passo pequeno
@@ -569,15 +633,6 @@ double GRNEDOHelpers::lsodaWrapper(int dydt(double t, double *y, double *ydot, v
                 _yout[outIndex] = INFINITY;
             }
             break;
-
-            //cout << y[0] << endl;
-            //cout << y[1] << endl;
-            //cout << y[2] << endl;
-            //cout << y[3] << endl;
-            //cout << y[4] << endl;
-            //break;
-            //exit(0);
-            //cout << "_----------------------------" << endl;
         }
         tout = tout + dt;
     }
@@ -589,6 +644,84 @@ double GRNEDOHelpers::lsodaWrapper(int dydt(double t, double *y, double *ydot, v
 
     return 0;
 }
+
+double GRNEDOHelpers::lsodaWrapperTest(int dydt(double t, double *y, double *ydot, void *data), double* tspan, double* y_0, int totalSteps, int nVariables, double* times, void* individual, double *_yout)
+{
+
+    // todo: tentar colocar essa alocação fora da função
+    //  esses vetores serão alocados toda vez, e essa função será chamada
+    //  a cada avaliação de indivíduo
+
+    double *atol = new double[nVariables];
+    double *rtol = new double[nVariables];
+    double t, tout, dt;
+
+    double *y = new double[nVariables];
+    int iout;
+
+    for (int i = 0; i < nVariables; i++)
+    {
+        y[i] = y_0[i];
+        rtol[i] = atol[i] = 1.49012e-4;
+        _yout[i] = y_0[i];
+    }
+
+    t = tspan[0];
+    dt = (tspan[1] - tspan[0]) / (double)(totalSteps);
+    tout = t +  dt;
+
+    struct lsoda_opt_t opt = {0};
+    opt.ixpr = 0;
+    opt.rtol = rtol;
+    opt.atol = atol;
+    opt.itask = 1;
+    opt.mxstep = 500;
+
+
+    struct lsoda_context_t ctx = {
+            .function = dydt,
+            .data = individual,
+            .neq = nVariables,
+            .state = 1,
+    };
+    //ctx.data = coefficients;
+
+    lsoda_prepare(&ctx, &opt);
+
+    for (iout =1; iout <= totalSteps; iout++)
+    {
+        lsoda(&ctx, y, &t, tout);
+        //printf(" at t= %12.4e y= %14.6e %14.6e %14.6e %14.6e %14.6e\n", t, y[0], y[1], y[2], y[3], y[4]);
+
+        for(int i=0; i<nVariables; i++) {
+            int outIndex = nVariables * iout + i;
+            _yout[outIndex] = y[i];
+
+        }
+
+        if (ctx.state <= 0)
+        { //todo: ver se devo abortar ou não.
+            //todo: entender esse limite de passos e pq está sendo atingido mesmo com tamanho de passo pequeno
+            // outputToFile("problematicInds.txt", vectorToString(appCtx->individual, 0, appCtx->IND_SIZE-1) + "\n", true);
+            //cout << vectorToString(appCtx->individual, 0, appCtx->IND_SIZE-1)<<endl;
+            printf("error istate = %d\n", ctx.state);
+            for(int i=0; i<nVariables; i++) {
+                int outIndex = nVariables * iout + i;
+                _yout[outIndex] = INFINITY;
+            }
+            break;
+        }
+        tout = tout + dt;
+    }
+
+    delete[] rtol;
+    delete[] atol;
+    delete[] y;
+    lsoda_free(&ctx);
+
+    return 0;
+}
+
 
 double GRNEDOHelpers::getMaxValue(double *values, int numElements)
 {
@@ -779,12 +912,36 @@ double GRNEDOHelpers::grn5EvaluationLSODA(void *ind, void* data)
 
 }
 
+double GRNEDOHelpers::grnEvaluationLSODATest(void* individual, void* series)
+{
+    GRNSeries* evalSeries = (GRNSeries*)(series);
+    int granularity = 1;
+    double* yout = new double[(evalSeries->getNumTimeSteps()) * evalSeries->getNumVariables()];
+    int totalSteps = (evalSeries->getNumTimeSteps() - 1) * granularity;
+    double tspan[] {evalSeries->getStartTime(), evalSeries->getEndTime()};
+    double** expectedResult = &evalSeries->getVectors()[1];
+    int nVariables = evalSeries->getNumVariables();
+    double *y_0 = evalSeries->getInitialValues();
+
+    lsodaWrapperTest(twoBody5VarLSODATest, tspan, y_0, totalSteps, nVariables, nullptr, individual, yout);
+
+    double eval = differenceTest(yout, expectedResult,  evalSeries->getNumTimeSteps() - 1, nVariables, granularity);
+
+    delete [] yout;
+
+
+    return eval;
+
+}
+
 double GRNEDOHelpers::grn5EvaluationRK4(void *ind, void* data)
 
 {   appContext* ctx = (appContext*)(data);
     double* _ind = (double *)ind;
     ctx->individual = _ind;
     double *t = new double [ctx->totalSteps+1];
+
+    //todo: mudar para que rk4 e lsodaWrapper tenham mesma assinatura
     rk4(twoBody5VarLSODA, ctx->tspan, ctx->y_0, ctx->totalSteps, ctx->nVariables, t, _ind, ctx);
     delete [] t;
     return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);

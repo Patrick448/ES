@@ -12,11 +12,12 @@ using namespace std;
 class Individual {
 
 private:
-    double* dimensions;
+    double* parameters;
     double* sigmas;
     int numDimensions;
     double evaluation;
     double globalSigma;
+    double *maxValues;
 
 public:
     Individual(int numDimensions);
@@ -24,14 +25,18 @@ public:
     ~Individual();
     void setEvaluation(double val);
     double getEvaluation();
-    void setDimension(int index, double val);
+    void setParameter(int index, double val);
     void setSigma(int index, double val);
     void setGlobalSigma(double val);
     double getGlobalSigma();
     double getDimension(int index);
-    double *getDimensions();
+    //todo: rename to something like getCoefficients, getParameters, etc.
+    double *getParameters();
     double getSigma(int index);
     string toCSVString();
+    void setMaxValues(double *maxValues);
+    double *getMaxValues() const;
+    void setParameters(double *parameters);
 
 };
 

@@ -4,7 +4,7 @@
 
 #ifndef ES_GRNSERIES_H
 #define ES_GRNSERIES_H
-#include "dependencies.h"
+#include <string>
 
 using namespace std;
 
@@ -15,6 +15,7 @@ private:
     int numColumns;
     bool matrixInitialized;
     double *maxValues;
+    double *initialValues;
 public:
     GRNSeries();
     GRNSeries(string filepath);
@@ -31,11 +32,19 @@ public:
 
     int getNumColumns() const;
 
+    int getNumVariables() const;
 
+    double getStartTime() const;
+
+    double getEndTime() const;
+
+    double* getInitialValues() const;
 
     bool isMatrixInitialized() const;
 
     void setMatrixInitialized(bool matrixInitialized);
+
+    void initializeInitialValues();
 
     double *getMaxValues() const;
     void loadMaxValues();

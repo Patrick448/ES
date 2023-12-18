@@ -42,6 +42,8 @@ add_executable(test
         src/GRNEDOHelpers.cpp
         src/read.cpp
         src/rk4.c
+        src/Individual.cpp
+        include/Individual.h
         tests/unit_tests.cpp)
 target_link_libraries(test PUBLIC liblsoda Pagmo::pagmo
     ${Boost_FILESYSTEM_LIBRARY}

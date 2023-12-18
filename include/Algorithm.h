@@ -5,7 +5,10 @@
 #ifndef ES_ALGORITHM_H
 #define ES_ALGORITHM_H
 #include <vector>
+#include "dependencies.h"
 #include "Individual.h"
+#include "GRNCoefProblem.h"
+#include "GRNSeries.h"
 
 using namespace std;
 class Algorithm {
@@ -24,6 +27,9 @@ private:
     double maxSigma;
     void *context;
     Individual* bestIndividual;
+    GRNCoefProblem* problem;
+    GRNSeries* trainingSeries;
+    GRNSeries* testSeries;
 
 public:
     static int UPPER_OPEN;
@@ -37,6 +43,7 @@ public:
     static int NON_ISOTROPIC;
 
     Algorithm(int numDimensions);
+    Algorithm(GRNCoefProblem& problem, GRNSeries& trainingSeries, GRNSeries& testSeries, double (*evaluationFunction)(void*, void*));
     ~Algorithm();
     vector<Individual*> getPopulation();
     void addIndividual(Individual* individual);

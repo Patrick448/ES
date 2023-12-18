@@ -9,21 +9,21 @@ Individual::Individual(int numDimensions) {
    // this->dimensions.resize(numDimensions);
    // this->sigmas.resize(numDimensions);
     this->numDimensions = numDimensions;
-    this->dimensions = new double[numDimensions];
+    this->parameters = new double[numDimensions];
     this->sigmas = new double[numDimensions];
 }
 
 Individual::Individual(int numDimensions, double *dimensions) {
     this->numDimensions = numDimensions;
-    this->dimensions = new double[numDimensions];
+    this->parameters = new double[numDimensions];
 
     for(int i=0; i< numDimensions; i++){
-        this->dimensions[i] = dimensions[i];
+        this->parameters[i] = dimensions[i];
     }
 }
 
 Individual::~Individual() {
-    delete [] this->dimensions;
+    delete [] this->parameters;
     delete [] this->sigmas;
 }
 
@@ -35,8 +35,8 @@ double Individual::getEvaluation() {
     return this->evaluation;
 }
 
-void Individual::setDimension(int index, double val){
-    this->dimensions[index] = val;
+void Individual::setParameter(int index, double val){
+    this->parameters[index] = val;
 }
 
 void Individual::setSigma(int index, double val){
@@ -46,11 +46,11 @@ void Individual::setSigma(int index, double val){
 
 
 double Individual::getDimension(int index){
-    return this->dimensions[index];
+    return this->parameters[index];
 }
 
-double* Individual::getDimensions() {
-    return this->dimensions;
+double* Individual::getParameters() {
+    return this->parameters;
 }
 
 double Individual::getSigma(int index){
@@ -81,11 +81,26 @@ string doubleToString(double val, int precision){
 string Individual::toCSVString(){
     string indString = "";
     for(int i=0; i< this->numDimensions; i++){
-        indString+= doubleToString(this->dimensions[i], 15) + ",";
+        indString+= doubleToString(this->parameters[i], 15) + ",";
     }
 
     indString+= doubleToString(this->evaluation, 15);
     return indString;
+}
+
+void Individual::setMaxValues(double *maxValues) {
+    this->maxValues = maxValues;
+}
+
+double *Individual::getMaxValues() const {
+    return maxValues;
+}
+
+void Individual::setParameters(double *parameters) {
+
+    for(int i=0; i< this->numDimensions; i++){
+        this->parameters[i] = parameters[i];
+    }
 }
 
 
