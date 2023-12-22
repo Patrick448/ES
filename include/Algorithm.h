@@ -43,7 +43,8 @@ public:
     static int NON_ISOTROPIC;
 
     Algorithm(int numDimensions);
-    Algorithm(GRNCoefProblem& problem, GRNSeries& trainingSeries, GRNSeries& testSeries, double (*evaluationFunction)(void*, void*));
+    Algorithm(GRNSeries &trainingSeries, GRNSeries &testSeries,
+              double (*evaluationFunction)(void *, void *), int numDimensions);
     ~Algorithm();
     vector<Individual*> getPopulation();
     void addIndividual(Individual* individual);
@@ -73,6 +74,7 @@ public:
     void runSADE(int seed,int maxEvals, int populationSize);
     Individual* getBestIndividual();
     double evaluationIncrementCounterWrapper(void *ind, void * context);
+    void reevaluateBestIndividualUsingTestSet();
     };
 
 

@@ -8,13 +8,15 @@
 #include <utility>
 #include "pagmo/types.hpp"
 #include "appCtx.h"
+#include "ProblemDescription.h"
 
 using namespace pagmo;
 
 /// Class that represents the Problem to be solved by Pagmo (as required by the library)
 class GRNCoefProblem {
 private:
-    appContext *context;
+    appContext *evaluationContext;
+    ProblemDescription* problemDescription;
     double (*evaluationFunction)(void *, void *);
     int dimension;
     vector_double upperBounds;
@@ -22,6 +24,7 @@ private:
 
 public:
     explicit GRNCoefProblem(appContext *context);
+    explicit GRNCoefProblem(appContext *evaluationContext, ProblemDescription *problemDescription);
     explicit GRNCoefProblem(int dim);
     explicit GRNCoefProblem();
     ~GRNCoefProblem(){};

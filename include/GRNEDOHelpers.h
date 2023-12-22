@@ -6,15 +6,29 @@
 #define ES_GRNEDOHELPERS_H
 #include "appCtx.h"
 #include "dependencies.h"
+#include "ProblemDescription.h"
 
 
 /// This namespace contains all the functions that are used to create the context of the problem
 /// and to evaluate the individuals.
 namespace GRNEDOHelpers{
+
+    static ProblemDescription grn5ProblemDescription = {
+            .IND_SIZE = 19,        // Tamanho do indivíduo (quantidade de coeficientes)
+            .MIN_K = 0.01, //0.1,       // Menor valor que K pode assumir
+            .MAX_K = 1,       // Maior valor que K pode assumir
+            .MIN_N = 1,        // Menor valor que N pode assumir
+            .MAX_N = 30, //25       // Maior valor que N pode assumir
+            .MIN_TAU = 0.1,      // Menor valor que TAU pode assumir
+            .MAX_TAU = 6,  //5     // Maior valor que TAU pode assumir
+            .TAU_SIZE = 5,
+            .N_SIZE = 7,
+            .K_SIZE = 7
+    } ;
     /// 5 variable GRN model.
     /// todo: rename to grn5Model
     int twoBody5VarLSODA(double t, double *y, double *ydot, void *_data);
-    int twoBody5VarLSODATest(double t, double *y, double *ydot, void *_individual);
+    int twoBody5VarLSODATest(double t, double *y, double *ydot, void *data);
 
     /// 10 variable GRN model.
     /// todo: rename to grn10Model
@@ -48,7 +62,7 @@ namespace GRNEDOHelpers{
     /// @param appCtx the context of the problem.
     /// @param _yout the output of the integration (meaning the function values at each time step).
     double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), appContext *appCtx, double *_yout);
-    double lsodaWrapperTest(int dydt(double t, double *y, double *ydot, void *data), double* tspan, double* y_0, int totalSteps, int nVariables, double* times, void* individual, double *_yout);
+    double lsodaWrapperTest(int dydt(double t, double *y, double *ydot, void *data), double* tspan, double* y_0, int totalSteps, int nVariables, double* times, void* context, double *_yout);
 
     /// evaluates the given individual (5 variables) using the LSODA algorithm.
     double grn5EvaluationLSODA(void *ind, void* data);
@@ -61,7 +75,7 @@ namespace GRNEDOHelpers{
     /// evaluates the given individual (10 variables) using the RK4 algorithm.
     double grn10EvaluationRK4(void *ind, void* data);
 
-    double grnEvaluationLSODATest(void* individual, void* series);
+    double grnEvaluationLSODATest(void* individual, void* context);
 
     /// changes the mode of the problem.
     /// @see initializeGRN5Context for more details.

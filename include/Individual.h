@@ -14,14 +14,15 @@ class Individual {
 private:
     double* parameters;
     double* sigmas;
-    int numDimensions;
+    int numParameters;
     double evaluation;
     double globalSigma;
     double *maxValues;
+    double *fullParameters;
 
 public:
-    Individual(int numDimensions);
-    Individual(int numDimensions, double *dimensions);
+    Individual(int numParameters);
+    Individual(int numDimensions,double *parameters);
     ~Individual();
     void setEvaluation(double val);
     double getEvaluation();
@@ -37,6 +38,7 @@ public:
     void setMaxValues(double *maxValues);
     double *getMaxValues() const;
     void setParameters(double *parameters);
+    double *getFullParameters() const;
 
 };
 

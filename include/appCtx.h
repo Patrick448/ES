@@ -6,7 +6,7 @@
 #define ES_APPCTX_H
 
 
- struct appContext {
+struct appContext {
 
     int mode;
     int IND_SIZE;        // Tamanho do indivíduo (quantidade de coeficientes)
@@ -47,6 +47,7 @@
     double **vectors;
     double **expectedResult;
     double* individual;
+    void *series;
 
 } ;
 #endif //ES_APPCTX_H

@@ -9,12 +9,11 @@
 #include "GRNEDOHelpers.h"
 #include "algModes.h"
 #include <pagmo/algorithms/cmaes.hpp>
-#include <pagmo/algorithm.hpp>
 #include <pagmo/population.hpp>
-#include <pagmo/problem.hpp>
 #include <pagmo/utils/constrained.hpp>
 #include "GRNCoefProblem.h"
 #include "GRNSeries.h"
+#include "ProblemDescription.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -935,6 +934,7 @@ void runExperimentRoundTest(Algorithm& esAlgorithm, GRNSeries& train, GRNSeries&
 
     //GRNEDOHelpers::setMode(&ctx, TEST_MODE);
     //esAlgorithm.evaluate(esAlgorithm.getBestIndividual());
+    //esAlgorithm.reevaluateBestIndividualUsingTestSet();
     bestInd = esAlgorithm.getBestIndividual();
     //GRNEDOHelpers::setMode(&ctx, TRAINING_MODE);
 
@@ -1504,7 +1504,7 @@ void testCMAES2(){
     cout << "Best fitness: " << esAlgorithm.getBestIndividual()->getEvaluation() << endl;
 }
 
-int main(int argc, char** argv)
+int main2(int argc, char** argv)
 {
     string grnMode;
     string evalMode;
@@ -1552,9 +1552,9 @@ std::map<string, char*> parseArgs(int argc, char** argv){
     std::map<string, char*> args;
     if (argc == 6) {
         if(strcmp(argv[1], "grn5") == 0 || strcmp(argv[1], "grn10") == 0){
-            args["grnMode"] = argv[1];
+            args["grnModel"] = argv[1];
         }else{
-            cout << "Invalid GRN mode" << endl;
+            cout << "Invalid GRN model" << endl;
         }
 
         if(strcmp(argv[2], "lsoda") == 0 || strcmp(argv[2], "rk4") == 0) {
@@ -1573,32 +1573,36 @@ std::map<string, char*> parseArgs(int argc, char** argv){
 
         args["maxEvals"] = argv[4];
         args["seed"] = argv[5];
+    }else{
+        cout << "Invalid number of arguments" << endl;
     }
 
     return args;
 }
 
-int main2(int argc, char** argv)
+int main(int argc, char** argv)
 {
     std::map<string, char*> args = parseArgs(argc, argv);
-    string grnMode = args["grnMode"];
+    string grnModel = args["grnModel"];
     string evalMode = args["evalMode"];
     string algName = args["algName"];
     int maxEvals = atoi(args["maxEvals"]);
     int seed = atoi(argv[5]);
 
-    appContext ctx{};
+    //appContext ctx{};
     double (*func)(void*,void*);
+    ProblemDescription ctx = GRNEDOHelpers::grn5ProblemDescription;
 
     //todo: usar novo initialize
     //todo: unir grn5EvaluationLSODA e grn10EvaluationLSODA em uma só função
     //todo: fazer o mesmo para RK4
 
-    if(algName == "grn5"){
+    if(grnModel == "grn5"){
         ctx = {.IND_SIZE = 19, .MIN_K = 0.01,.MAX_K = 1,.MIN_N = 1,.MAX_N = 30,.MIN_TAU = 0.1,.MAX_TAU = 6,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 7,.K_SIZE = 7};
-    }else{
-
+    }else if(grnModel == "grn10"){
+        ctx = {.IND_SIZE = 40, .MIN_K = 0.01,.MAX_K = 1,.MIN_N = 1,.MAX_N = 30,.MIN_TAU = 0.1,.MAX_TAU = 6,
+                .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 15,.K_SIZE = 15};
     }
 
     if(evalMode == "lsoda"){
@@ -1610,46 +1614,36 @@ int main2(int argc, char** argv)
       //  initializeGRN5Context(&ctx, TRAINING_MODE, 20);
     }
 
-    GRNCoefProblem problem = GRNCoefProblem(19);
+    GRNSeries series = GRNSeries("GRN5.txt");
+    GRNSeries trainingSeries = GRNSeries(series, 0, 34);
+    GRNSeries testSeries = GRNSeries(series, 35, 49);
+    Algorithm algorithm = Algorithm(trainingSeries, testSeries, func, ctx.IND_SIZE);
+    algorithm.setContext(&ctx);
+    algorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
 
     // inicializa limites de tau, k e n
-    //todo: número de taus etc são diferentes dependendo do modelo, ver como fazer
     int cont = 0;
     for (int i = 0; i < ctx.TAU_SIZE; i++)
     {
-        problem.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU);
+        algorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
     {
-        problem.setBounds(i, ctx.MIN_K, ctx.MAX_K);
+        algorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
     for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
     {
-        problem.setBounds(i, ctx.MIN_N, ctx.MAX_N);
+        algorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
-    GRNSeries series = GRNSeries("GRN5.txt");
-    GRNSeries trainingSeries = GRNSeries(series, 0, 34);
-    GRNSeries testSeries = GRNSeries(series, 35, 49);
-
-
-    //todo:
-    Algorithm algorithm = Algorithm(problem, trainingSeries, testSeries, func);
-    //algorithm.setEvaluationFunction(func);
-    algorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
-    //algorithm.setContext(&ctx);
-
     //todo: falta usar de fato os conjuntos de treino e teste
     runExperimentRoundTest(algorithm, trainingSeries, testSeries, algName, maxEvals, seed);
-    clearContext2Test(&ctx);
 
-
-    //runExperimentRound("grn5", "lsoda", "cmaes", 1000, 0);
     return 0;
 
 

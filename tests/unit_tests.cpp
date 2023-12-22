@@ -228,14 +228,23 @@ BOOST_AUTO_TEST_CASE(test_evaluate_GRN5_LSODA){
                        4.254757908429968, 3.759370669969996, 4.784173526119725,
                        10.935884810737809, 24.595975874929724, 2.8109199678182635,
                        4.922623602327875};
+    double ind1[19] = {1.501389186814979,1.942449012417511,2.274636941429680,
+                       1.992580970631320,3.042183132272457,0.653825553189122,
+                       0.513122411862982,0.426546191045782,0.489374978181903,
+                       0.551634460261957,0.376952220630747,0.640936236050839,
+                       13.585063650892280,5.589296776771892,3.715287690756511,
+                       3.239909510258489,17.220015477006509,1.317604387880688,
+                       4.528470958973156};
 
     Individual ind = Individual(19);
-    ind.setParameters(ind0);
+    ind.setParameters(ind1);
     ind.setMaxValues(maxValues);
+
+    appContext ctx{.series = &series};
 
     //initializeGRNContext(&ctx, 1, numVariables, 5, 7, 7, 0, 49, vectors, maxValues);
 
-    double eval = grnEvaluationLSODATest(&ind, &testSeries);
+    double eval = grnEvaluationLSODATest(ind.getParameters(), &ctx);
     //clearContext2Test(&ctx);
 
     BOOST_CHECK_CLOSE_FRACTION( eval, 26.92, 0.001 );

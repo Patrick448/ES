@@ -67,7 +67,8 @@ void Algorithm::addIndividual(Individual* individual){
 }
 
 double Algorithm::evaluate(Individual* ind){
-    double eval =this->evaluationFunction(ind->getParameters(), this->context);
+    appContext ctx{.series = this->trainingSeries};
+    double eval =this->evaluationFunction(ind->getParameters(), &ctx);
     ind->setEvaluation(eval);
     this->evaluationsCounter++;
     return eval;
@@ -299,7 +300,6 @@ void deleteIndividuals(vector<Individual*> &vec, int start, int end){
 }
 
 
-//todo: set best individual at the end
 void Algorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, int maxEvals, int numParents, int numOffspring){
     this->clear();
     //vector<int> successHistory;
@@ -369,7 +369,6 @@ void Algorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, int 
 
 }
 
-//todo: set best individual at the end
 void Algorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation, int maxEvals, int numParents, int numOffspring){
     this->clear();
     //vector<int> successHistory;
@@ -441,12 +440,6 @@ void Algorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation, i
 
 }
 
-//todo: remover
-double Algorithm::evaluationIncrementCounterWrapper(void *ind, void * context){
-
-    this->evaluationsCounter++;
-    return this->evaluationFunction(ind, context);
-}
 
 void Algorithm::runCMAES(int seed, int maxEvals, int populationSize){
     this->clear();
@@ -454,12 +447,12 @@ void Algorithm::runCMAES(int seed, int maxEvals, int populationSize){
     this->bestIndividual->setEvaluation(DBL_MAX);
     int maxGenerations, newSeed;
     srand(seed);
-
+    appContext evaluationContext = appContext{.series = this->trainingSeries};
 
     while(this->evaluationsCounter < maxEvals){
         newSeed = rand();
         maxGenerations = (maxEvals - this->evaluationsCounter - populationSize)/populationSize;
-        GRNCoefProblem problem = GRNCoefProblem((appContext*)this->context);
+        GRNCoefProblem problem = GRNCoefProblem(&evaluationContext, (ProblemDescription*)this->context);
         problem.setEvaluationFunction(this->evaluationFunction);
         pagmo::population pop = pagmo::population(problem, populationSize, newSeed);
         cmaes alg = cmaes(maxGenerations, -1, -1, -1, -1, 0.5, 1e-6, 1e-6, false, true, newSeed);
@@ -491,12 +484,13 @@ void Algorithm::runDE(int seed, int maxEvals, int populationSize){
     this->bestIndividual->setEvaluation(DBL_MAX);
     int maxGenerations, newSeed;
     srand(seed);
+    appContext ctx = appContext{.series = this->trainingSeries};
 
 
     while(this->evaluationsCounter < maxEvals){
         newSeed = rand();
         maxGenerations = (maxEvals - this->evaluationsCounter - populationSize)/populationSize;
-        GRNCoefProblem problem = GRNCoefProblem((appContext*)this->context);
+        GRNCoefProblem problem = GRNCoefProblem(&ctx);
         problem.setEvaluationFunction(this->evaluationFunction);
         pagmo::population pop = pagmo::population(problem, populationSize, newSeed);
         pagmo::de alg = pagmo::de(maxGenerations, 0.8, 0.9, 2u, 1e-6, 1e-6, newSeed);
@@ -526,11 +520,13 @@ void Algorithm::runSADE(int seed, int maxEvals, int populationSize){
     this->bestIndividual->setEvaluation(DBL_MAX);
     int maxGenerations, newSeed;
     srand(seed);
+    appContext ctx = appContext{.series = this->trainingSeries};
+
 
     while(this->evaluationsCounter < maxEvals){
         newSeed = rand();
         maxGenerations = (maxEvals - this->evaluationsCounter - populationSize)/populationSize;
-        GRNCoefProblem problem = GRNCoefProblem((appContext*)this->context);
+        GRNCoefProblem problem = GRNCoefProblem(&ctx);
         problem.setEvaluationFunction(this->evaluationFunction);
         pagmo::population pop = pagmo::population(problem, populationSize, newSeed);
 
@@ -569,11 +565,24 @@ string Algorithm::populationToCSVString(){
     return popString;
 }
 
-Algorithm::Algorithm(GRNCoefProblem &problem, GRNSeries &trainingSeries, GRNSeries &testSeries,
-                     double (*evaluationFunction)(void *, void *)) {
-    this->problem = &problem;
+Algorithm::Algorithm(GRNSeries &trainingSeries, GRNSeries &testSeries,
+                     double (*evaluationFunction)(void *, void *), int numDimensions) {
     this->trainingSeries = &trainingSeries;
     this->testSeries = &testSeries;
     this->evaluationFunction = evaluationFunction;
+    this->numDimensions = numDimensions;
+    this->upperBounds.resize(numDimensions);
+    this->lowerBounds.resize(numDimensions);
+    this->lowerBoundTypes.resize(numDimensions);
+    this->upperBoundTypes.resize(numDimensions);
+    this->maxSigma = DBL_MAX;
+    this->minSigma = -DBL_MAX;
 
+}
+
+void Algorithm::reevaluateBestIndividualUsingTestSet() {
+    appContext ctx{.series = this->testSeries};
+    double eval =this->evaluationFunction(this->bestIndividual->getParameters(), &ctx);
+    this->bestIndividual->setEvaluation(eval);
+    //return eval;
 }

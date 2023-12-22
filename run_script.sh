@@ -1,7 +1,7 @@
 #!/bin/bash
-for i in {0..29}
+for i in {0..5}
 do
-   ./build/ES grn10 lsoda sade 1050000 $i >> sade-output10-new-limits.txt &
+   ./build/ES grn5 lsoda cmaes 1050000 $i >> testing-grn5-lsoda.txt &
 done
 
 exit

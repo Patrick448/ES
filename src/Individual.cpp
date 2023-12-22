@@ -5,20 +5,19 @@
 #include "Individual.h"
 #include <math.h>
 
-Individual::Individual(int numDimensions) {
-   // this->dimensions.resize(numDimensions);
-   // this->sigmas.resize(numDimensions);
-    this->numDimensions = numDimensions;
-    this->parameters = new double[numDimensions];
-    this->sigmas = new double[numDimensions];
+Individual::Individual(int numParameters) {
+    this->numParameters = numParameters;
+    this->parameters = new double[numParameters];
+    this->sigmas = new double[numParameters];
+
 }
 
-Individual::Individual(int numDimensions, double *dimensions) {
-    this->numDimensions = numDimensions;
+Individual::Individual(int numDimensions, double *parameters) {
+    this->numParameters = numDimensions;
     this->parameters = new double[numDimensions];
 
     for(int i=0; i< numDimensions; i++){
-        this->parameters[i] = dimensions[i];
+        this->parameters[i] = parameters[i];
     }
 }
 
@@ -80,7 +79,7 @@ string doubleToString(double val, int precision){
 
 string Individual::toCSVString(){
     string indString = "";
-    for(int i=0; i< this->numDimensions; i++){
+    for(int i=0; i< this->numParameters; i++){
         indString+= doubleToString(this->parameters[i], 15) + ",";
     }
 
@@ -98,9 +97,16 @@ double *Individual::getMaxValues() const {
 
 void Individual::setParameters(double *parameters) {
 
-    for(int i=0; i< this->numDimensions; i++){
+    for(int i=0; i< this->numParameters; i++){
         this->parameters[i] = parameters[i];
     }
+}
+
+double *Individual::getFullParameters() const {
+    //initialize fullParameters with maxValues then
+
+
+    return nullptr;
 }
 
 
