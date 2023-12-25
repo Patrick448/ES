@@ -61,7 +61,7 @@ int GRNEDOHelpers::twoBody5VarLSODA(double t, double *y, double *ydot, void *_da
     return 0;
 }
 //todo: renomear para twoBody5VarModel (ou grn5VariablesModel) ou algo assim
-int GRNEDOHelpers::twoBody5VarLSODATest(double t, double *y, double *ydot, void *context)
+int GRNEDOHelpers::grn5Model(double t, double *y, double *ydot, void *context)
 {
     appContext *ctx = (appContext *)context;
     //Individual *ind = (Individual *)data;
@@ -645,7 +645,7 @@ double GRNEDOHelpers::lsodaWrapper(int dydt(double t, double *y, double *ydot, v
     return 0;
 }
 
-double GRNEDOHelpers::lsodaWrapperTest(int dydt(double t, double *y, double *ydot, void *data), double* tspan, double* y_0, int totalSteps, int nVariables, double* times, void* context, double *_yout)
+double GRNEDOHelpers::lsodaWrapperTest(int dydt(double t, double *y, double *ydot, void *data), double* tspan, double* y_0, int totalSteps, int nVariables, double* times, double *_yout, void* context)
 {
 
     // todo: tentar colocar essa alocação fora da função
@@ -910,6 +910,8 @@ double GRNEDOHelpers::grn5EvaluationLSODA(void *ind, void* data)
 
 }
 
+
+//todo: generalizar função para qualquer modelo
 double GRNEDOHelpers::grnEvaluationLSODATest(void* individual, void* context)
 {
     appContext* ctx = (appContext*)(context);
@@ -926,11 +928,42 @@ double GRNEDOHelpers::grnEvaluationLSODATest(void* individual, void* context)
     int nVariables = evalSeries->getNumVariables();
     double *y_0 = evalSeries->getInitialValues();
 
-    lsodaWrapperTest(twoBody5VarLSODATest, tspan, y_0, totalSteps, nVariables, nullptr, ctx, yout);
+    lsodaWrapperTest(grn5Model, tspan, y_0, totalSteps, nVariables, nullptr, yout, ctx);
 
     double eval = differenceTest(yout, expectedResult,  evalSeries->getNumTimeSteps() - 1, nVariables, granularity);
 
     delete [] yout;
+
+
+    return eval;
+
+}
+
+//todo: generalizar função para qualquer modelo
+double GRNEDOHelpers::grnEvaluationRK4Test(void* individual, void* context)
+{
+    appContext* ctx = (appContext*)(context);
+    GRNSeries* evalSeries = (GRNSeries*)(ctx->series);
+    double* _ind = (double*)individual;
+    ctx->individual = _ind;
+
+    //todo: ver se volto granularity para o context
+    int granularity = 20;
+    double* yout = new double[(evalSeries->getNumTimeSteps()) * evalSeries->getNumVariables()];
+    int totalSteps = (evalSeries->getNumTimeSteps() - 1) * granularity;
+    double tspan[] {evalSeries->getStartTime(), evalSeries->getEndTime()};
+    double** expectedResult = &evalSeries->getVectors()[1];
+    int nVariables = evalSeries->getNumVariables();
+    double *y_0 = evalSeries->getInitialValues();
+    double *t = new double [ctx->totalSteps+1];
+
+    //lsodaWrapperTest(twoBody5VarLSODATest, tspan, y_0, totalSteps, nVariables, nullptr, ctx, yout);
+    rk4(grn5Model, tspan, y_0, totalSteps, nVariables, t, yout, ctx);
+
+    double eval = differenceTest(yout, expectedResult,  evalSeries->getNumTimeSteps() - 1, nVariables, granularity);
+
+    delete [] yout;
+    delete [] t;
 
 
     return eval;
@@ -963,7 +996,6 @@ double GRNEDOHelpers::grn10EvaluationLSODA(void *ind, void *data)
 }
 
 double GRNEDOHelpers::grn10EvaluationRK4(void *ind, void* data)
-
 {   appContext* ctx = (appContext*)(data);
     double* _ind = (double *)ind;
     ctx->individual = _ind;

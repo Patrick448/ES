@@ -21,6 +21,7 @@ private:
     vector<int> lowerBoundTypes;
     int numDimensions;
     double (*evaluationFunction)(void*, void*);
+    int (*grnModel)(double t, double *y, double *ydot, void *context);
     int algorithmType;
     int evaluationsCounter;
     double minSigma;
@@ -75,7 +76,10 @@ public:
     Individual* getBestIndividual();
     double evaluationIncrementCounterWrapper(void *ind, void * context);
     void reevaluateBestIndividualUsingTestSet();
-    };
+
+    void setGrnModel(int (*grnModel)(double, double *, double *, void *));
+
+};
 
 
 #endif //ES_ALGORITHM_H

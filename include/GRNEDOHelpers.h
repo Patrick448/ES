@@ -28,7 +28,7 @@ namespace GRNEDOHelpers{
     /// 5 variable GRN model.
     /// todo: rename to grn5Model
     int twoBody5VarLSODA(double t, double *y, double *ydot, void *_data);
-    int twoBody5VarLSODATest(double t, double *y, double *ydot, void *data);
+    int grn5Model(double t, double *y, double *ydot, void *data);
 
     /// 10 variable GRN model.
     /// todo: rename to grn10Model
@@ -62,7 +62,7 @@ namespace GRNEDOHelpers{
     /// @param appCtx the context of the problem.
     /// @param _yout the output of the integration (meaning the function values at each time step).
     double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), appContext *appCtx, double *_yout);
-    double lsodaWrapperTest(int dydt(double t, double *y, double *ydot, void *data), double* tspan, double* y_0, int totalSteps, int nVariables, double* times, void* context, double *_yout);
+    double lsodaWrapperTest(int dydt(double t, double *y, double *ydot, void *data), double* tspan, double* y_0, int totalSteps, int nVariables, double* times, double *_yout, void* context);
 
     /// evaluates the given individual (5 variables) using the LSODA algorithm.
     double grn5EvaluationLSODA(void *ind, void* data);
@@ -76,7 +76,7 @@ namespace GRNEDOHelpers{
     double grn10EvaluationRK4(void *ind, void* data);
 
     double grnEvaluationLSODATest(void* individual, void* context);
-
+    double grnEvaluationRK4Test(void* individual, void* context);
     /// changes the mode of the problem.
     /// @see initializeGRN5Context for more details.
     void setMode(appContext* ctx, int mode);

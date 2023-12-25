@@ -906,6 +906,7 @@ void runExperimentRound(string grnMode, string evalMode, string algName, int max
     clearContext(&ctx);
 }
 
+
 void runExperimentRoundTest(Algorithm& esAlgorithm, GRNSeries& train, GRNSeries& test, string algName, int maxEvals, int seed)
 {
     //string resultCsv = "seed,eval,time,numEvals,ind\n";
@@ -1604,19 +1605,17 @@ int main(int argc, char** argv)
         ctx = {.IND_SIZE = 40, .MIN_K = 0.01,.MAX_K = 1,.MIN_N = 1,.MAX_N = 30,.MIN_TAU = 0.1,.MAX_TAU = 6,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 15,.K_SIZE = 15};
     }
-
     if(evalMode == "lsoda"){
         func = &grnEvaluationLSODATest;
 
     }
-    else {
-      //  func = &grn5EvaluationRK4;
-      //  initializeGRN5Context(&ctx, TRAINING_MODE, 20);
+    else if(evalMode == "rk4"){
+        func = &grnEvaluationRK4Test;
     }
 
     GRNSeries series = GRNSeries("GRN5.txt");
-    GRNSeries trainingSeries = GRNSeries(series, 0, 34);
-    GRNSeries testSeries = GRNSeries(series, 35, 49);
+    GRNSeries trainingSeries = GRNSeries(series, 0, 49);
+    GRNSeries testSeries = GRNSeries(series, 0, 49);
     Algorithm algorithm = Algorithm(trainingSeries, testSeries, func, ctx.IND_SIZE);
     algorithm.setContext(&ctx);
     algorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);

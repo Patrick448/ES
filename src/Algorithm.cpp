@@ -586,3 +586,7 @@ void Algorithm::reevaluateBestIndividualUsingTestSet() {
     this->bestIndividual->setEvaluation(eval);
     //return eval;
 }
+
+void Algorithm::setGrnModel(int (*grnModel)(double, double *, double *, void *)) {
+    this->grnModel = grnModel;
+}
