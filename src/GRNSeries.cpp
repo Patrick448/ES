@@ -166,7 +166,7 @@ void GRNSeries::setMatrixInitialized(bool matrixInitialized) {
 
 
 GRNSeries::~GRNSeries() {
-    if(!this->matrixInitialized){
+    if(this->matrixInitialized){
         for(int i=0; i<this->numColumns; i++){
             delete[] this->vectors[i];
         }
