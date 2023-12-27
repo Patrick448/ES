@@ -1549,31 +1549,49 @@ int main2(int argc, char** argv)
 
 }
 
-std::map<string, char*> parseArgs(int argc, char** argv){
-    std::map<string, char*> args;
-    if (argc == 6) {
-        if(strcmp(argv[1], "grn5") == 0 || strcmp(argv[1], "grn10") == 0){
-            args["grnModel"] = argv[1];
+string findArg(int argc, char** argv, string argName){
+    for(int i = 0; i < argc; i++){
+        if(strcmp(argv[i], argName.c_str()) == 0){
+            return string(argv[i+1]);
+        }
+    }
+    return "";
+}
+
+std::map<string, string> parseArgs(int argc, char** argv){
+    std::map<string, string> args;
+    if (argc == 13) {
+        string inputFile = findArg(argc, argv, "-i");
+        string grnModel = findArg(argc, argv, "-m");
+        string evalMode = findArg(argc, argv, "-e");
+        string algName = findArg(argc, argv, "-a");
+        string maxEvals = findArg(argc, argv, "-n");
+        string seed = findArg(argc, argv, "-s");
+
+        args["inputFile"] = inputFile;
+
+        if(grnModel == "grn5"|| grnModel == "grn10"){
+            args["grnModel"] = grnModel;
         }else{
             cout << "Invalid GRN model" << endl;
         }
 
-        if(strcmp(argv[2], "lsoda") == 0 || strcmp(argv[2], "rk4") == 0) {
-            args["evalMode"] = argv[2];
+        if(evalMode == "lsoda" || evalMode == "rk4") {
+            args["evalMode"] = evalMode;
         }else{
             cout << "Invalid evaluation mode" << endl;
         }
 
-        if(strcmp(argv[3], "cmaes") == 0 || strcmp(argv[3], "es-i") == 0 ||
-           strcmp(argv[3], "es-ni"  ) == 0 ||strcmp(argv[3], "de") == 0 ||
-           strcmp(argv[3], "sade") == 0) {
-            args["algName"] = argv[3];
-        }else  {
+        if(algName == "cmaes" || algName == "es-i" || algName == "es-ni"||
+        algName == "de" ||algName == "sade") {
+            args["algName"] = algName;
+        }
+        else  {
             cout << "Invalid algorithm name" << endl;
         }
 
-        args["maxEvals"] = argv[4];
-        args["seed"] = argv[5];
+        args["maxEvals"] = maxEvals;
+        args["seed"] = seed;
     }else{
         cout << "Invalid number of arguments" << endl;
     }
@@ -1581,14 +1599,17 @@ std::map<string, char*> parseArgs(int argc, char** argv){
     return args;
 }
 
+
+
 int main(int argc, char** argv)
 {
-    std::map<string, char*> args = parseArgs(argc, argv);
+    std::map<string, string> args = parseArgs(argc, argv);
     string grnModel = args["grnModel"];
     string evalMode = args["evalMode"];
     string algName = args["algName"];
-    int maxEvals = atoi(args["maxEvals"]);
-    int seed = atoi(argv[5]);
+    string inputFile = args["inputFile"];
+    int seed = stoi(args["seed"]);
+    int maxEvals = stoi(args["maxEvals"]);
 
     //appContext ctx{};
     double (*func)(void*,void*);
@@ -1607,13 +1628,12 @@ int main(int argc, char** argv)
     }
     if(evalMode == "lsoda"){
         func = &grnEvaluationLSODATest;
-
     }
     else if(evalMode == "rk4"){
         func = &grnEvaluationRK4Test;
     }
 
-    GRNSeries series = GRNSeries("GRN5.txt");
+    GRNSeries series = GRNSeries(inputFile);
     GRNSeries trainingSeries = GRNSeries(series, 0, 49);
     GRNSeries testSeries = GRNSeries(series, 0, 49);
     Algorithm algorithm = Algorithm(trainingSeries, testSeries, func, ctx.IND_SIZE);
