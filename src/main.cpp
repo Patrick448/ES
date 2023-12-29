@@ -1618,11 +1618,11 @@ int main(int argc, char** argv)
     //todo: fazer o mesmo para RK4
 
     if(grnModel == "grn5"){
-        ctx = {.IND_SIZE = 19, .MIN_K = 0.01,.MAX_K = 1,.MIN_N = 1,.MAX_N = 30,.MIN_TAU = 0.1,.MAX_TAU = 6,
+        ctx = {.IND_SIZE = 19, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 7,.K_SIZE = 7};
     }
     else if(grnModel == "grn10"){
-        ctx = {.IND_SIZE = 40, .MIN_K = 0.01,.MAX_K = 1,.MIN_N = 1,.MAX_N = 30,.MIN_TAU = 0.1,.MAX_TAU = 6,
+        ctx = {.IND_SIZE = 40, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 15,.K_SIZE = 15};
     }
     if(evalMode == "lsoda"){
