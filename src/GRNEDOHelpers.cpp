@@ -921,8 +921,10 @@ double GRNEDOHelpers::grnEvaluationLSODATest(void* individual, void* context)
 
     //todo: ver se volto granularity para o context
     int granularity = 1;
-    double* yout = new double[(evalSeries->getNumTimeSteps()) * evalSeries->getNumVariables()];
     int totalSteps = (evalSeries->getNumTimeSteps() - 1) * granularity;
+    //double* yout = new double[(evalSeries->getNumTimeSteps()) * evalSeries->getNumVariables()];
+    double* yout = new double[(totalSteps + 1) * evalSeries->getNumVariables()];
+
     double tspan[] {evalSeries->getStartTime(), evalSeries->getEndTime()};
     double** expectedResult = &evalSeries->getVectors()[1];
     int nVariables = evalSeries->getNumVariables();
@@ -949,13 +951,13 @@ double GRNEDOHelpers::grnEvaluationRK4Test(void* individual, void* context)
 
     //todo: ver se volto granularity para o context
     int granularity = 20;
-    double* yout = new double[(evalSeries->getNumTimeSteps()) * evalSeries->getNumVariables()];
     int totalSteps = (evalSeries->getNumTimeSteps() - 1) * granularity;
+    double* yout = new double[(totalSteps + 1) * evalSeries->getNumVariables()];
     double tspan[] {evalSeries->getStartTime(), evalSeries->getEndTime()};
     double** expectedResult = &evalSeries->getVectors()[1];
     int nVariables = evalSeries->getNumVariables();
     double *y_0 = evalSeries->getInitialValues();
-    double *t = new double [ctx->totalSteps+1];
+    double *t = new double [totalSteps+1];
 
     //lsodaWrapperTest(twoBody5VarLSODATest, tspan, y_0, totalSteps, nVariables, nullptr, ctx, yout);
     rk4(grn5Model, tspan, y_0, totalSteps, nVariables, t, yout, ctx);
