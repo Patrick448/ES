@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BUDGET=1050000
+BUDGET=10500
 INPUT_FILE="GRN5.txt"
 MODEL="grn5"
 EXE_PATH="./build/ES"

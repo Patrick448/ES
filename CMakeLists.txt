@@ -7,7 +7,7 @@ SET(CMAKE_C_FLAGS "-O3")
 file(GLOB source_cpp src/*.cpp)
 file(GLOB source_h include/*.h)
 file(GLOB source_c src/*.c)
-
+list(APPEND CMAKE_PREFIX_PATH "/home/patrick/.local/lib/cmake/pagmo")
 #
 # sudo apt install libboost1.74-all-dev
 #
