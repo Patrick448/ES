@@ -484,13 +484,13 @@ void Algorithm::runDE(int seed, int maxEvals, int populationSize){
     this->bestIndividual->setEvaluation(DBL_MAX);
     int maxGenerations, newSeed;
     srand(seed);
-    appContext ctx = appContext{.series = this->trainingSeries};
+    appContext evaluationContext = appContext{.series = this->trainingSeries};
 
 
     while(this->evaluationsCounter < maxEvals){
         newSeed = rand();
         maxGenerations = (maxEvals - this->evaluationsCounter - populationSize)/populationSize;
-        GRNCoefProblem problem = GRNCoefProblem(&ctx);
+        GRNCoefProblem problem = GRNCoefProblem(&evaluationContext, (ProblemDescription*)this->context);
         problem.setEvaluationFunction(this->evaluationFunction);
         pagmo::population pop = pagmo::population(problem, populationSize, newSeed);
         pagmo::de alg = pagmo::de(maxGenerations, 0.8, 0.9, 2u, 1e-6, 1e-6, newSeed);

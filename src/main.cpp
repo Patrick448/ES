@@ -935,7 +935,7 @@ void runExperimentRoundTest(Algorithm& esAlgorithm, GRNSeries& train, GRNSeries&
 
     //GRNEDOHelpers::setMode(&ctx, TEST_MODE);
     //esAlgorithm.evaluate(esAlgorithm.getBestIndividual());
-    //esAlgorithm.reevaluateBestIndividualUsingTestSet();
+    esAlgorithm.reevaluateBestIndividualUsingTestSet();
     bestInd = esAlgorithm.getBestIndividual();
     //GRNEDOHelpers::setMode(&ctx, TRAINING_MODE);
 
@@ -1583,7 +1583,7 @@ std::map<string, string> parseArgs(int argc, char** argv){
         }
 
         if(algName == "cmaes" || algName == "es-i" || algName == "es-ni"||
-        algName == "de" ||algName == "sade") {
+        algName == "de" ||algName == "sade" || algName == "1+1"){
             args["algName"] = algName;
         }
         else  {
@@ -1633,8 +1633,8 @@ int main(int argc, char** argv)
     }
 
     GRNSeries series = GRNSeries(inputFile);
-    GRNSeries trainingSeries = GRNSeries(series, 0, 49);
-    GRNSeries testSeries = GRNSeries(series, 0, 49);
+    GRNSeries trainingSeries = GRNSeries(series, 0, 34);
+    GRNSeries testSeries = GRNSeries(series, 35, 49);
     Algorithm algorithm = Algorithm(trainingSeries, testSeries, func, ctx.IND_SIZE);
     algorithm.setContext(&ctx);
     algorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);

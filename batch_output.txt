@@ -1,0 +1,316 @@
+Command received: ./build/ES -i GRN5.txt -m grn5 -e lsoda -a cmaes -n 1050 -s $i >> grn5-1050/output-grn5-cmaes.txt
+running batch 0 to 3
+0
+1
+2
+3
+waiting for processes...
+ 664680   2 ES
+ 664682   3 ES
+ 664684   4 ES
+ 664687   7 ES
+running batch 4 to 7
+4
+5
+6
+7
+waiting for processes...
+ 664694   1 ES
+ 664695   2 ES
+ 664697   4 ES
+ 664699   6 ES
+running batch 8 to 11
+8
+9
+10
+11
+waiting for processes...
+ 664707   2 ES
+ 664708   1 ES
+ 664710   3 ES
+ 664713   0 ES
+running batch 12 to 15
+12
+13
+14
+15
+waiting for processes...
+ 664719   6 ES
+ 664721   5 ES
+ 664723   3 ES
+ 664724   2 ES
+running batch 16 to 19
+16
+17
+18
+19
+waiting for processes...
+ 664733   2 ES
+ 664734   0 ES
+ 664736   7 ES
+ 664738   3 ES
+running batch 20 to 23
+20
+21
+22
+23
+waiting for processes...
+ 664746   7 ES
+ 664747   0 ES
+ 664749   1 ES
+ 664752   6 ES
+running batch 24 to 27
+24
+25
+26
+27
+waiting for processes...
+ 664759   7 ES
+ 664760   4 ES
+ 664762   3 ES
+ 664765   5 ES
+running batch 28 to 29
+28
+29
+waiting for processes...
+ 664774   0 ES
+ 664776   3 ES
+finished
+Elapsed Time: 3 seconds
+Command received: ./build/ES -i GRN5.txt -m grn5 -e lsoda -a de -n 1050 -s $i >> grn5-1050/output-grn5-de.txt
+running batch 0 to 3
+0
+1
+2
+3
+waiting for processes...
+ 664786   3 ES
+ 664788   2 ES
+ 664790   0 ES
+ 664792   1 ES
+running batch 4 to 7
+4
+5
+6
+7
+waiting for processes...
+ 664799   6 ES
+ 664801   2 ES
+ 664803   7 ES
+ 664805   1 ES
+running batch 8 to 11
+8
+9
+10
+11
+waiting for processes...
+ 664813   6 ES
+ 664814   1 ES
+ 664817   4 ES
+ 664818   3 ES
+running batch 12 to 15
+12
+13
+14
+15
+waiting for processes...
+ 664826   3 ES
+ 664827   4 ES
+ 664829   2 ES
+ 664831   5 ES
+running batch 16 to 19
+16
+17
+18
+19
+waiting for processes...
+ 664839   7 ES
+ 664841   4 ES
+ 664842   5 ES
+ 664845   2 ES
+running batch 20 to 23
+20
+21
+22
+23
+waiting for processes...
+ 664853   2 ES
+ 664854   5 ES
+ 664855   7 ES
+ 664857   4 ES
+running batch 24 to 27
+24
+25
+26
+27
+waiting for processes...
+ 664864   1 ES
+ 664866   4 ES
+ 664867   6 ES
+ 664870   7 ES
+running batch 28 to 29
+28
+29
+waiting for processes...
+ 664877   2 ES
+ 664879   7 ES
+finished
+Elapsed Time: 2 seconds
+Command received: ./build/ES -i GRN5.txt -m grn5 -e lsoda -a es-i -n 1050 -s $i >> grn5-1050/output-grn5-es-i.txt
+running batch 0 to 3
+0
+1
+2
+3
+waiting for processes...
+ 664890   5 ES
+ 664891   0 ES
+ 664893   2 ES
+ 664895   6 ES
+running batch 4 to 7
+4
+5
+6
+7
+waiting for processes...
+ 664904   3 ES
+ 664905   1 ES
+ 664906   2 ES
+ 664908   5 ES
+running batch 8 to 11
+8
+9
+10
+11
+waiting for processes...
+ 664916   2 ES
+ 664917   3 ES
+ 664919   4 ES
+ 664921   1 ES
+running batch 12 to 15
+12
+13
+14
+15
+waiting for processes...
+ 664930   0 ES
+ 664932   4 ES
+ 664934   7 ES
+ 664936   3 ES
+running batch 16 to 19
+16
+17
+18
+19
+waiting for processes...
+ 664948   5 ES
+ 664950   4 ES
+ 664952   0 ES
+ 664954   2 ES
+running batch 20 to 23
+20
+21
+22
+23
+waiting for processes...
+ 664964   0 ES
+ 664966   5 ES
+ 664969   3 ES
+ 664970   2 ES
+running batch 24 to 27
+24
+25
+26
+27
+waiting for processes...
+ 664978   5 ES
+ 664980   3 ES
+ 664982   1 ES
+ 664983   7 ES
+running batch 28 to 29
+28
+29
+waiting for processes...
+ 664991   7 ES
+ 664992   2 ES
+finished
+Elapsed Time: 3 seconds
+Command received: ./build/ES -i GRN5.txt -m grn5 -e lsoda -a es-ni -n 1050 -s $i >> grn5-1050/output-grn5-es-ni.txt
+running batch 0 to 3
+0
+1
+2
+3
+waiting for processes...
+ 665002   2 ES
+ 665004   5 ES
+ 665007   1 ES
+ 665008   0 ES
+running batch 4 to 7
+4
+5
+6
+7
+waiting for processes...
+ 665016   1 ES
+ 665017   0 ES
+ 665021   6 ES
+ 665022   5 ES
+running batch 8 to 11
+8
+9
+10
+11
+waiting for processes...
+ 665028   7 ES
+ 665030   5 ES
+ 665032   1 ES
+ 665034   0 ES
+running batch 12 to 15
+12
+13
+14
+15
+waiting for processes...
+ 665042   6 ES
+ 665043   4 ES
+ 665046   3 ES
+ 665047   0 ES
+running batch 16 to 19
+16
+17
+18
+19
+waiting for processes...
+ 665054   3 ES
+ 665056   6 ES
+ 665058   1 ES
+ 665060   5 ES
+running batch 20 to 23
+20
+21
+22
+23
+waiting for processes...
+ 665068   1 ES
+ 665069   3 ES
+ 665071   0 ES
+ 665073   2 ES
+running batch 24 to 27
+24
+25
+26
+27
+waiting for processes...
+ 665081   1 ES
+ 665083   4 ES
+ 665084   7 ES
+ 665086   6 ES
+running batch 28 to 29
+28
+29
+waiting for processes...
+ 665094   4 ES
+ 665096   7 ES
+finished
+Elapsed Time: 3 seconds
