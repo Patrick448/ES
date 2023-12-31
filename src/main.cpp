@@ -1620,17 +1620,26 @@ int main(int argc, char** argv)
     if(grnModel == "grn5"){
         ctx = {.IND_SIZE = 19, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 7,.K_SIZE = 7};
+
+        if(evalMode == "lsoda"){
+            func = &grnEvaluationLSODATest;
+        }
+        else if(evalMode == "rk4"){
+            func = &grnEvaluationRK4Test;
+        }
     }
     else if(grnModel == "grn10"){
         ctx = {.IND_SIZE = 40, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 15,.K_SIZE = 15};
+
+        if(evalMode == "lsoda"){
+            func = &grn10EvaluationLSODATest;
+        }
+        else if(evalMode == "rk4"){
+            func = &grn10EvaluationRK4Test;
+        }
     }
-    if(evalMode == "lsoda"){
-        func = &grnEvaluationLSODATest;
-    }
-    else if(evalMode == "rk4"){
-        func = &grnEvaluationRK4Test;
-    }
+
 
     GRNSeries series = GRNSeries(inputFile);
     GRNSeries trainingSeries = GRNSeries(series, 0, 34);

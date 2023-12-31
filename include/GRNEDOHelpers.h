@@ -29,6 +29,7 @@ namespace GRNEDOHelpers{
     /// todo: rename to grn5Model
     int twoBody5VarLSODA(double t, double *y, double *ydot, void *_data);
     int grn5Model(double t, double *y, double *ydot, void *data);
+    int grn10Model(double t, double *y, double *ydot, void *data);
 
     /// 10 variable GRN model.
     /// todo: rename to grn10Model
@@ -77,6 +78,8 @@ namespace GRNEDOHelpers{
 
     double grnEvaluationLSODATest(void* individual, void* context);
     double grnEvaluationRK4Test(void* individual, void* context);
+    double grn10EvaluationLSODATest(void* individual, void* context);
+    double grn10EvaluationRK4Test(void* individual, void* context);
     /// changes the mode of the problem.
     /// @see initializeGRN5Context for more details.
     void setMode(appContext* ctx, int mode);
