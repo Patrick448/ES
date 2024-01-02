@@ -907,7 +907,7 @@ void runExperimentRound(string grnMode, string evalMode, string algName, int max
 }
 
 
-void runExperimentRoundTest(Algorithm& esAlgorithm, GRNSeries& train, GRNSeries& test, string algName, int maxEvals, int seed)
+void runExperimentRoundTest(Algorithm& esAlgorithm, string algName, int maxEvals, int seed)
 {
     //string resultCsv = "seed,eval,time,numEvals,ind\n";
     string resultCsv = "";
@@ -1558,15 +1558,50 @@ string findArg(int argc, char** argv, string argName){
     return "";
 }
 
+vector<string> findArgList(int argc, char** argv, string argName, int listSize){
+    vector<string> args;
+
+    for(int i = 0; i < argc; i++){
+        if(strcmp(argv[i], argName.c_str()) == 0){
+            for(int j=0; j < listSize; j++){
+                args.push_back(string(argv[i+j+1]));
+            }
+        }
+    }
+    return args;
+}
+
+bool argExists(int argc, char** argv, string argName){
+    bool argFound = false;
+
+    for(int i = 0; i < argc && !argFound; i++){
+        if(strcmp(argv[i], argName.c_str()) == 0){
+            argFound = true;
+        }
+    }
+    return argFound;
+}
+
 std::map<string, string> parseArgs(int argc, char** argv){
     std::map<string, string> args;
-    if (argc == 13) {
+    //if (argc == 13) {
         string inputFile = findArg(argc, argv, "-i");
         string grnModel = findArg(argc, argv, "-m");
         string evalMode = findArg(argc, argv, "-e");
         string algName = findArg(argc, argv, "-a");
         string maxEvals = findArg(argc, argv, "-n");
         string seed = findArg(argc, argv, "-s");
+
+        if(argExists(argc, argv, "-ts")){
+            args["testSet"] = findArg(argc, argv, "-ts");
+        }
+        if(argExists(argc, argv, "-sd")){
+            vector<string> setIntervals = findArgList(argc, argv, "-sd", 4);
+            args["trainingStart"] = setIntervals[0];
+            args["trainingEnd"] = setIntervals[1];
+            args["testStart"] = setIntervals[2];
+            args["testEnd"] = setIntervals[3];
+        }
 
         args["inputFile"] = inputFile;
 
@@ -1592,9 +1627,9 @@ std::map<string, string> parseArgs(int argc, char** argv){
 
         args["maxEvals"] = maxEvals;
         args["seed"] = seed;
-    }else{
-        cout << "Invalid number of arguments" << endl;
-    }
+   // }else{
+  //      cout << "Invalid number of arguments" << endl;
+   // }
 
     return args;
 }
@@ -1641,10 +1676,28 @@ int main(int argc, char** argv)
     }
 
 
-    GRNSeries series = GRNSeries(inputFile);
-    GRNSeries trainingSeries = GRNSeries(series, 0, 34);
-    GRNSeries testSeries = GRNSeries(series, 35, 49);
-    Algorithm algorithm = Algorithm(trainingSeries, testSeries, func, ctx.IND_SIZE);
+//    GRNSeries series = GRNSeries(inputFile);
+//    GRNSeries trainingSeries = GRNSeries(series, 0, 34);
+//    GRNSeries testSeries = GRNSeries(series, 35, 49);
+    GRNSeries* inputSeries = new GRNSeries(inputFile);
+    GRNSeries* trainingSeries;
+    GRNSeries* testSeries;
+   // GRNSeries trainingSeries;
+    //GRNSeries testSeries;
+
+    if(args.find("testSet") != args.end()){
+        trainingSeries = new GRNSeries(inputFile);
+        testSeries = new GRNSeries(args["testSet"]);
+
+    }else if(args.find("trainingStart") != args.end()){
+        trainingSeries = new GRNSeries(*inputSeries, stoi(args["trainingStart"]), stoi(args["trainingEnd"]));
+        testSeries = new GRNSeries(*inputSeries, stoi(args["testStart"]), stoi(args["testEnd"]));
+    }else {
+        trainingSeries = new GRNSeries(inputFile);
+        testSeries = new GRNSeries(inputFile);
+    }
+
+    Algorithm algorithm = Algorithm(*trainingSeries, *testSeries, func, ctx.IND_SIZE);
     algorithm.setContext(&ctx);
     algorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
 
@@ -1669,8 +1722,11 @@ int main(int argc, char** argv)
     }
 
     //todo: falta usar de fato os conjuntos de treino e teste
-    runExperimentRoundTest(algorithm, trainingSeries, testSeries, algName, maxEvals, seed);
+    runExperimentRoundTest(algorithm, algName, maxEvals, seed);
 
+    delete inputSeries;
+    delete trainingSeries;
+    delete testSeries;
     return 0;
 
 
