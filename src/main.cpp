@@ -1675,15 +1675,9 @@ int main(int argc, char** argv)
         }
     }
 
-
-//    GRNSeries series = GRNSeries(inputFile);
-//    GRNSeries trainingSeries = GRNSeries(series, 0, 34);
-//    GRNSeries testSeries = GRNSeries(series, 35, 49);
     GRNSeries* inputSeries = new GRNSeries(inputFile);
     GRNSeries* trainingSeries;
     GRNSeries* testSeries;
-   // GRNSeries trainingSeries;
-    //GRNSeries testSeries;
 
     if(args.find("testSet") != args.end()){
         trainingSeries = new GRNSeries(inputFile);

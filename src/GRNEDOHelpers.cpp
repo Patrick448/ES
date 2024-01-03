@@ -64,7 +64,6 @@ int GRNEDOHelpers::twoBody5VarLSODA(double t, double *y, double *ydot, void *_da
 int GRNEDOHelpers::grn5Model(double t, double *y, double *ydot, void *context)
 {
     appContext *ctx = (appContext *)context;
-    //Individual *ind = (Individual *)data;
     double* individual = ctx->individual;
     double* maxValues = ((GRNSeries*)ctx->series)->getMaxValues();
     double *tau = &individual[0];
