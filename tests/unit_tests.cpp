@@ -98,33 +98,6 @@ BOOST_AUTO_TEST_CASE(test_GRNSeries_should_return_correct_max_values){
 }
 
 //todo: fazer o teste abaixo com diferentes conjuntos
-BOOST_AUTO_TEST_CASE(test_initialize_GRN5_context_LSODA){
-    //void GRNEDOHelpers::initializeGRNContext(appContext* ctx, int granularity, int numVariables, int numTau, int numN, int numK, int setStart, int setEnd, double** vectors, double * maxValues)
-    appContext ctx{};
-    GRNSeries series = GRNSeries("GRN5.txt");
-    GRNSeries trainingSeries = GRNSeries(series, 0, 49);
-    double **vectors = trainingSeries.getVectors();
-    double *maxValues = trainingSeries.getMaxValues();
-    int numVariables = trainingSeries.getNumColumns() -1;
-
-    double ind0[19] = {1.2163355099083872, 1.1264485098219865, 2.973714367061704,
-                       2.952143123315177, 2.998260518457365, 0.5687249950503857,
-                       0.4580723119903261, 0.46214892372246563, 0.6182568295500336,
-                       0.5213082492659304, 0.7708877748759901, 0.1497642024548283,
-                       4.254757908429968, 3.759370669969996, 4.784173526119725,
-                       10.935884810737809, 24.595975874929724, 2.8109199678182635,
-                       4.922623602327875};
-
-    initializeGRNContext(&ctx, 1, numVariables, 5, 7, 7, 0, 49, vectors, maxValues);
-
-    double eval = grn5EvaluationLSODA(ind0, &ctx);
-    clearContext2Test(&ctx);
-
-    BOOST_CHECK_CLOSE_FRACTION( eval, 26.92, 0.001 );
-
-}
-
-//todo: fazer o teste abaixo com diferentes conjuntos
 BOOST_AUTO_TEST_CASE(test_evaluate_GRN5_LSODA){
     //void GRNEDOHelpers::initializeGRNContext(appContext* ctx, int granularity, int numVariables, int numTau, int numN, int numK, int setStart, int setEnd, double** vectors, double * maxValues)
    // appContext ctx{};
@@ -143,7 +116,7 @@ BOOST_AUTO_TEST_CASE(test_evaluate_GRN5_LSODA){
     ind.setParameters(ind0);
     appContext ctx{.series = &series};
 
-    double eval = grnEvaluationLSODATest(ind.getParameters(), &ctx);
+    double eval = grnEvaluationLSODA(ind.getParameters(), &ctx);
     BOOST_CHECK_CLOSE_FRACTION( eval, 26.92, 0.001 );
 
 }
@@ -164,7 +137,7 @@ BOOST_AUTO_TEST_CASE(test_evaluate_GRN5_RK4){
     ind.setParameters(ind0);
 
     appContext ctx{.series = &series};
-    double eval = grnEvaluationRK4Test(ind.getParameters(), &ctx);
+    double eval = grnEvaluationRK4(ind.getParameters(), &ctx);
 
     BOOST_CHECK_CLOSE_FRACTION( eval, 26.92, 0.001 );
 
@@ -187,7 +160,7 @@ BOOST_AUTO_TEST_CASE(test_evaluate_GRN10_LSODA){
     ind.setParameters(ind0);
 
     appContext ctx{.series = &series};
-    double eval = grn10EvaluationLSODATest(ind.getParameters(), &ctx);
+    double eval = grn10EvaluationLSODA(ind.getParameters(), &ctx);
 
     BOOST_CHECK_CLOSE_FRACTION( eval, 56.71, 0.001 );
 
@@ -209,7 +182,7 @@ BOOST_AUTO_TEST_CASE(test_evaluate_GRN10_RK4){
     ind.setParameters(ind0);
 
     appContext ctx{.series = &series};
-    double eval = grn10EvaluationRK4Test(ind.getParameters(), &ctx);
+    double eval = grn10EvaluationRK4(ind.getParameters(), &ctx);
 
     BOOST_CHECK_CLOSE_FRACTION( eval, 56.71, 0.001 );
 

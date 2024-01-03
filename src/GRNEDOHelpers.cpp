@@ -374,30 +374,6 @@ int GRNEDOHelpers::twoBody10VarLSODA(double t, double *y, double *ydot, void *_d
     return 0;
 }
 
-double GRNEDOHelpers::difference(double *actual, double **expected, int numVariables, int numElements)
-{
-    double difTotal = 0.0;
-
-    for (int i = 0; i < numVariables; i++)
-    {
-        // dif[i] = 0;
-        for (int j = 0; j < numElements; j++)
-        {
-            //  dif[i] += fabs(actual[i][j] - expected[i][j]);
-            // if(i==3)continue;
-            difTotal += fabs(actual[j * numVariables + i] - expected[i][j]);
-        }
-    }
-
-    if (isnan(difTotal))
-    {
-        return DBL_MAX;
-    }
-
-    return difTotal;
-}
-
-
 //todo: melhorar vetores, padronizar o formato e melhorar os acessos
 double GRNEDOHelpers::difference(double *actual, double **expected, int numVariables, int start, int end, int numSteps)
 {
@@ -857,30 +833,6 @@ double GRNEDOHelpers::lsodaWrapperTest(int dydt(double t, double *y, double *ydo
     return 0;
 }
 
-
-double GRNEDOHelpers::getMaxValue(double *values, int numElements)
-{
-    double maxValue = 0;
-    for (int i = 0; i < numElements; i++)
-    {
-        if (values[i] > maxValue)
-        {
-            maxValue = values[i];
-        }
-    }
-
-    return maxValue;
-}
-
-void GRNEDOHelpers::getMaxValues(double **data, double *outMaxValues, int numVariables, int numElements)
-{
-
-    for (int i = 1; i < numVariables + 1; i++)
-    {
-        outMaxValues[i - 1] = getMaxValue(data[i], numElements);
-    }
-}
-
 double GRNEDOHelpers::getMaxValue(double *values, int start, int end)
 {
     double maxValue = 0;
@@ -940,28 +892,6 @@ void GRNEDOHelpers::printContext(appContext* ctx){
 
 }
 
-void GRNEDOHelpers::twoBody(double t, double y[], double max[], double tau[], double n[], double k[], double yp[])
-{
-
-    yp[0] = ((1 - (pow((y[4] / max[4]), n[0])) / (pow((y[4] / max[0]), n[0]) + pow(k[0], n[0]))) - (y[0] / max[0])) / tau[0];
-
-    yp[1] = (((pow((y[0] / max[0]), (int)n[1])) / (pow((y[0] / max[0]), (int)n[1]) + pow(k[1], (int)n[1]))) -
-             (y[1] / max[1])) /
-            tau[1];
-
-    yp[2] = (((pow((y[1] / max[1]), n[2])) / (pow((y[1] / max[1]), (int)n[2]) + pow(k[2], (int)n[2]))) -
-             (y[2] / max[2])) /
-            tau[2];
-
-    yp[3] = (((pow((y[2] / max[2]), (int)n[3])) / (pow((y[2] / max[2]), (int)n[3]) + pow(k[3], (int)n[3]))) -
-             (y[3] / max[3])) /
-            tau[3];
-
-    yp[4] = (((pow((y[3] / max[3]), (int)n[4])) / (pow((y[3] / max[3]), (int)n[4]) + pow(k[4], (int)n[4]))) -
-             (y[4] / max[4])) /
-            tau[4];
-}
-
 string GRNEDOHelpers::vectorToString(double *vec, int start, int end)
 {
     string s = "";
@@ -985,68 +915,8 @@ void GRNEDOHelpers::printGRNVector(double **vec, int rows, int cols)
 
 }
 
-int GRNEDOHelpers::twoBodyFixedLSODA(double t, double *y, double *ydot, void *data)
-{
-    double max[] = {2.96, 1.8768, 1.0653, 1.0101, 1.4608};
-    double tau[] = {1.25, 4, 1.02, 1.57, 3.43};
-    double n[] = {13, 4, 3, 4, 16};
-    double k[] = {0.72, 0.50, 0.45, 0.51, 0.52};
-
-    ydot[0] = ((1 - (pow((y[4] / max[4]), n[0])) / (pow((y[4] / max[4]), n[0]) + pow(k[0], n[0]))) - (y[0] / max[0])) / tau[0];
-
-    ydot[1] = (((pow((y[0] / max[0]), n[1])) / (pow((y[0] / max[0]), n[1]) + pow(k[1], n[1]))) - (y[1] / max[1])) /
-              tau[1];
-
-    ydot[2] = (((pow((y[1] / max[1]), n[2])) / (pow((y[1] / max[1]), n[2]) + pow(k[2], n[2]))) - (y[2] / max[2])) /
-              tau[2];
-
-    ydot[3] = (((pow((y[2] / max[2]), n[3])) / (pow((y[2] / max[2]), n[3]) + pow(k[3], n[3]))) - (y[3] / max[3])) /
-              tau[3];
-
-    ydot[4] = (((pow((y[3] / max[3]), n[4])) / (pow((y[3] / max[3]), n[4]) + pow(k[4], n[4]))) - (y[4] / max[4])) /
-              tau[4];
-
-    return 0;
-}
-
-void GRNEDOHelpers::twoBodyFixed(double t, double y[], double *dim, double yp[])
-{
-    double max[] = {2.96, 1.8768, 1.0653, 1.0101, 1.4608};
-    double tau[] = {1.25, 4, 1.02, 1.57, 3.43};
-    double n[] = {13, 4, 3, 4, 16};
-    double k[] = {0.72, 0.50, 0.45, 0.51, 0.52};
-
-    yp[0] = ((1 - (pow((y[4] / max[4]), n[0])) / (pow((y[4] / max[4]), n[0]) + pow(k[0], n[0]))) - (y[0] / max[0])) / tau[0];
-
-    yp[1] = (((pow((y[0] / max[0]), n[1])) / (pow((y[0] / max[0]), n[1]) + pow(k[1], n[1]))) - (y[1] / max[1])) /
-            tau[1];
-
-    yp[2] = (((pow((y[1] / max[1]), n[2])) / (pow((y[1] / max[1]), n[2]) + pow(k[2], n[2]))) - (y[2] / max[2])) /
-            tau[2];
-
-    yp[3] = (((pow((y[2] / max[2]), n[3])) / (pow((y[2] / max[2]), n[3]) + pow(k[3], n[3]))) - (y[3] / max[3])) /
-            tau[3];
-
-    yp[4] = (((pow((y[3] / max[3]), n[4])) / (pow((y[3] / max[3]), n[4]) + pow(k[4], n[4]))) - (y[4] / max[4])) /
-            tau[4];
-}
-
-//todo: renomear quando concluir
-double GRNEDOHelpers::grn5EvaluationLSODA(void *ind, void* data)
-{
-    appContext* ctx = (appContext*)(data);
-    double* _ind = (double *)ind;
-    ctx->individual = _ind;
-    lsodaWrapper(twoBody5VarLSODA, ctx, ctx->yout);
-
-    double eval = difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
-
-    return eval;
-
-}
-
 //todo: generalizar função para qualquer modelo
-double GRNEDOHelpers::grn10EvaluationLSODATest(void* individual, void* context)
+double GRNEDOHelpers::grn10EvaluationLSODA(void* individual, void* context)
 {
     appContext* ctx = (appContext*)(context);
     GRNSeries* evalSeries = (GRNSeries*)(ctx->series);
@@ -1076,7 +946,7 @@ double GRNEDOHelpers::grn10EvaluationLSODATest(void* individual, void* context)
 }
 
 //todo: generalizar função para qualquer modelo
-double GRNEDOHelpers::grn10EvaluationRK4Test(void* individual, void* context)
+double GRNEDOHelpers::grn10EvaluationRK4(void* individual, void* context)
 {
     appContext* ctx = (appContext*)(context);
     GRNSeries* evalSeries = (GRNSeries*)(ctx->series);
@@ -1107,7 +977,7 @@ double GRNEDOHelpers::grn10EvaluationRK4Test(void* individual, void* context)
 }
 
 //todo: generalizar função para qualquer modelo
-double GRNEDOHelpers::grnEvaluationLSODATest(void* individual, void* context)
+double GRNEDOHelpers::grnEvaluationLSODA(void* individual, void* context)
 {
     appContext* ctx = (appContext*)(context);
     GRNSeries* evalSeries = (GRNSeries*)(ctx->series);
@@ -1137,7 +1007,7 @@ double GRNEDOHelpers::grnEvaluationLSODATest(void* individual, void* context)
 }
 
 //todo: generalizar função para qualquer modelo
-double GRNEDOHelpers::grnEvaluationRK4Test(void* individual, void* context)
+double GRNEDOHelpers::grnEvaluationRK4(void* individual, void* context)
 {
     appContext* ctx = (appContext*)(context);
     GRNSeries* evalSeries = (GRNSeries*)(ctx->series);
@@ -1164,42 +1034,6 @@ double GRNEDOHelpers::grnEvaluationRK4Test(void* individual, void* context)
 
 
     return eval;
-
-}
-
-double GRNEDOHelpers::grn5EvaluationRK4(void *ind, void* data)
-
-{   appContext* ctx = (appContext*)(data);
-    double* _ind = (double *)ind;
-    ctx->individual = _ind;
-    double *t = new double [ctx->totalSteps+1];
-
-    //todo: mudar para que rk4 e lsodaWrapper tenham mesma assinatura
-    rk4(twoBody5VarLSODA, ctx->tspan, ctx->y_0, ctx->totalSteps, ctx->nVariables, t, _ind, ctx);
-    delete [] t;
-    return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
-
-}
-
-double GRNEDOHelpers::grn10EvaluationLSODA(void *ind, void *data)
-{
-    appContext* ctx = (appContext*)(data);
-    double* _ind = (double *)ind;
-    ctx->individual = _ind;
-    lsodaWrapper(twoBody10VarLSODA, ctx, ctx->yout);
-
-    return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
-
-}
-
-double GRNEDOHelpers::grn10EvaluationRK4(void *ind, void* data)
-{   appContext* ctx = (appContext*)(data);
-    double* _ind = (double *)ind;
-    ctx->individual = _ind;
-    double *t = new double [ctx->totalSteps+1];
-    rk4(twoBody10VarLSODA, ctx->tspan, ctx->y_0, ctx->totalSteps, ctx->nVariables, t, _ind, ctx);
-    delete [] t;
-    return difference(ctx->yout, ctx->expectedResult, ctx->nVariables, ctx->setStart, ctx->setEnd, ctx->nSteps);
 
 }
 

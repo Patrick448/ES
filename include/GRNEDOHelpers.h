@@ -33,7 +33,6 @@ namespace GRNEDOHelpers{
 
     /// 10 variable GRN model.
     /// todo: rename to grn10Model
-    int twoBody10VarLSODA(double t, double *y, double *ydot, void *_data);
     double difference(double *actual, double **expected, int numVariables, int numElements);
     double difference(double *actual, double **expected, int numVariables, int start, int end, int numSteps);
     double differenceTest(double *actual, double **expected, int numElements, int numVariables, int granularity);
@@ -65,21 +64,11 @@ namespace GRNEDOHelpers{
     double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), appContext *appCtx, double *_yout);
     double lsodaWrapperTest(int dydt(double t, double *y, double *ydot, void *data), double* tspan, double* y_0, int totalSteps, int nVariables, double* times, double *_yout, void* context);
 
-    /// evaluates the given individual (5 variables) using the LSODA algorithm.
-    double grn5EvaluationLSODA(void *ind, void* data);
-    /// evaluates the given individual (5 variables) using the RK4 algorithm.
-    double grn5EvaluationRK4(void *ind, void* data);
 
-    /// evaluates the given individual (10 variables) using the LSODA algorithm.
-    double grn10EvaluationLSODA(void *ind, void *data);
-
-    /// evaluates the given individual (10 variables) using the RK4 algorithm.
-    double grn10EvaluationRK4(void *ind, void* data);
-
-    double grnEvaluationLSODATest(void* individual, void* context);
-    double grnEvaluationRK4Test(void* individual, void* context);
-    double grn10EvaluationLSODATest(void* individual, void* context);
-    double grn10EvaluationRK4Test(void* individual, void* context);
+    double grnEvaluationLSODA(void* individual, void* context);
+    double grnEvaluationRK4(void* individual, void* context);
+    double grn10EvaluationLSODA(void* individual, void* context);
+    double grn10EvaluationRK4(void* individual, void* context);
     /// changes the mode of the problem.
     /// @see initializeGRN5Context for more details.
     void setMode(appContext* ctx, int mode);
