@@ -1,7 +1,7 @@
 #include "GRNEDOHelpers.h"
 #include "dependencies.h"
 #include "GRN5Model.h"
-#include "GRN10Model.h"
+#include "GRN5NCYCModel.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -795,7 +795,7 @@ double GRNEDOHelpers::grn10EvaluationLSODA(void* individual, void* context)
     int nVariables = evalSeries->getNumVariables();
     double *y_0 = evalSeries->getInitialValues();
 
-    lsodaWrapperTest(GRN10Model::modelFunction, tspan, y_0, totalSteps, nVariables, nullptr, yout, ctx);
+    lsodaWrapperTest(GRN5NCYCModel::modelFunction, tspan, y_0, totalSteps, nVariables, nullptr, yout, ctx);
 
     double eval = differenceTest(yout, expectedResult,  evalSeries->getNumTimeSteps() - 1, nVariables, granularity);
 
@@ -825,7 +825,7 @@ double GRNEDOHelpers::grn10EvaluationRK4(void* individual, void* context)
     double *t = new double [totalSteps+1];
 
     //lsodaWrapperTest(twoBody5VarLSODATest, tspan, y_0, totalSteps, nVariables, nullptr, ctx, yout);
-    rk4(GRN10Model::modelFunction, tspan, y_0, totalSteps, nVariables, t, yout, ctx);
+    rk4(GRN5NCYCModel::modelFunction, tspan, y_0, totalSteps, nVariables, t, yout, ctx);
 
     double eval = differenceTest(yout, expectedResult,  evalSeries->getNumTimeSteps() - 1, nVariables, granularity);
 
