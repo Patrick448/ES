@@ -1,9 +1,7 @@
 #include "GRNEDOHelpers.h"
-#include "appCtx.h"
-#include <cmath>
-#include <cfloat>
 #include "dependencies.h"
-
+#include "GRN5Model.h"
+#include "GRN10Model.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -160,143 +158,6 @@ int GRNEDOHelpers::grn10Model(double t, double *y, double *ydot, void *context)
     double nIG = (int)individual[37];
     double nIH = (int)individual[38];
     double nJI = (int)individual[39];
-
-    ydot[0] = ((1 - pow(y[9] / maximo_J, nAJ) / (pow(y[9] / maximo_J, nAJ) + pow(kAJ, nAJ))) - (y[0] / maximo_A)) / tauA;
-
-    ydot[1] = (pow(y[4] / maximo_E, nBE) / (pow(y[4] / maximo_E, nBE) + pow(kBE, nBE)) - (y[1] / maximo_B)) / tauB;
-
-    ydot[2] = (pow(y[1] / maximo_B, nCB) / (pow(y[1] / maximo_B, nCB) + pow(kCB, nCB)) *
-               (1 - pow(y[5] / maximo_F, nCF) / (pow(y[5] / maximo_F, nCF) + pow(kCF, nCF))) *
-               (1 - pow(y[0] / maximo_A, nCA) / (pow(y[0] / maximo_A, nCA) + pow(kCA, nCA))) +
-               (1 - pow(y[1] / maximo_B, nCB) / (pow(y[1] / maximo_B, nCB) + pow(kCB, nCB))) * pow(y[5] / maximo_F, nCF) /
-               (pow(y[5] / maximo_F, nCF) + pow(kCF, nCF)) *
-               (1 - pow(y[0] / maximo_A, nCA) / (pow(y[0] / maximo_A, nCA) + pow(kCA, nCA))) +
-               (1 - pow(y[1] / maximo_B, nCB) / (pow(y[1] / maximo_B, nCB) + pow(kCB, nCB))) *
-               (1 - pow(y[5] / maximo_F, nCF) / (pow(y[5] / maximo_F, nCF) + pow(kCF, nCF))) * pow(y[0] / maximo_A, nCA) /
-               (pow(y[0] / maximo_A, nCA) + pow(kCA, nCA)) +
-               pow(y[1] / maximo_B, nCB) / (pow(y[1] / maximo_B, nCB) + pow(kCB, nCB)) *
-               (1 - pow(y[5] / maximo_F, nCF) / (pow(y[5] / maximo_F, nCF) + pow(kCF, nCF))) * pow(y[0] / maximo_A, nCA) /
-               (pow(y[0] / maximo_A, nCA) + pow(kCA, nCA)) +
-               (1 - pow(y[1] / maximo_B, nCB) / (pow(y[1] / maximo_B, nCB) + pow(kCB, nCB))) * pow(y[5] / maximo_F, nCF) /
-               (pow(y[5] / maximo_F, nCF) + pow(kCF, nCF)) * pow(y[0] / maximo_A, nCA) /
-               (pow(y[0] / maximo_A, nCA) + pow(kCA, nCA)) +
-               pow(y[1] / maximo_B, nCB) / (pow(y[1] / maximo_B, nCB) + pow(kCB, nCB)) * pow(y[5] / maximo_F, nCF) /
-               (pow(y[5] / maximo_F, nCF) + pow(kCF, nCF)) * pow(y[0] / maximo_A, nCA) /
-               (pow(y[0] / maximo_A, nCA) + pow(kCA, nCA)) -
-               (y[2] / maximo_C)) /
-              tauC;
-
-    ydot[3] = (pow(y[5] / maximo_F, nDF) / (pow(y[4] / maximo_E, nDF) + pow(kDF, nDF)) - (y[3] / maximo_D)) / tauD;
-
-    ydot[4] = (1 - pow(y[9] / maximo_J, nEJ) / (pow(y[9] / maximo_J, nEJ) + pow(kEJ, nEJ)) - (y[4] / maximo_E)) / tauE;
-
-    ydot[5] = (pow(y[0] / maximo_A, nFA) / (pow(y[0] / maximo_A, nFA) + pow(kFA, nFA)) - (y[5] / maximo_F)) / tauF;
-
-    ydot[6] = (pow(y[1] / maximo_B, nGB) / (pow(y[1] / maximo_B, nGB) + pow(kGB, nGB)) *
-               (1 - pow(y[5] / maximo_F, nGF) / (pow(y[5] / maximo_F, nGF) + pow(kGF, nGF))) *
-               (1 - pow(y[0] / maximo_A, nGA) / (pow(y[0] / maximo_A, nGA) + pow(kGA, nGA))) +
-               (1 - pow(y[1] / maximo_B, nGB) / (pow(y[1] / maximo_B, nGB) + pow(kGB, nGB))) * pow(y[5] / maximo_F, nGF) /
-               (pow(y[5] / maximo_F, nGF) + pow(kGF, nGF)) *
-               (1 - pow(y[0] / maximo_A, nGA) / (pow(y[0] / maximo_A, nGA) + pow(kGA, nGA))) +
-               (1 - pow(y[1] / maximo_B, nGB) / (pow(y[1] / maximo_B, nGB) + pow(kGB, nGB))) *
-               (1 - pow(y[5] / maximo_F, nGF) / (pow(y[5] / maximo_F, nGF) + pow(kGF, nGF))) * pow(y[0] / maximo_A, nGA) /
-               (pow(y[0] / maximo_A, nGA) + pow(kGA, nGA)) +
-               pow(y[1] / maximo_B, nGB) / (pow(y[1] / maximo_B, nGB) + pow(kGB, nGB)) *
-               (1 - pow(y[5] / maximo_F, nGF) / (pow(y[5] / maximo_F, nGF) + pow(kGF, nGF))) * pow(y[0] / maximo_A, nGA) /
-               (pow(y[0] / maximo_A, nGA) + pow(kGA, nGA)) +
-               (1 - pow(y[1] / maximo_B, nGB) / (pow(y[1] / maximo_B, nGB) + pow(kGB, nGB))) * pow(y[5] / maximo_F, nGF) /
-               (pow(y[5] / maximo_F, nGF) + pow(kGF, nGF)) * pow(y[0] / maximo_A, nGA) /
-               (pow(y[0] / maximo_A, nGA) + pow(kGA, nGA)) +
-               pow(y[1] / maximo_B, nGB) / (pow(y[1] / maximo_B, nGB) + pow(kGB, nGB)) * pow(y[5] / maximo_F, nGF) /
-               (pow(y[5] / maximo_F, nGF) + pow(kGF, nGF)) * pow(y[0] / maximo_A, nGA) /
-               (pow(y[0] / maximo_A, nGA) + pow(kGA, nGA)) -
-               (y[6] / maximo_G)) /
-              tauG;
-
-    ydot[7] = (pow(y[5] / maximo_F, nHF) / (pow(y[5] / maximo_F, nHF) + pow(kHF, nHF)) - (y[7] / maximo_H)) / tauH;
-
-    ydot[8] = (pow(y[6] / maximo_G, nIG) / (pow(y[6] / maximo_G, nIG) + pow(kIG, nIG)) * pow(y[7] / maximo_H, nIH) /
-               (pow(y[7] / maximo_H, nIH) + pow(kIH, nIH)) -
-               (y[8] / maximo_I)) /
-              tauI;
-
-    ydot[9] = (pow(y[8] / maximo_I, nJI) / (pow(y[8] / maximo_I, nJI) + pow(kJI, nJI)) - (y[9] / maximo_J)) / tauJ;
-
-    ydot[3] = (pow(y[5] / maximo_F, nDF) / (pow(y[4] / maximo_E, nDF) + pow(kDF, nDF)) - (y[3] / maximo_D)) / tauD;
-
-    //    cout << "#########################" << endl;
-    //    cout << pow(y[5] / maximo_F, nDF) << endl;
-    //    cout << pow(y[4] / maximo_E, nDF) << endl;
-    //    cout << pow(kDF, nDF) << endl;
-    //    cout << (y[3] / maximo_D) << endl;
-    //    cout << tauD << endl;
-    //    cout << y[3] << endl;
-    //    cout << maximo_D << endl;
-    //    cout << "#########################" << endl;
-
-    return 0;
-}
-
-int GRNEDOHelpers::twoBody10VarLSODA(double t, double *y, double *ydot, void *_data)
-{
-
-    appContext *ctx = (appContext *)_data;
-    double* data = ctx->individual;
-    double* maxValues = ctx->maxValues;
-    double *tau = &data[0];
-
-    double *k = &data[ctx->TAU_SIZE];
-    double *n = &data[ctx->TAU_SIZE + ctx->N_SIZE];
-    double maximo_A = maxValues[0];
-    double maximo_B = maxValues[1];
-    double maximo_C = maxValues[2];
-    double maximo_D = maxValues[3];
-    double maximo_E = maxValues[4];
-    double maximo_F = maxValues[5];
-    double maximo_G = maxValues[6];
-    double maximo_H = maxValues[7];
-    double maximo_I = maxValues[8];
-    double maximo_J = maxValues[9];
-    double tauA = data[0];
-    double tauB = data[1];
-    double tauC = data[2];
-    double tauD = data[3];
-    double tauE = data[4];
-    double tauF = data[5];
-    double tauG = data[6];
-    double tauH = data[7];
-    double tauI = data[8];
-    double tauJ = data[9];
-    double kAJ = data[10];
-    double kBE = data[11];
-    double kCB = data[12];
-    double kCF = data[13];
-    double kCA = data[14];
-    double kDF = data[15];
-    double kEJ = data[16];
-    double kFA = data[17];
-    double kGB = data[18];
-    double kGF = data[19];
-    double kGA = data[20];
-    double kHF = data[21];
-    double kIG = data[22];
-    double kIH = data[23];
-    double kJI = data[24];
-    double nAJ = (int)data[25];
-    double nBE = (int)data[26];
-    double nCB = (int)data[27];
-    double nCF = (int)data[28];
-    double nCA = (int)data[29];
-    double nDF = (int)data[30];
-    double nEJ = (int)data[31];
-    double nFA = (int)data[32];
-    double nGB = (int)data[33];
-    double nGF = (int)data[34];
-    double nGA = (int)data[35];
-    double nHF = (int)data[36];
-    double nIG = (int)data[37];
-    double nIH = (int)data[38];
-    double nJI = (int)data[39];
 
     ydot[0] = ((1 - pow(y[9] / maximo_J, nAJ) / (pow(y[9] / maximo_J, nAJ) + pow(kAJ, nAJ))) - (y[0] / maximo_A)) / tauA;
 
@@ -934,7 +795,7 @@ double GRNEDOHelpers::grn10EvaluationLSODA(void* individual, void* context)
     int nVariables = evalSeries->getNumVariables();
     double *y_0 = evalSeries->getInitialValues();
 
-    lsodaWrapperTest(grn10Model, tspan, y_0, totalSteps, nVariables, nullptr, yout, ctx);
+    lsodaWrapperTest(GRN10Model::modelFunction, tspan, y_0, totalSteps, nVariables, nullptr, yout, ctx);
 
     double eval = differenceTest(yout, expectedResult,  evalSeries->getNumTimeSteps() - 1, nVariables, granularity);
 
@@ -964,7 +825,7 @@ double GRNEDOHelpers::grn10EvaluationRK4(void* individual, void* context)
     double *t = new double [totalSteps+1];
 
     //lsodaWrapperTest(twoBody5VarLSODATest, tspan, y_0, totalSteps, nVariables, nullptr, ctx, yout);
-    rk4(grn10Model, tspan, y_0, totalSteps, nVariables, t, yout, ctx);
+    rk4(GRN10Model::modelFunction, tspan, y_0, totalSteps, nVariables, t, yout, ctx);
 
     double eval = differenceTest(yout, expectedResult,  evalSeries->getNumTimeSteps() - 1, nVariables, granularity);
 
@@ -995,7 +856,7 @@ double GRNEDOHelpers::grnEvaluationLSODA(void* individual, void* context)
     int nVariables = evalSeries->getNumVariables();
     double *y_0 = evalSeries->getInitialValues();
 
-    lsodaWrapperTest(grn5Model, tspan, y_0, totalSteps, nVariables, nullptr, yout, ctx);
+    lsodaWrapperTest(GRN5Model::modelFunction, tspan, y_0, totalSteps, nVariables, nullptr, yout, ctx);
 
     double eval = differenceTest(yout, expectedResult,  evalSeries->getNumTimeSteps() - 1, nVariables, granularity);
 
@@ -1025,7 +886,7 @@ double GRNEDOHelpers::grnEvaluationRK4(void* individual, void* context)
     double *t = new double [totalSteps+1];
 
     //lsodaWrapperTest(twoBody5VarLSODATest, tspan, y_0, totalSteps, nVariables, nullptr, ctx, yout);
-    rk4(grn5Model, tspan, y_0, totalSteps, nVariables, t, yout, ctx);
+    rk4(GRN5Model::modelFunction, tspan, y_0, totalSteps, nVariables, t, yout, ctx);
 
     double eval = differenceTest(yout, expectedResult,  evalSeries->getNumTimeSteps() - 1, nVariables, granularity);
 
