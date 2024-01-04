@@ -117,7 +117,7 @@ void outputToFile(string path, string text, bool append)
     outputf.close();
 }
 
-void runExperimentRoundTest(Algorithm& esAlgorithm, string algName, int maxEvals, int seed)
+void runExperimentRoundTest(Algorithm& algorithm, string algName, int maxEvals, int seed)
 {
     //string resultCsv = "seed,eval,time,numEvals,ind\n";
     string resultCsv = "";
@@ -126,18 +126,18 @@ void runExperimentRoundTest(Algorithm& esAlgorithm, string algName, int maxEvals
     double  bestEval = 0;
 
     if(algName=="cmaes"){
-        esAlgorithm.runCMAES(seed, maxEvals, 40);
+        algorithm.runCMAES(seed, maxEvals, 40);
     }else if(algName=="es-i"){
-        esAlgorithm.runPopulationalIsotropicES(seed, 0.5, maxEvals, 15, 105);
+        algorithm.runPopulationalIsotropicES(seed, 0.5, maxEvals, 15, 105);
     }else if(algName=="es-ni"){
-        esAlgorithm.runPopulationalNonIsotropicES(seed, 0.5, maxEvals, 15, 105);
+        algorithm.runPopulationalNonIsotropicES(seed, 0.5, maxEvals, 15, 105);
     }
     else if(algName=="1+1"){
-        esAlgorithm.run1Plus1ES(seed, 0.5, 0.817, 10, maxEvals);
+        algorithm.run1Plus1ES(seed, 0.5, 0.817, 10, maxEvals);
     }else if(algName=="de") {
-        esAlgorithm.runDE(seed, maxEvals, 40);
+        algorithm.runDE(seed, maxEvals, 40);
     }else if(algName=="sade") {
-        esAlgorithm.runSADE(seed, maxEvals, 40);
+        algorithm.runSADE(seed, maxEvals, 40);
     }
 
     //todo: uma função que reavalia população segundo conjunto de teste
@@ -145,18 +145,18 @@ void runExperimentRoundTest(Algorithm& esAlgorithm, string algName, int maxEvals
 
     //GRNEDOHelpers::setMode(&ctx, TEST_MODE);
     //esAlgorithm.evaluate(esAlgorithm.getBestIndividual());
-    esAlgorithm.reevaluateBestIndividualUsingTestSet();
-    bestInd = esAlgorithm.getBestIndividual();
+    algorithm.reevaluateBestIndividualUsingTestSet();
+    bestInd = algorithm.getBestIndividual();
     //GRNEDOHelpers::setMode(&ctx, TRAINING_MODE);
 
 
     //temporização
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<std::chrono::seconds>(end - beg);
-    resultCsv += to_string(seed) +","
+    resultCsv += to_string(seed) + ","
                  + to_string(bestInd->getEvaluation()) + ","
                  + to_string(duration.count()) + ","
-                 + to_string(esAlgorithm.getEvaluations()) + ",["
+                 + to_string(algorithm.getEvaluations()) + ",["
                  + bestInd->toCSVString()+ "]";
 
     cout << resultCsv << endl;
@@ -259,13 +259,8 @@ int main(int argc, char** argv)
     string inputFile = args["inputFile"];
     int seed = stoi(args["seed"]);
     int maxEvals = stoi(args["maxEvals"]);
-
-    //appContext ctx{};
     double (*func)(void*,void*);
     ProblemDescription ctx = GRNEDOHelpers::grn5ProblemDescription;
-    //todo: usar novo initialize
-    //todo: unir grn5EvaluationLSODA e grn10EvaluationLSODA em uma só função
-    //todo: fazer o mesmo para RK4
 
     if(grnModelName == "grn5"){
         ctx = {.IND_SIZE = 19, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
@@ -274,6 +269,18 @@ int main(int argc, char** argv)
     else if(grnModelName == "grn10"){
         ctx = {.IND_SIZE = 40, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 15,.K_SIZE = 15, .modelFunction = GRNEDOHelpers::grn10Model};
+    }
+    else if(grnModelName == "grn5new"){
+        ctx = {.IND_SIZE = 21, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+                .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 8,.K_SIZE = 8, .modelFunction = GRNEDOHelpers::grn5NewModel};
+    }
+    else if(grnModelName == "grn10new"){
+        ctx = {.IND_SIZE = 48, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+                .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 19,.K_SIZE = 19, .modelFunction = GRNEDOHelpers::grn10NewModel};
+    }
+    else if(grnModelName == "grn5ncyc"){
+        ctx = {.IND_SIZE = 31, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+                .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 13,.K_SIZE = 13, .modelFunction = GRNEDOHelpers::grn5NCYCModel};
     }
 
     if(evalMode == "lsoda"){
@@ -302,6 +309,7 @@ int main(int argc, char** argv)
     Algorithm algorithm = Algorithm(*trainingSeries, *testSeries, func, ctx.IND_SIZE, &ctx);
     algorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
 
+   //todo: passar essas inicializações para dentro da classe Algorithm usando o objeto ctx
     // inicializa limites de tau, k e n
     int cont = 0;
     for (int i = 0; i < ctx.TAU_SIZE; i++)
@@ -322,7 +330,6 @@ int main(int argc, char** argv)
         cont = i;
     }
 
-    //todo: falta usar de fato os conjuntos de treino e teste
     runExperimentRoundTest(algorithm, algName, maxEvals, seed);
 
     delete inputSeries;

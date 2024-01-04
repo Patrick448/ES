@@ -29,8 +29,10 @@ namespace GRNEDOHelpers{
     /// todo: rename to grn5Model
     int twoBody5VarLSODA(double t, double *y, double *ydot, void *_data);
     int grn5Model(double t, double *y, double *ydot, void *data);
+    int grn5NewModel(double t, double *y, double *ydot, void *data);
     int grn10Model(double t, double *y, double *ydot, void *data);
-
+    int grn10NewModel(double t, double *y, double *ydot, void *data);
+    int grn5NCYCModel(double t, double *y, double *ydot, void *context);
     /// 10 variable GRN model.
     /// todo: rename to grn10Model
     double difference(double *actual, double **expected, int numVariables, int numElements);
