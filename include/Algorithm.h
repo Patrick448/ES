@@ -21,7 +21,6 @@ private:
     vector<int> lowerBoundTypes;
     int numDimensions;
     double (*evaluationFunction)(void*, void*);
-    int (*grnModel)(double t, double *y, double *ydot, void *context);
     int algorithmType;
     int evaluationsCounter;
     double minSigma;
@@ -31,6 +30,7 @@ private:
     GRNCoefProblem* problem;
     GRNSeries* trainingSeries;
     GRNSeries* testSeries;
+    ProblemDescription *modelDescription;
 
 public:
     static int UPPER_OPEN;
@@ -44,8 +44,9 @@ public:
     static int NON_ISOTROPIC;
 
     Algorithm(int numDimensions);
+
     Algorithm(GRNSeries &trainingSeries, GRNSeries &testSeries,
-              double (*evaluationFunction)(void *, void *), int numDimensions);
+              double (*evaluationFunction)(void *, void *), int numDimensions, ProblemDescription *description);
     ~Algorithm();
     vector<Individual*> getPopulation();
     void addIndividual(Individual* individual);
@@ -77,7 +78,7 @@ public:
     double evaluationIncrementCounterWrapper(void *ind, void * context);
     void reevaluateBestIndividualUsingTestSet();
 
-    void setGrnModel(int (*grnModel)(double, double *, double *, void *));
+
 
 };
 

@@ -16,13 +16,15 @@
 #include <iostream>
 #include <random>
 #include <float.h>
+#include <utility>
+#include "pagmo/types.hpp"
+#include "appCtx.h"
 
 
-#include "Algorithm.h"
 #include "read.h"
 #include "ode.h"
 #include "rk4.h"
-#include "GRNSeries.h"
+
 
 
 using namespace std;

@@ -5,10 +5,7 @@
 #ifndef ES_GRNCOEFPROBLEM_H
 #define ES_GRNCOEFPROBLEM_H
 
-#include <utility>
-#include "pagmo/types.hpp"
-#include "appCtx.h"
-#include "ProblemDescription.h"
+#include "dependencies.h"
 
 using namespace pagmo;
 

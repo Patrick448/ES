@@ -7,6 +7,7 @@
 
 GRNCoefProblem::GRNCoefProblem(appContext *context) {
     this->evaluationContext = context;
+    this->problemDescription = context->description;
 }
 
 GRNCoefProblem::GRNCoefProblem(appContext *evaluationContext, ProblemDescription *problemDescription) {

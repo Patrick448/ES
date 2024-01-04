@@ -5,6 +5,7 @@
 #ifndef ES_APPCTX_H
 #define ES_APPCTX_H
 
+#include "ProblemDescription.h"
 
 struct appContext {
 
@@ -48,6 +49,6 @@ struct appContext {
     double **expectedResult;
     double* individual;
     void *series;
-
+    struct ProblemDescription *description;
 } ;
 #endif //ES_APPCTX_H

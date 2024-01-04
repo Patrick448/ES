@@ -14,6 +14,7 @@
 #include "GRNEDOHelpers.h"
 #include "algModes.h"
 #include "GRNSeries.h"
+#include "Individual.h"
 using namespace algModes;
 using namespace GRNEDOHelpers;
 
@@ -103,6 +104,9 @@ BOOST_AUTO_TEST_CASE(test_evaluate_GRN5_LSODA){
    // appContext ctx{};
     GRNSeries series = GRNSeries("GRN5.txt");
     GRNSeries testSeries = GRNSeries(series, 0, 49);
+    ProblemDescription desc = {.IND_SIZE = 19, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+            .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 7,.K_SIZE = 7, .modelFunction = GRNEDOHelpers::grn5Model};
+
 
     double ind0[19] = {1.2163355099083872, 1.1264485098219865, 2.973714367061704,
                        2.952143123315177, 2.998260518457365, 0.5687249950503857,
@@ -114,7 +118,7 @@ BOOST_AUTO_TEST_CASE(test_evaluate_GRN5_LSODA){
 
     Individual ind = Individual(19);
     ind.setParameters(ind0);
-    appContext ctx{.series = &series};
+    appContext ctx{.series = &series, .description = &desc};
 
     double eval = grnEvaluationLSODA(ind.getParameters(), &ctx);
     BOOST_CHECK_CLOSE_FRACTION( eval, 26.92, 0.001 );
@@ -124,6 +128,9 @@ BOOST_AUTO_TEST_CASE(test_evaluate_GRN5_LSODA){
 BOOST_AUTO_TEST_CASE(test_evaluate_GRN5_RK4){
     GRNSeries series = GRNSeries("GRN5.txt");
     GRNSeries testSeries = GRNSeries(series, 0, 49);
+    ProblemDescription desc = {.IND_SIZE = 19, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+            .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 7,.K_SIZE = 7, .modelFunction = GRNEDOHelpers::grn5Model};
+
 
     double ind0[19] = {1.2163355099083872, 1.1264485098219865, 2.973714367061704,
                        2.952143123315177, 2.998260518457365, 0.5687249950503857,
@@ -136,7 +143,7 @@ BOOST_AUTO_TEST_CASE(test_evaluate_GRN5_RK4){
     Individual ind = Individual(19);
     ind.setParameters(ind0);
 
-    appContext ctx{.series = &series};
+    appContext ctx{.series = &series, .description = &desc};
     double eval = grnEvaluationRK4(ind.getParameters(), &ctx);
 
     BOOST_CHECK_CLOSE_FRACTION( eval, 26.92, 0.001 );
@@ -147,6 +154,9 @@ BOOST_AUTO_TEST_CASE(test_evaluate_GRN5_RK4){
 BOOST_AUTO_TEST_CASE(test_evaluate_GRN10_LSODA){
     GRNSeries series = GRNSeries("GRN10.txt");
     GRNSeries testSeries = GRNSeries(series, 0, 49);
+    ProblemDescription desc = {.IND_SIZE = 40, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+            .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 15,.K_SIZE = 15, .modelFunction = GRNEDOHelpers::grn10Model};
+
 
     double ind0[40] = {1.73,2,0.81,0.11, 1.23, 1.78,
                        1.14, 1.04, 3.47, 3.21, 0.45,
@@ -159,7 +169,7 @@ BOOST_AUTO_TEST_CASE(test_evaluate_GRN10_LSODA){
     Individual ind = Individual(40);
     ind.setParameters(ind0);
 
-    appContext ctx{.series = &series};
+    appContext ctx{.series = &series, .description = &desc};
     double eval = grn10EvaluationLSODA(ind.getParameters(), &ctx);
 
     BOOST_CHECK_CLOSE_FRACTION( eval, 56.71, 0.001 );
@@ -169,6 +179,8 @@ BOOST_AUTO_TEST_CASE(test_evaluate_GRN10_LSODA){
 BOOST_AUTO_TEST_CASE(test_evaluate_GRN10_RK4){
     GRNSeries series = GRNSeries("GRN10.txt");
     GRNSeries testSeries = GRNSeries(series, 0, 49);
+    ProblemDescription desc = {.IND_SIZE = 40, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+            .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 15,.K_SIZE = 15, .modelFunction = GRNEDOHelpers::grn10Model};
 
     double ind0[40] = {1.73,2,0.81,0.11, 1.23, 1.78,
                        1.14, 1.04, 3.47, 3.21, 0.45,
@@ -181,7 +193,7 @@ BOOST_AUTO_TEST_CASE(test_evaluate_GRN10_RK4){
     Individual ind = Individual(40);
     ind.setParameters(ind0);
 
-    appContext ctx{.series = &series};
+    appContext ctx{.series = &series, .description = &desc};
     double eval = grn10EvaluationRK4(ind.getParameters(), &ctx);
 
     BOOST_CHECK_CLOSE_FRACTION( eval, 56.71, 0.001 );

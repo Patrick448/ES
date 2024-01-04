@@ -19,5 +19,7 @@
      int TAU_SIZE;
      int N_SIZE;
      int K_SIZE;
-} ;
+     int (*modelFunction) (double t, double *y, double *ydot, void *_data);
+
+ } ;
 #endif //ES_PROBLEM_DESC_H

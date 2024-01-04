@@ -5,8 +5,9 @@
 #ifndef ES_GRN5NCYCMODEL_H
 #define ES_GRN5NCYCMODEL_H
 #include "dependencies.h"
+#include "GRNModel.h"
 
-class GRN5NCYCModel {
+class GRN5NCYCModel:GRNModel {
 
 public:
     static const int TAU_SIZE = 5;
@@ -19,7 +20,7 @@ public:
     static constexpr double MAX_N = 25;
     static constexpr double MIN_TAU = 0.1;
     static constexpr double MAX_TAU = 5;
-    static int modelFunction(double t, double *y, double *ydot, void *context) {
+    int modelFunction(double t, double *y, double *ydot, void *context) {
         appContext *ctx = (appContext *)context;
         double* individual = ctx->individual;
         double* maxValues = ((GRNSeries*)ctx->series)->getMaxValues();

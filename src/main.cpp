@@ -14,6 +14,8 @@
 #include "GRNCoefProblem.h"
 #include "GRNSeries.h"
 #include "ProblemDescription.h"
+#include "GRN5Model.h"
+#include "Algorithm.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -251,7 +253,7 @@ std::map<string, string> parseArgs(int argc, char** argv){
 int main(int argc, char** argv)
 {
     std::map<string, string> args = parseArgs(argc, argv);
-    string grnModel = args["grnModel"];
+    string grnModelName = args["grnModel"];
     string evalMode = args["evalMode"];
     string algName = args["algName"];
     string inputFile = args["inputFile"];
@@ -261,32 +263,24 @@ int main(int argc, char** argv)
     //appContext ctx{};
     double (*func)(void*,void*);
     ProblemDescription ctx = GRNEDOHelpers::grn5ProblemDescription;
-
     //todo: usar novo initialize
     //todo: unir grn5EvaluationLSODA e grn10EvaluationLSODA em uma só função
     //todo: fazer o mesmo para RK4
 
-    if(grnModel == "grn5"){
+    if(grnModelName == "grn5"){
         ctx = {.IND_SIZE = 19, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
-                .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 7,.K_SIZE = 7};
-
-        if(evalMode == "lsoda"){
-            func = &grnEvaluationLSODA;
-        }
-        else if(evalMode == "rk4"){
-            func = &grnEvaluationRK4;
-        }
+                .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 7,.K_SIZE = 7, .modelFunction = GRNEDOHelpers::grn5Model};
     }
-    else if(grnModel == "grn10"){
+    else if(grnModelName == "grn10"){
         ctx = {.IND_SIZE = 40, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
-                .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 15,.K_SIZE = 15};
+                .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 15,.K_SIZE = 15, .modelFunction = GRNEDOHelpers::grn10Model};
+    }
 
-        if(evalMode == "lsoda"){
-            func = &grn10EvaluationLSODA;
-        }
-        else if(evalMode == "rk4"){
-            func = &grn10EvaluationRK4;
-        }
+    if(evalMode == "lsoda"){
+        func = &grnEvaluationLSODA;
+    }
+    else if(evalMode == "rk4"){
+        func = &grnEvaluationRK4;
     }
 
     GRNSeries* inputSeries = new GRNSeries(inputFile);
@@ -305,8 +299,7 @@ int main(int argc, char** argv)
         testSeries = new GRNSeries(inputFile);
     }
 
-    Algorithm algorithm = Algorithm(*trainingSeries, *testSeries, func, ctx.IND_SIZE);
-    algorithm.setContext(&ctx);
+    Algorithm algorithm = Algorithm(*trainingSeries, *testSeries, func, ctx.IND_SIZE, &ctx);
     algorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
 
     // inicializa limites de tau, k e n

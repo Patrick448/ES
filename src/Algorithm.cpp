@@ -45,9 +45,27 @@ Algorithm::Algorithm(int numDimensions){
     this->minSigma = -DBL_MAX;
 
 }
+
+Algorithm::Algorithm(GRNSeries &trainingSeries, GRNSeries &testSeries,
+                     double (*evaluationFunction)(void *, void *), int numDimensions, ProblemDescription *description) {
+    this->trainingSeries = &trainingSeries;
+    this->testSeries = &testSeries;
+    this->evaluationFunction = evaluationFunction;
+    this->numDimensions = numDimensions;
+    this->upperBounds.resize(numDimensions);
+    this->lowerBounds.resize(numDimensions);
+    this->lowerBoundTypes.resize(numDimensions);
+    this->upperBoundTypes.resize(numDimensions);
+    this->maxSigma = DBL_MAX;
+    this->minSigma = -DBL_MAX;
+    this->modelDescription = description;
+
+}
+
 Algorithm::~Algorithm(){
     this->clear();
 }
+
 
 void Algorithm::clear() {
     this->evaluationsCounter=0;
@@ -67,7 +85,7 @@ void Algorithm::addIndividual(Individual* individual){
 }
 
 double Algorithm::evaluate(Individual* ind){
-    appContext ctx{.series = this->trainingSeries};
+    appContext ctx{.series = this->trainingSeries, .description = this->modelDescription};
     double eval =this->evaluationFunction(ind->getParameters(), &ctx);
     ind->setEvaluation(eval);
     this->evaluationsCounter++;
@@ -447,12 +465,12 @@ void Algorithm::runCMAES(int seed, int maxEvals, int populationSize){
     this->bestIndividual->setEvaluation(DBL_MAX);
     int maxGenerations, newSeed;
     srand(seed);
-    appContext evaluationContext = appContext{.series = this->trainingSeries};
+    appContext evaluationContext = appContext{.series = this->trainingSeries, .description = this->modelDescription};
 
     while(this->evaluationsCounter < maxEvals){
         newSeed = rand();
         maxGenerations = (maxEvals - this->evaluationsCounter - populationSize)/populationSize;
-        GRNCoefProblem problem = GRNCoefProblem(&evaluationContext, (ProblemDescription*)this->context);
+        GRNCoefProblem problem = GRNCoefProblem(&evaluationContext);
         problem.setEvaluationFunction(this->evaluationFunction);
         pagmo::population pop = pagmo::population(problem, populationSize, newSeed);
         cmaes alg = cmaes(maxGenerations, -1, -1, -1, -1, 0.5, 1e-6, 1e-6, false, true, newSeed);
@@ -484,13 +502,13 @@ void Algorithm::runDE(int seed, int maxEvals, int populationSize){
     this->bestIndividual->setEvaluation(DBL_MAX);
     int maxGenerations, newSeed;
     srand(seed);
-    appContext evaluationContext = appContext{.series = this->trainingSeries};
+    appContext evaluationContext = appContext{.series = this->trainingSeries, .description = this->modelDescription};
 
 
     while(this->evaluationsCounter < maxEvals){
         newSeed = rand();
         maxGenerations = (maxEvals - this->evaluationsCounter - populationSize)/populationSize;
-        GRNCoefProblem problem = GRNCoefProblem(&evaluationContext, (ProblemDescription*)this->context);
+        GRNCoefProblem problem = GRNCoefProblem(&evaluationContext);
         problem.setEvaluationFunction(this->evaluationFunction);
         pagmo::population pop = pagmo::population(problem, populationSize, newSeed);
         pagmo::de alg = pagmo::de(maxGenerations, 0.8, 0.9, 2u, 1e-6, 1e-6, newSeed);
@@ -520,7 +538,7 @@ void Algorithm::runSADE(int seed, int maxEvals, int populationSize){
     this->bestIndividual->setEvaluation(DBL_MAX);
     int maxGenerations, newSeed;
     srand(seed);
-    appContext ctx = appContext{.series = this->trainingSeries};
+    appContext ctx = appContext{.series = this->trainingSeries, .description = this->modelDescription};
 
 
     while(this->evaluationsCounter < maxEvals){
@@ -565,28 +583,12 @@ string Algorithm::populationToCSVString(){
     return popString;
 }
 
-Algorithm::Algorithm(GRNSeries &trainingSeries, GRNSeries &testSeries,
-                     double (*evaluationFunction)(void *, void *), int numDimensions) {
-    this->trainingSeries = &trainingSeries;
-    this->testSeries = &testSeries;
-    this->evaluationFunction = evaluationFunction;
-    this->numDimensions = numDimensions;
-    this->upperBounds.resize(numDimensions);
-    this->lowerBounds.resize(numDimensions);
-    this->lowerBoundTypes.resize(numDimensions);
-    this->upperBoundTypes.resize(numDimensions);
-    this->maxSigma = DBL_MAX;
-    this->minSigma = -DBL_MAX;
 
-}
 
 void Algorithm::reevaluateBestIndividualUsingTestSet() {
-    appContext ctx{.series = this->testSeries};
+    appContext ctx{.series = this->testSeries, .description = this->modelDescription};
     double eval =this->evaluationFunction(this->bestIndividual->getParameters(), &ctx);
     this->bestIndividual->setEvaluation(eval);
     //return eval;
 }
 
-void Algorithm::setGrnModel(int (*grnModel)(double, double *, double *, void *)) {
-    this->grnModel = grnModel;
-}
