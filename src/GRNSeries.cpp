@@ -17,7 +17,7 @@ GRNSeries::GRNSeries(string filepath) {
     initializeInitialValues();
 }
 
-GRNSeries::GRNSeries(GRNSeries &grnSeries, int start, int end) {
+GRNSeries::GRNSeries(GRNSeries &grnSeries, int start, int end, bool copyMaxValues) {
     int timeSteps = end - start + 1;
     this->numTimeSteps = timeSteps;
     this->numColumns = grnSeries.getNumColumns();
@@ -34,7 +34,15 @@ GRNSeries::GRNSeries(GRNSeries &grnSeries, int start, int end) {
         }
     }
 
-    loadMaxValues();
+    if(copyMaxValues){
+        this->maxValues = new double[grnSeries.getNumVariables()];
+        for(int i=0; i<grnSeries.getNumVariables(); i++){
+            this->maxValues[i] = grnSeries.getMaxValues()[i];
+        }
+    }
+    else{
+        loadMaxValues();
+    }
     initializeInitialValues();
 }
 

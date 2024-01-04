@@ -295,13 +295,17 @@ int main(int argc, char** argv)
     GRNSeries* testSeries;
 
     if(args.find("testSet") != args.end()){
+        //todo: aqui vai ter um problema com o maxValues, pois ele é inicializado com o conjunto que é carregado
+        //  talvez seja melhor usar o maxValues como parte do indivíduo
         trainingSeries = new GRNSeries(inputFile);
         testSeries = new GRNSeries(args["testSet"]);
 
     }else if(args.find("trainingStart") != args.end()){
+        //todo: vai dar problema, deveria usar o maxValues do conjunto de treino
         trainingSeries = new GRNSeries(*inputSeries, stoi(args["trainingStart"]), stoi(args["trainingEnd"]));
         testSeries = new GRNSeries(*inputSeries, stoi(args["testStart"]), stoi(args["testEnd"]));
     }else {
+        //todo:vai dar o mesmo problema
         trainingSeries = new GRNSeries(inputFile);
         testSeries = new GRNSeries(inputFile);
     }
