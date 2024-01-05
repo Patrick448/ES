@@ -80,10 +80,14 @@ vector<double> extractDoubleRow(string text)
 
     for (int i = 0; i < text.size(); i++)
     {
-        if (text[i] == ' ' || text[i] == '\n' || text[i] == '\r')
+        if (text[i] == ' ' || text[i] == '\n' || text[i] == '\r' || text[i] == '\t')
         {
-            result.push_back(stod(part));
-            part = "";
+            if(part != "") {
+
+                result.push_back(stod(part));
+                part = "";
+            }
+
         }
         else
         {
@@ -91,7 +95,9 @@ vector<double> extractDoubleRow(string text)
         }
     }
 
-    result.push_back(stod(part));
+    if(part != ""){
+        result.push_back(stod(part));
+    }
     return result;
 }
 
@@ -135,10 +141,11 @@ void GRNSeries::loadFromFile(string filepath)//(string path, int numVectors, dou
     //todo: ver se preciso tratar caso de linha vazia
     for(int i=0; !input.eof(); i++){
         getline(input, textAux);
-        lineElements = extractDoubleRow(textAux);
-
-        for(int j=0; j<this->numColumns; j++){
-            this->vectors[j][i] = lineElements[j];
+        if(textAux != ""){
+            lineElements = extractDoubleRow(textAux);
+            for(int j=0; j<this->numColumns; j++){
+                this->vectors[j][i] = lineElements[j];
+            }
         }
     }
 
