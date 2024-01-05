@@ -138,6 +138,8 @@ void runExperimentRoundTest(Algorithm& algorithm, string algName, int maxEvals, 
         algorithm.runDE(seed, maxEvals, 40);
     }else if(algName=="sade") {
         algorithm.runSADE(seed, maxEvals, 40);
+    }else{
+        cout << "Invalid algorithm name: "<< algName << endl;
     }
 
     //todo: uma função que reavalia população segundo conjunto de teste
@@ -220,27 +222,9 @@ std::map<string, string> parseArgs(int argc, char** argv){
         }
 
         args["inputFile"] = inputFile;
-
-        if(grnModel == "grn5"|| grnModel == "grn10"){
-            args["grnModel"] = grnModel;
-        }else{
-            cout << "Invalid GRN model" << endl;
-        }
-
-        if(evalMode == "lsoda" || evalMode == "rk4") {
-            args["evalMode"] = evalMode;
-        }else{
-            cout << "Invalid evaluation mode" << endl;
-        }
-
-        if(algName == "cmaes" || algName == "es-i" || algName == "es-ni"||
-        algName == "de" ||algName == "sade" || algName == "1+1"){
-            args["algName"] = algName;
-        }
-        else  {
-            cout << "Invalid algorithm name" << endl;
-        }
-
+        args["grnModel"] = grnModel;
+        args["evalMode"] = evalMode;
+        args["algName"] = algName;
         args["maxEvals"] = maxEvals;
         args["seed"] = seed;
    // }else{
@@ -281,6 +265,11 @@ int main(int argc, char** argv)
     else if(grnModelName == "grn5ncyc"){
         ctx = {.IND_SIZE = 31, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 13,.K_SIZE = 13, .modelFunction = GRNEDOHelpers::grn5NCYCModel};
+    }else if(grnModelName == "grn4ncyc"){
+        ctx = {.IND_SIZE = 26, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+                .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 4,.N_SIZE = 11,.K_SIZE = 11, .modelFunction = GRNEDOHelpers::grn4NCYCModel};
+    }else{
+        cout << "Invalid GRN model: "<< grnModelName << endl;
     }
 
     if(evalMode == "lsoda"){
@@ -288,6 +277,8 @@ int main(int argc, char** argv)
     }
     else if(evalMode == "rk4"){
         func = &grnEvaluationRK4;
+    }else{
+        cout << "Invalid ODE solver name: "<<evalMode << endl;
     }
 
     GRNSeries* inputSeries = new GRNSeries(inputFile);
@@ -305,7 +296,7 @@ int main(int argc, char** argv)
         trainingSeries = new GRNSeries(*inputSeries, stoi(args["trainingStart"]), stoi(args["trainingEnd"]));
         testSeries = new GRNSeries(*inputSeries, stoi(args["testStart"]), stoi(args["testEnd"]));
     }else {
-        //todo:vai dar o mesmo problema
+        //todo:vai dar o mesmo problema que acima
         trainingSeries = new GRNSeries(inputFile);
         testSeries = new GRNSeries(inputFile);
     }

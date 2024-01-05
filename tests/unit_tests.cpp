@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE(test_evaluate_GRN10_LSODA){
     ind.setParameters(ind0);
 
     appContext ctx{.series = &series, .description = &desc};
-    double eval = grn10EvaluationLSODA(ind.getParameters(), &ctx);
+    double eval = grnEvaluationLSODA(ind.getParameters(), &ctx);
 
     BOOST_CHECK_CLOSE_FRACTION( eval, 56.71, 0.001 );
 
@@ -194,7 +194,7 @@ BOOST_AUTO_TEST_CASE(test_evaluate_GRN10_RK4){
     ind.setParameters(ind0);
 
     appContext ctx{.series = &series, .description = &desc};
-    double eval = grn10EvaluationRK4(ind.getParameters(), &ctx);
+    double eval = grnEvaluationRK4(ind.getParameters(), &ctx);
 
     BOOST_CHECK_CLOSE_FRACTION( eval, 56.71, 0.001 );
 
