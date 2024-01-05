@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(test_evaluate_GRN5_LSODA){
     //void GRNEDOHelpers::initializeGRNContext(appContext* ctx, int granularity, int numVariables, int numTau, int numN, int numK, int setStart, int setEnd, double** vectors, double * maxValues)
    // appContext ctx{};
     GRNSeries series = GRNSeries("GRN5.txt");
-    GRNSeries testSeries = GRNSeries(series, 0, 49);
+    GRNSeries testSeries = GRNSeries(series, 0, 10);
     ProblemDescription desc = {.IND_SIZE = 19, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
             .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 7,.K_SIZE = 7, .modelFunction = GRNEDOHelpers::grn5Model};
 

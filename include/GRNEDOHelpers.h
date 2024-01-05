@@ -39,9 +39,9 @@ namespace GRNEDOHelpers{
     /// @param _yout the output of the integration (meaning the function values at each time step).
     double lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), double* tspan, double* y_0, int totalSteps, int nVariables, double* times, double *_yout, void* context);
 
-
     double grnEvaluationLSODA(void* individual, void* context);
     double grnEvaluationRK4(void* individual, void* context);
+    void getLSODASeriesResult(void* individual, void* context, double* yout, double* t);
 
     // other helpers
     string vectorToString(double *vec, int start, int end);

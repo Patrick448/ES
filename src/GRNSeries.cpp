@@ -4,6 +4,7 @@
 #include "GRNSeries.h"
 #include <fstream>
 #include <vector>
+#include <iostream>
 
 
 GRNSeries::GRNSeries() {
@@ -16,6 +17,32 @@ GRNSeries::GRNSeries(string filepath) {
     loadMaxValues();
     initializeInitialValues();
 }
+
+GRNSeries::GRNSeries(int numTimeSteps, int numColumns, double *vector, double *times, int granularity) {
+    this->numTimeSteps = numTimeSteps;
+    this->numColumns = numColumns;
+
+    this->vectors = new double*[numColumns];
+    for(int i=0; i<numColumns; i++){
+        this->vectors[i] = new double[numTimeSteps];
+    }
+    matrixInitialized = true;
+
+    for (int i = 0; i < numColumns; i++)
+    {
+        for (int j = 0; j <= numTimeSteps; j++)
+        {
+            int index = granularity*j* numColumns + i;
+            std::cout << vector[index] << " ";
+            this->vectors[i][j] = vector[index];
+        }
+        cout << endl;
+    }
+
+    loadMaxValues();
+    initializeInitialValues();
+}
+
 
 GRNSeries::GRNSeries(GRNSeries &grnSeries, int start, int end, bool copyMaxValues) {
     int timeSteps = end - start + 1;
@@ -214,6 +241,13 @@ void GRNSeries::initializeInitialValues() {
 double *GRNSeries::getInitialValues() const {
     return this->initialValues;
 }
+
+void GRNSeries::loadMaxValuesFrom(GRNSeries &grnSeries) {
+    for(int i=0; i<grnSeries.getNumVariables(); i++){
+        this->maxValues[i] = grnSeries.getMaxValues()[i];
+    }
+}
+
 
 
 

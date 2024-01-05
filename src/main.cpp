@@ -234,8 +234,41 @@ std::map<string, string> parseArgs(int argc, char** argv){
     return args;
 }
 
+void printGRNResultTest(){
+    GRNSeries series = GRNSeries("GRN5.txt");
+    GRNSeries testSeries = GRNSeries(series, 0, 10);
+    ProblemDescription desc = {.IND_SIZE = 19, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+            .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 7,.K_SIZE = 7, .modelFunction = GRNEDOHelpers::grn5Model};
+
+
+    double ind0[19] = {1.2163355099083872, 1.1264485098219865, 2.973714367061704,
+                       2.952143123315177, 2.998260518457365, 0.5687249950503857,
+                       0.4580723119903261, 0.46214892372246563, 0.6182568295500336,
+                       0.5213082492659304, 0.7708877748759901, 0.1497642024548283,
+                       4.254757908429968, 3.759370669969996, 4.784173526119725,
+                       10.935884810737809, 24.595975874929724, 2.8109199678182635,
+                       4.922623602327875};
+
+    double* yout;
+    double *t;
+
+    Individual ind = Individual(19);
+    ind.setParameters(ind0);
+    appContext ctx{.series = &testSeries, .description = &desc};
+
+    getLSODASeriesResult(ind.getParameters(), &ctx, yout, t);
+
+    GRNSeries resultSeries = GRNSeries(11, 5, yout, t, 1);
+
+    delete[] yout;
+    delete[] t;
+
+}
+
 int main(int argc, char** argv)
 {
+    //printGRNResultTest();
+    //return 0;
     std::map<string, string> args = parseArgs(argc, argv);
     string grnModelName = args["grnModel"];
     string evalMode = args["evalMode"];
@@ -290,15 +323,21 @@ int main(int argc, char** argv)
         //  talvez seja melhor usar o maxValues como parte do indivíduo
         trainingSeries = new GRNSeries(inputFile);
         testSeries = new GRNSeries(args["testSet"]);
+        //todo: pensar em uma forma melhor de fazer isso. Para manter os max values do conjunto de treino
+        testSeries->loadMaxValuesFrom(*trainingSeries);
 
     }else if(args.find("trainingStart") != args.end()){
         //todo: vai dar problema, deveria usar o maxValues do conjunto de treino
         trainingSeries = new GRNSeries(*inputSeries, stoi(args["trainingStart"]), stoi(args["trainingEnd"]));
         testSeries = new GRNSeries(*inputSeries, stoi(args["testStart"]), stoi(args["testEnd"]));
+        testSeries->loadMaxValuesFrom(*trainingSeries);
+
     }else {
         //todo:vai dar o mesmo problema que acima
         trainingSeries = new GRNSeries(inputFile);
         testSeries = new GRNSeries(inputFile);
+        testSeries->loadMaxValuesFrom(*trainingSeries);
+
     }
 
     Algorithm algorithm = Algorithm(*trainingSeries, *testSeries, func, ctx.IND_SIZE, &ctx);
@@ -331,7 +370,6 @@ int main(int argc, char** argv)
     delete trainingSeries;
     delete testSeries;
     return 0;
-
 
 }
 

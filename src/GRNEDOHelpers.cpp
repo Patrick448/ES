@@ -407,7 +407,9 @@ double GRNEDOHelpers::difference(double *actual, double **expected, int numEleme
         {
             int index = granularity*j* numVariables + i;
             difTotal += fabs(actual[index] - expected[i][j]);
+           // cout << actual[index] << " ";
         }
+        //cout << endl;
     }
     if (isnan(difTotal))
     {
@@ -575,3 +577,28 @@ double GRNEDOHelpers::grnEvaluationRK4(void* individual, void* context)
 
 }
 
+void GRNEDOHelpers::getLSODASeriesResult(void* individual, void* context, double* yout, double* t)
+{
+    appContext* ctx = (appContext*)(context);
+    GRNSeries* evalSeries = (GRNSeries*)(ctx->series);
+    double* _ind = (double*)individual;
+    ctx->individual = _ind;
+
+    //todo: ver se volto granularity para o context
+    int granularity = 1;
+    int totalSteps = (evalSeries->getNumTimeSteps() - 1) * granularity;
+    yout = new double[(totalSteps + 1) * evalSeries->getNumVariables()];
+
+    double tspan[] {evalSeries->getStartTime(), evalSeries->getEndTime()};
+    double** expectedResult = &evalSeries->getVectors()[1];
+    int nVariables = evalSeries->getNumVariables();
+    double *y_0 = evalSeries->getInitialValues();
+    t = new double [totalSteps+1];
+
+    lsodaWrapper(ctx->description->modelFunction, tspan, y_0, totalSteps, nVariables, nullptr, yout, ctx);
+
+
+    //delete [] yout;
+    //delete [] t;
+
+}
