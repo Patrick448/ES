@@ -1,8 +1,8 @@
 #!/bin/bash
 
 BUDGET=1050000
-INPUT_FILE="GRN5_DATA.txt"
-MODEL="grn5new"
+INPUT_FILE="GRN10_DATA.txt"
+MODEL="grn10new"
 EXE_PATH="./build/ES"
 EXP_NAME="$MODEL-$BUDGET"
 SET_DIV="-sd 0 34 35 49"
