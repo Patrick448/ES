@@ -327,13 +327,11 @@ int main(int argc, char** argv)
         testSeries->loadMaxValuesFrom(*trainingSeries);
 
     }else if(args.find("trainingStart") != args.end()){
-        //todo: vai dar problema, deveria usar o maxValues do conjunto de treino
         trainingSeries = new GRNSeries(*inputSeries, stoi(args["trainingStart"]), stoi(args["trainingEnd"]));
         testSeries = new GRNSeries(*inputSeries, stoi(args["testStart"]), stoi(args["testEnd"]));
         testSeries->loadMaxValuesFrom(*trainingSeries);
 
     }else {
-        //todo:vai dar o mesmo problema que acima
         trainingSeries = new GRNSeries(inputFile);
         testSeries = new GRNSeries(inputFile);
         testSeries->loadMaxValuesFrom(*trainingSeries);

@@ -116,7 +116,10 @@ void GRNSeries::initializeMatrix(string filepath){
 
     for(int i=1; !input.eof(); i++){
         getline(input, textAux);
-        rowCount++;
+        if(textAux != ""){
+            rowCount++;
+        }
+
     }
 
     input.close();
