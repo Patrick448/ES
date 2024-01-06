@@ -18,25 +18,29 @@ GRNSeries::GRNSeries(string filepath) {
     initializeInitialValues();
 }
 
-GRNSeries::GRNSeries(int numTimeSteps, int numColumns, double *vector, double *times, int granularity) {
+GRNSeries::GRNSeries(int numTimeSteps, int numVariables, double *vector, double *times, int granularity) {
     this->numTimeSteps = numTimeSteps;
-    this->numColumns = numColumns;
+    this->numColumns = numVariables+1;
 
-    this->vectors = new double*[numColumns];
-    for(int i=0; i<numColumns; i++){
-        this->vectors[i] = new double[numTimeSteps];
+    this->vectors = new double*[this->numColumns];
+    for(int i=0; i < this->numColumns; i++){
+        this->vectors[i] = new double[this->numTimeSteps];
     }
     matrixInitialized = true;
 
-    for (int i = 0; i < numColumns; i++)
+    for(int i=0; i<this->numTimeSteps; i++){
+        this->vectors[0][i] = times[i];
+    }
+
+    for (int i = 0; i < numVariables ; i++)
     {
-        for (int j = 0; j <= numTimeSteps; j++)
+        for (int j = 0; j < this->numTimeSteps; j++)
         {
-            int index = granularity*j* numColumns + i;
-            std::cout << vector[index] << " ";
-            this->vectors[i][j] = vector[index];
+            int index = granularity * j * numVariables + i;
+            //std::cout << vector[index] << " ";
+            this->vectors[i+1][j] = vector[index];
         }
-        cout << endl;
+      //  cout << endl;
     }
 
     loadMaxValues();
@@ -256,6 +260,18 @@ void GRNSeries::loadMaxValuesFrom(GRNSeries &grnSeries) {
     for(int i=0; i<grnSeries.getNumVariables(); i++){
         this->maxValues[i] = grnSeries.getMaxValues()[i];
     }
+}
+
+string GRNSeries::toString() {
+    string seriesString = "";
+    for(int i=0; i<this->numTimeSteps; i++){
+        for(int j=0; j<this->numColumns; j++){
+            seriesString += to_string(this->vectors[j][i]) + "\t";
+        }
+        seriesString += "\n";
+    }
+
+    return seriesString;
 }
 
 

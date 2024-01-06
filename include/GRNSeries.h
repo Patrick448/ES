@@ -18,7 +18,7 @@ private:
     double *initialValues;
 public:
     GRNSeries();
-    GRNSeries(int numTimeSteps, int numColumns, double *vector, double* times, int granularity);
+    GRNSeries(int numTimeSteps, int numVariables, double *vector, double* times, int granularity);
     GRNSeries(string filepath);
     GRNSeries(GRNSeries &grnSeries, int start, int end, bool copyMaxValues = false);
     ~GRNSeries();
@@ -50,6 +50,8 @@ public:
 
     double *getMaxValues() const;
     void loadMaxValues();
+
+    string toString();
 
 };
 

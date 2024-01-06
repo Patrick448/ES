@@ -577,7 +577,26 @@ double GRNEDOHelpers::grnEvaluationRK4(void* individual, void* context)
 
 }
 
-void GRNEDOHelpers::getLSODASeriesResult(void* individual, void* context, double* yout, double* t)
+/// helper for outputting text to file
+void outputToFile(string path, string text, bool append)
+{
+    ofstream outputf;
+
+    if (append)
+    {
+        outputf.open(path, std::ios_base::app);
+    }
+    else
+    {
+        outputf.open(path);
+    }
+
+    outputf << text;
+    outputf.close();
+}
+
+//todo: mudar de void* para double* (individual)
+void GRNEDOHelpers::printODEIntSeries(void* individual, void* context, const string& outputFile, int solver)
 {
     appContext* ctx = (appContext*)(context);
     GRNSeries* evalSeries = (GRNSeries*)(ctx->series);
@@ -587,18 +606,28 @@ void GRNEDOHelpers::getLSODASeriesResult(void* individual, void* context, double
     //todo: ver se volto granularity para o context
     int granularity = 1;
     int totalSteps = (evalSeries->getNumTimeSteps() - 1) * granularity;
-    yout = new double[(totalSteps + 1) * evalSeries->getNumVariables()];
+    double* yout = new double[(totalSteps + 1) * evalSeries->getNumVariables()];
+    double *t = new double[totalSteps +1];
 
     double tspan[] {evalSeries->getStartTime(), evalSeries->getEndTime()};
     double** expectedResult = &evalSeries->getVectors()[1];
     int nVariables = evalSeries->getNumVariables();
     double *y_0 = evalSeries->getInitialValues();
-    t = new double [totalSteps+1];
-
-    lsodaWrapper(ctx->description->modelFunction, tspan, y_0, totalSteps, nVariables, nullptr, yout, ctx);
 
 
-    //delete [] yout;
-    //delete [] t;
+    if(solver == 1) {
+        rk4(ctx->description->modelFunction, tspan, y_0, totalSteps, nVariables, t, yout, ctx);}
+    else if(solver == 0) {
+        lsodaWrapper(ctx->description->modelFunction, tspan, y_0, totalSteps, nVariables, nullptr, yout, ctx);
+    }
+
+    GRNSeries resultSeries = GRNSeries(evalSeries->getNumTimeSteps(), evalSeries->getNumVariables(), yout, t, granularity);
+    if(!outputFile.empty()) {
+        outputToFile(outputFile, resultSeries.toString(), false);
+    }else{
+        cout << resultSeries.toString() << endl;
+    }
+    delete [] yout;
+    delete [] t;
 
 }

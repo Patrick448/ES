@@ -41,7 +41,7 @@ namespace GRNEDOHelpers{
 
     double grnEvaluationLSODA(void* individual, void* context);
     double grnEvaluationRK4(void* individual, void* context);
-    void getLSODASeriesResult(void* individual, void* context, double* yout, double* t);
+    void printODEIntSeries(void* individual, void* context, const string& outputFile, int solver);
 
     // other helpers
     string vectorToString(double *vec, int start, int end);

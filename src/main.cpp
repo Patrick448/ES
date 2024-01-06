@@ -99,23 +99,7 @@ double **expectedResult;
 
 };*/
 
-/// helper for outputting text to file
-void outputToFile(string path, string text, bool append)
-{
-    ofstream outputf;
 
-    if (append)
-    {
-        outputf.open(path, std::ios_base::app);
-    }
-    else
-    {
-        outputf.open(path);
-    }
-
-    outputf << text;
-    outputf.close();
-}
 
 void runExperimentRoundTest(Algorithm& algorithm, string algName, int maxEvals, int seed)
 {
@@ -240,7 +224,6 @@ void printGRNResultTest(){
     ProblemDescription desc = {.IND_SIZE = 19, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
             .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 7,.K_SIZE = 7, .modelFunction = GRNEDOHelpers::grn5Model};
 
-
     double ind0[19] = {1.2163355099083872, 1.1264485098219865, 2.973714367061704,
                        2.952143123315177, 2.998260518457365, 0.5687249950503857,
                        0.4580723119903261, 0.46214892372246563, 0.6182568295500336,
@@ -249,20 +232,8 @@ void printGRNResultTest(){
                        10.935884810737809, 24.595975874929724, 2.8109199678182635,
                        4.922623602327875};
 
-    double* yout;
-    double *t;
-
-    Individual ind = Individual(19);
-    ind.setParameters(ind0);
     appContext ctx{.series = &testSeries, .description = &desc};
-
-    getLSODASeriesResult(ind.getParameters(), &ctx, yout, t);
-
-    GRNSeries resultSeries = GRNSeries(11, 5, yout, t, 1);
-
-    delete[] yout;
-    delete[] t;
-
+    printODEIntSeries(ind0, &ctx, "",0);
 }
 
 int main(int argc, char** argv)
