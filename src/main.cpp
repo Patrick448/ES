@@ -267,7 +267,7 @@ int main(int argc, char** argv)
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 15,.K_SIZE = 15, .modelFunction = GRNEDOHelpers::grn10Model};
     }
     else if(grnModelName == "grn5new"){
-        ctx = {.IND_SIZE = 21, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 0,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+        ctx = {.IND_SIZE = 21, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 8,.K_SIZE = 8, .modelFunction = GRNEDOHelpers::grn5NewModel};
     }
     else if(grnModelName == "grn10new"){
