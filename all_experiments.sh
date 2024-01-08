@@ -1,12 +1,12 @@
 #!/bin/bash
 
 BUDGET=1050000
-INPUT_FILE="genesABCD_data.txt"
-MODEL="grn4ncyc"
+INPUT_FILE="GRN10_DATA.txt"
+MODEL="grn10new"
 EXE_PATH="./build/ES"
-DIFF=""
+DIFF="n0"
 EXP_NAME="$MODEL-$BUDGET-$DIFF"
-SET_DIV="-sd 0 97 98 140"
+SET_DIV="-sd 0 34 35 49"
 
 mkdir $EXP_NAME
 ./batch_run.sh 4 30 "$EXE_PATH -i $INPUT_FILE -m $MODEL -e lsoda -a cmaes -n $BUDGET -s \$i $SET_DIV >> $EXP_NAME/output-$MODEL-cmaes.txt"

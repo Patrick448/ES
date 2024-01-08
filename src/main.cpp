@@ -32,72 +32,6 @@ using namespace std;
 using namespace GRNEDOHelpers;
 using namespace algModes;
 using namespace pagmo;
-/*
-int IND_SIZE;        // Tamanho do indivíduo (quantidade de coeficientes)
-double MIN_K;        // Menor valor que K pode assumir
-double MAX_K;        // Maior valor que K pode assumir
-double MIN_N;        // Menor valor que N pode assumir
-double MAX_N;        // Maior valor que N pode assumir
-double MIN_TAU;      // Menor valor que TAU pode assumir
-double MAX_TAU;      // Maior valor que TAU pode assumir
-double MIN_STRATEGY; // Menor valor que a estratégia pode assumir
-double MAX_STRATEGY; // Maior valor que a estratégia pode assumir
-int TAU_SIZE;
-int N_SIZE;
-int K_SIZE;
-double *maxValues;
-
-int nVariables;
-int nSteps;
-double tspan[2];
-double *yout;
-double *y_0;
-double **vectors;
-double **expectedResult;
-*/
-
-/*struct appContext {
-    int TRAINING_MODE = 0;
-    int TEST_MODE = 2;
-    int VALIDATION_MODE = 1;
-    int mode=0;
-    int IND_SIZE;        // Tamanho do indivíduo (quantidade de coeficientes)
-    double MIN_K;        // Menor valor que K pode assumir
-    double MAX_K;        // Maior valor que K pode assumir
-    double MIN_N;        // Menor valor que N pode assumir
-    double MAX_N;        // Maior valor que N pode assumir
-    double MIN_TAU;      // Menor valor que TAU pode assumir
-    double MAX_TAU;      // Maior valor que TAU pode assumir
-    double MIN_STRATEGY; // Menor valor que a estratégia pode assumir
-    double MAX_STRATEGY; // Maior valor que a estratégia pode assumir
-    int TAU_SIZE;
-    int N_SIZE;
-    int K_SIZE;
-    double *maxValues;
-
-    int nVariables;
-    int nSteps;
-    int dataSetSize;
-    int trainingSteps;
-    int testSteps;
-    int validationSteps;
-    int trainingSetStart;
-    int trainingSetEnd;
-    int testSetStart;
-    int testSetEnd;
-    int validationSetStart;
-    int validationSetEnd;
-    int setStart;
-    int setEnd;
-    double tspan[2];
-    double trainingTSpan[2];
-    double *yout;
-    double *y_0;
-    double **vectors;
-    double **expectedResult;
-    double* individual;
-
-};*/
 
 
 
@@ -184,6 +118,34 @@ bool argExists(int argc, char** argv, string argName){
     return argFound;
 }
 
+vector<double> csvLineToDoubleVector(string text)
+{
+    vector<double> result;
+    string part;
+
+    for (int i = 0; i < text.size(); i++)
+    {
+        if (text[i] == ',')
+        {
+            if(part != "") {
+
+                result.push_back(stod(part));
+                part = "";
+            }
+
+        }
+        else
+        {
+            part += (text[i]);
+        }
+    }
+
+    if(part != ""){
+        result.push_back(stod(part));
+    }
+    return result;
+}
+
 std::map<string, string> parseArgs(int argc, char** argv){
     std::map<string, string> args;
     //if (argc == 13) {
@@ -193,6 +155,8 @@ std::map<string, string> parseArgs(int argc, char** argv){
         string algName = findArg(argc, argv, "-a");
         string maxEvals = findArg(argc, argv, "-n");
         string seed = findArg(argc, argv, "-s");
+        string individual = findArg(argc, argv, "-ind");
+        string outputFile = findArg(argc, argv, "-o");
 
         if(argExists(argc, argv, "-ts")){
             args["testSet"] = findArg(argc, argv, "-ts");
@@ -211,6 +175,8 @@ std::map<string, string> parseArgs(int argc, char** argv){
         args["algName"] = algName;
         args["maxEvals"] = maxEvals;
         args["seed"] = seed;
+        args["individual"] = individual;
+        args["outputFile"] = outputFile;
    // }else{
   //      cout << "Invalid number of arguments" << endl;
    // }
@@ -219,19 +185,21 @@ std::map<string, string> parseArgs(int argc, char** argv){
 }
 
 void printGRNResultTest(){
-    GRNSeries series = GRNSeries("genesABCD_data.txt");
-    GRNSeries testSeries = GRNSeries(series, 98, 140);
-    ProblemDescription desc =  {.IND_SIZE = 26, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
-            .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 4,.N_SIZE = 11,.K_SIZE = 11, .modelFunction = GRNEDOHelpers::grn4NCYCModel};
-    double ind0[26] = {4.834808656066785,4.999783895460130,4.999789187767514,
-                       0.205639485030801,0.214720076505044,0.278981874892055,
-                       0.999823267226977,0.999997471267274,0.100038796231457,
-                       0.566081513675810,0.302407672909777,0.735525738745361,
-                       0.541486083482295,0.589022970976682,0.100001296126439,
-                       8.354179543022741,1.000000000000000,9.906770301495885,
-                       25.000000000000000,8.310146878325836,13.509007483458482,
-                       24.992296312768775,24.703562804704244,25.000000000000000,
-                       1.009827056067247,1.070360277419574};
+    GRNSeries series = GRNSeries("DadosZeEduardo_DATA.txt");
+    GRNSeries testSeries = GRNSeries(series, 114, 161);
+    ProblemDescription desc =  {.IND_SIZE = 31, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+            .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 13,.K_SIZE = 13, .modelFunction = GRNEDOHelpers::grn5NCYCModel};
+    double ind0[31] = {0.509131859706313,4.705890160374611,0.100002011193567,
+                       0.100000000000000,0.587427439207285,0.930307173541365,
+                       0.271938661057075,0.995819658954900,0.440293368635028,
+                       0.294531357448824,0.643266490779396,0.100000206828619,
+                       0.999511289572582,0.443006784717132,0.999923201337715,
+                       0.999971822072094,0.230921764968310,0.999981525668626,
+                       1.027467752938993,20.590994565269891,1.000000000000000,
+                       24.932168591371969,1.000000000000000,1.809261972447725,
+                       1.603055004597870,25.000000000000000,24.960964294175983,
+                       12.005951470838969,25.000000000000000,15.878469782118251,
+                       24.523305696638271};
 
     appContext ctx{.series = &testSeries, .description = &desc};
     printODEIntSeries(ind0, &ctx, "",0);
@@ -246,33 +214,42 @@ int main(int argc, char** argv)
     string evalMode = args["evalMode"];
     string algName = args["algName"];
     string inputFile = args["inputFile"];
-    int seed = stoi(args["seed"]);
-    int maxEvals = stoi(args["maxEvals"]);
+    string individual = args["individual"];
+    string outputFile = args["outputFile"];
+    int seed;
+    int maxEvals;
     double (*func)(void*,void*);
-    ProblemDescription ctx = GRNEDOHelpers::grn5ProblemDescription;
+    ProblemDescription description = GRNEDOHelpers::grn5ProblemDescription;
+
+    if(args["seed"] != ""){
+        seed = stoi(args["seed"]);
+    }
+    if(args["maxEvals"] != ""){
+        maxEvals = stoi(args["maxEvals"]);
+    }
 
     if(grnModelName == "grn5"){
-        ctx = {.IND_SIZE = 19, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+        description = {.IND_SIZE = 19, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 7,.K_SIZE = 7, .modelFunction = GRNEDOHelpers::grn5Model};
     }
     else if(grnModelName == "grn10"){
-        ctx = {.IND_SIZE = 40, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+        description = {.IND_SIZE = 40, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 15,.K_SIZE = 15, .modelFunction = GRNEDOHelpers::grn10Model};
     }
     else if(grnModelName == "grn5new"){
-        ctx = {.IND_SIZE = 21, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+        description = {.IND_SIZE = 21, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 8,.K_SIZE = 8, .modelFunction = GRNEDOHelpers::grn5NewModel};
     }
     else if(grnModelName == "grn10new"){
-        ctx = {.IND_SIZE = 48, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+        description = {.IND_SIZE = 48, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 19,.K_SIZE = 19, .modelFunction = GRNEDOHelpers::grn10NewModel};
     }
     else if(grnModelName == "grn5ncyc"){
         //Modelo do DadosZeEduardo.txt
-        ctx = {.IND_SIZE = 31, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+        description = {.IND_SIZE = 31, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 13,.K_SIZE = 13, .modelFunction = GRNEDOHelpers::grn5NCYCModel};
     }else if(grnModelName == "grn4ncyc"){
-        ctx = {.IND_SIZE = 26, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+        description = {.IND_SIZE = 26, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 4,.N_SIZE = 11,.K_SIZE = 11, .modelFunction = GRNEDOHelpers::grn4NCYCModel};
     }else{
         cout << "Invalid GRN model: "<< grnModelName << endl;
@@ -309,30 +286,38 @@ int main(int argc, char** argv)
         trainingSeries = new GRNSeries(inputFile);
         testSeries = new GRNSeries(inputFile);
         testSeries->loadMaxValuesFrom(*trainingSeries);
-
     }
 
-    Algorithm algorithm = Algorithm(*trainingSeries, *testSeries, func, ctx.IND_SIZE, &ctx);
-    algorithm.setSigmaBounds(ctx.MIN_STRATEGY, ctx.MAX_STRATEGY);
+    if(argExists(argc, argv, "-ind")){
+        appContext ctx{.series = testSeries, .description = &description};
+        vector<double> indVec = csvLineToDoubleVector(individual);
+        double* indArray = indVec.data();
+        printODEIntSeries(indArray, &ctx, outputFile, 0);
+        return 0;
+    }
+
+
+    Algorithm algorithm = Algorithm(*trainingSeries, *testSeries, func, description.IND_SIZE, &description);
+    algorithm.setSigmaBounds(description.MIN_STRATEGY, description.MAX_STRATEGY);
 
    //todo: passar essas inicializações para dentro da classe Algorithm usando o objeto ctx
     // inicializa limites de tau, k e n
     int cont = 0;
-    for (int i = 0; i < ctx.TAU_SIZE; i++)
+    for (int i = 0; i < description.TAU_SIZE; i++)
     {
-        algorithm.setBounds(i, ctx.MIN_TAU, ctx.MAX_TAU, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
+        algorithm.setBounds(i, description.MIN_TAU, description.MAX_TAU, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
-    for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE; i++)
+    for (int i = cont + 1; i < description.TAU_SIZE + description.K_SIZE; i++)
     {
-        algorithm.setBounds(i, ctx.MIN_K, ctx.MAX_K, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
+        algorithm.setBounds(i, description.MIN_K, description.MAX_K, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
-    for (int i = cont + 1; i < ctx.TAU_SIZE + ctx.K_SIZE + ctx.N_SIZE; i++)
+    for (int i = cont + 1; i < description.TAU_SIZE + description.K_SIZE + description.N_SIZE; i++)
     {
-        algorithm.setBounds(i, ctx.MIN_N, ctx.MAX_N, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
+        algorithm.setBounds(i, description.MIN_N, description.MAX_N, Algorithm::LOWER_CLOSED, Algorithm::UPPER_CLOSED);
         cont = i;
     }
 
