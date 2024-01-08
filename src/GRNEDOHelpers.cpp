@@ -495,6 +495,77 @@ double GRNEDOHelpers::lsodaWrapper(int dydt(double t, double *y, double *ydot, v
     return 0;
 }
 
+double GRNEDOHelpers::lsodaWrapperTest(int dydt(double t, double *y, double *ydot, void *data), double* tspan, double* y_0, int totalSteps, int nVariables, double* times, double *_yout, void* context)
+{
+
+    // todo: tentar colocar essa alocação fora da função
+    //  esses vetores serão alocados toda vez, e essa função será chamada
+    //  a cada avaliação de indivíduo
+
+    double *atol = new double[nVariables];
+    double *rtol = new double[nVariables];
+    double t, tout, dt;
+
+    double *y = new double[nVariables];
+    int iout;
+
+    for (int i = 0; i < nVariables; i++)
+    {
+        y[i] = y_0[i];
+        rtol[i] = atol[i] = 1.49012e-4;
+        _yout[i] = y_0[i];
+    }
+
+    t = times[0];
+    //dt = (tspan[1] - tspan[0]) / (double)(totalSteps);
+    tout = times[1];
+
+    struct lsoda_opt_t opt = {0};
+    opt.ixpr = 0;
+    opt.rtol = rtol;
+    opt.atol = atol;
+    opt.itask = 1;
+    opt.mxstep = 500;
+
+    struct lsoda_context_t ctx = {.function = dydt,.data = context,.neq = nVariables,.state = 1};
+    lsoda_prepare(&ctx, &opt);
+
+    for (iout =1; iout <= totalSteps; iout++)
+    {
+        lsoda(&ctx, y, &t, tout);
+        //printf(" at t= %12.4e y= %14.6e %14.6e %14.6e %14.6e %14.6e\n", t, y[0], y[1], y[2], y[3], y[4]);
+
+        for(int i=0; i<nVariables; i++) {
+            int outIndex = nVariables * iout + i;
+            _yout[outIndex] = y[i];
+        }
+
+        if (ctx.state <= 0)
+        { //todo: ver se devo abortar ou não.
+            //todo: entender esse limite de passos e pq está sendo atingido mesmo com tamanho de passo pequeno
+            // outputToFile("problematicInds.txt", vectorToString(appCtx->individual, 0, appCtx->IND_SIZE-1) + "\n", true);
+            //cout << vectorToString(appCtx->individual, 0, appCtx->IND_SIZE-1)<<endl;
+            printf("error istate = %d\n", ctx.state);
+            for(int i=0; i<nVariables; i++) {
+                int outIndex = nVariables * iout + i;
+                _yout[outIndex] = INFINITY;
+            }
+            break;
+        }
+        if(iout < totalSteps){
+            tout = times[iout+1];
+        }
+
+    }
+
+    delete[] rtol;
+    delete[] atol;
+    delete[] y;
+    lsoda_free(&ctx);
+
+    return 0;
+}
+
 string GRNEDOHelpers::vectorToString(double *vec, int start, int end)
 {
     string s = "";
@@ -534,10 +605,11 @@ double GRNEDOHelpers::grnEvaluationLSODA(void* individual, void* context)
 
     double tspan[] {evalSeries->getStartTime(), evalSeries->getEndTime()};
     double** expectedResult = &evalSeries->getVectors()[1];
+    double *t = &evalSeries->getVectors()[0][0];
     int nVariables = evalSeries->getNumVariables();
     double *y_0 = evalSeries->getInitialValues();
 
-    lsodaWrapper(ctx->description->modelFunction, tspan, y_0, totalSteps, nVariables, nullptr, yout, ctx);
+    lsodaWrapperTest(ctx->description->modelFunction, tspan, y_0, totalSteps, nVariables, t, yout, ctx);
 
     double eval = difference(yout, expectedResult, evalSeries->getNumTimeSteps() - 1, nVariables, granularity);
 
@@ -613,15 +685,15 @@ void GRNEDOHelpers::printODEIntSeries(void* individual, void* context, const str
     double** expectedResult = &evalSeries->getVectors()[1];
     int nVariables = evalSeries->getNumVariables();
     double *y_0 = evalSeries->getInitialValues();
-
+    double *times = &evalSeries->getVectors()[0][0];
 
     if(solver == 1) {
         rk4(ctx->description->modelFunction, tspan, y_0, totalSteps, nVariables, t, yout, ctx);}
     else if(solver == 0) {
-        lsodaWrapper(ctx->description->modelFunction, tspan, y_0, totalSteps, nVariables, nullptr, yout, ctx);
+        lsodaWrapperTest(ctx->description->modelFunction, tspan, y_0, totalSteps, nVariables, times, yout, ctx);
     }
 
-    GRNSeries resultSeries = GRNSeries(evalSeries->getNumTimeSteps(), evalSeries->getNumVariables(), yout, t, granularity);
+    GRNSeries resultSeries = GRNSeries(evalSeries->getNumTimeSteps(), evalSeries->getNumVariables(), yout, times, granularity);
     if(!outputFile.empty()) {
         outputToFile(outputFile, resultSeries.toString(), false);
     }else{

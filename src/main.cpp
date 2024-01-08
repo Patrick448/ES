@@ -219,18 +219,26 @@ std::map<string, string> parseArgs(int argc, char** argv){
 }
 
 void printGRNResultTest(){
-    GRNSeries series = GRNSeries("GRN5.txt");
-    GRNSeries testSeries = GRNSeries(series, 0, 10);
-    ProblemDescription desc = {.IND_SIZE = 19, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
-            .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 7,.K_SIZE = 7, .modelFunction = GRNEDOHelpers::grn5Model};
-
-    double ind0[19] = {1.2163355099083872, 1.1264485098219865, 2.973714367061704,
-                       2.952143123315177, 2.998260518457365, 0.5687249950503857,
-                       0.4580723119903261, 0.46214892372246563, 0.6182568295500336,
-                       0.5213082492659304, 0.7708877748759901, 0.1497642024548283,
-                       4.254757908429968, 3.759370669969996, 4.784173526119725,
-                       10.935884810737809, 24.595975874929724, 2.8109199678182635,
-                       4.922623602327875};
+    GRNSeries series = GRNSeries("GRN10_DATA.txt");
+    GRNSeries testSeries = GRNSeries(series, 35, 49);
+    ProblemDescription desc = {.IND_SIZE = 48, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+            .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 19,.K_SIZE = 19, .modelFunction = GRNEDOHelpers::grn10NewModel};
+    double ind0[48] = {1.175042025275570,4.693818673398216,2.380845233272494,
+                       4.957303701580132,4.999967317881001,1.360529271831751,
+                       1.534870530887797,0.227019163232895,0.253624382458847,
+                       0.592358056908460,0.296886071298359,0.269464498050080,
+                       0.556919592489785,0.130838195571425,0.698173492664491,
+                       0.546765388965079,0.705519606632066,0.999999444210364,
+                       0.149676733483615,0.298244082519963,0.297830994615812,
+                       0.999165782545770,0.512218226060345,0.517740470079879,
+                       0.214093711431962,0.613824943520217,0.570317540838330,
+                       0.235581043888974,0.998208029063022,21.924110194517535,
+                       8.440067917308521,6.214521821552676,18.932288395129489,
+                       19.900965921081791,7.341079398564723,23.342970117584680,
+                       23.197908684392661,21.541274471788739,18.773907518188625,
+                       16.964192398334400,21.176235336520434,4.770609500712096,
+                       3.451628856593428,9.086045333643623,6.411841795215747,
+                       24.063790426707956,18.211771620843585,9.854435955709497};
 
     appContext ctx{.series = &testSeries, .description = &desc};
     printODEIntSeries(ind0, &ctx, "",0);
@@ -259,7 +267,7 @@ int main(int argc, char** argv)
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 15,.K_SIZE = 15, .modelFunction = GRNEDOHelpers::grn10Model};
     }
     else if(grnModelName == "grn5new"){
-        ctx = {.IND_SIZE = 21, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+        ctx = {.IND_SIZE = 21, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 0,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 8,.K_SIZE = 8, .modelFunction = GRNEDOHelpers::grn5NewModel};
     }
     else if(grnModelName == "grn10new"){
@@ -267,6 +275,7 @@ int main(int argc, char** argv)
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 19,.K_SIZE = 19, .modelFunction = GRNEDOHelpers::grn10NewModel};
     }
     else if(grnModelName == "grn5ncyc"){
+        //Modelo do DadosZeEduardo.txt
         ctx = {.IND_SIZE = 31, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 13,.K_SIZE = 13, .modelFunction = GRNEDOHelpers::grn5NCYCModel};
     }else if(grnModelName == "grn4ncyc"){
@@ -280,6 +289,7 @@ int main(int argc, char** argv)
         func = &grnEvaluationLSODA;
     }
     else if(evalMode == "rk4"){
+        //todo: corrigir - por enquanto o rk4 só vai funcionar se os intervalos forem uniformes
         func = &grnEvaluationRK4;
     }else{
         cout << "Invalid ODE solver name: "<<evalMode << endl;
