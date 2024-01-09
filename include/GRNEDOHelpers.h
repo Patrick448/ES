@@ -29,6 +29,7 @@ namespace GRNEDOHelpers{
     int grn5NewModel(double t, double *y, double *ydot, void *data);
     int grn10Model(double t, double *y, double *ydot, void *data);
     int grn10NewModel(double t, double *y, double *ydot, void *data);
+    int grn10New2Model(double t, double *y, double *ydot, void *context);
     int grn5NCYCModel(double t, double *y, double *ydot, void *context);
     int grn4NCYCModel(double t, double *y, double *ydot, void *context);
     double difference(double *actual, double **expected, int numElements, int numVariables, int granularity);
