@@ -241,10 +241,10 @@ int main(int argc, char** argv)
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 8,.K_SIZE = 8, .modelFunction = GRNEDOHelpers::grn5NewModel};
     }
     else if(grnModelName == "grn10new"){
-        description = {.IND_SIZE = 48, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 0,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+        description = {.IND_SIZE = 48, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 19,.K_SIZE = 19, .modelFunction = GRNEDOHelpers::grn10NewModel};
     }else if(grnModelName == "grn10new2"){
-        description = {.IND_SIZE = 60, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+        description = {.IND_SIZE = 60, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 0,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
                 .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 10,.N_SIZE = 25,.K_SIZE = 25, .modelFunction = GRNEDOHelpers::grn10New2Model};
     }
     else if(grnModelName == "grn5ncyc"){
