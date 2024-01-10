@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BUDGET=1050000
+BUDGET=2100000
 INPUT_FILE="GRN10_DATA.txt"
 MODEL="grn10new2"
 EXE_PATH="./build/ES"
