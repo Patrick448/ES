@@ -268,6 +268,7 @@ string GRNSeries::toString() {
         for(int j=0; j<this->numColumns; j++){
             seriesString += to_string(this->vectors[j][i]) + "\t";
         }
+        seriesString.pop_back();
         seriesString += "\n";
     }
 
