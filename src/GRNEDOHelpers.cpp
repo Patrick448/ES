@@ -652,13 +652,31 @@ int GRNEDOHelpers::grn10New2Model(double t, double *y, double *ydot, void *conte
 }
 
 //todo: melhorar vetores, padronizar o formato e melhorar os acessos
-double
-GRNEDOHelpers::difference(double *actual, double **expected, int numElements, int numVariables, int granularity) {
+double GRNEDOHelpers::difference(double *actual, double **expected, int numElements, int numVariables, int granularity) {
     double difTotal = 0.0;
     for (int i = 0; i < numVariables; i++) {
         for (int j = 0; j <= numElements; j++) {
             int index = granularity * j * numVariables + i;
             difTotal += fabs(actual[index] - expected[i][j]);
+            // cout << actual[index] << " ";
+        }
+        //cout << endl;
+    }
+    if (isnan(difTotal)) {
+        return DBL_MAX;
+    }
+    return difTotal;
+}
+
+
+double GRNEDOHelpers::differenceNormalized(double *actual, double **expected, int numElements, int numVariables, int granularity, double* maxValues, double* minValues) {
+    double difTotal = 0.0;
+    for (int i = 0; i < numVariables; i++) {
+        for (int j = 0; j <= numElements; j++) {
+            int index = granularity * j * numVariables + i;
+            double dif = fabs(actual[index] - expected[i][j]);
+            double normalizedDif = fabs((dif - minValues[i]) / (maxValues[i] - minValues[i]));
+            difTotal += normalizedDif;
             // cout << actual[index] << " ";
         }
         //cout << endl;
@@ -853,7 +871,8 @@ double GRNEDOHelpers::grnEvaluationLSODA(void *individual, void *context) {
 
     lsodaWrapperTest(ctx->description->modelFunction, tspan, y_0, totalSteps, nVariables, t, yout, ctx);
 
-    double eval = difference(yout, expectedResult, evalSeries->getNumTimeSteps() - 1, nVariables, granularity);
+    double eval = differenceNormalized(yout, expectedResult, evalSeries->getNumTimeSteps() - 1, nVariables, granularity,
+                                       evalSeries->getMaxValues(), evalSeries->getMinValues());
 
     delete[] yout;
 

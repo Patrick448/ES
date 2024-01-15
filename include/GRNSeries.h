@@ -15,6 +15,7 @@ private:
     int numColumns;
     bool matrixInitialized;
     double *maxValues;
+    double *minValues;
     double *initialValues;
 public:
     GRNSeries();
@@ -49,7 +50,9 @@ public:
     void initializeInitialValues();
 
     double *getMaxValues() const;
-    void loadMaxValues();
+    double *getMinValues() const;
+
+    void loadMinMaxValues();
 
     string toString();
 

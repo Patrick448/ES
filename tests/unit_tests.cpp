@@ -95,6 +95,14 @@ BOOST_AUTO_TEST_CASE(test_GRNSeries_should_return_correct_max_values){
 
     BOOST_CHECK_CLOSE_FRACTION( maxValues[0], 1.1517, 0.001 );
     BOOST_CHECK_CLOSE_FRACTION( maxValues[1], 0.3415, 0.001 );
+}
+
+BOOST_AUTO_TEST_CASE(test_GRNSeries_should_return_correct_min_values){
+    GRNSeries series = GRNSeries("testGRN.txt");
+    double *maxValues = series.getMinValues();
+
+    BOOST_CHECK_CLOSE_FRACTION( maxValues[0], 0.7095, 0.001 );
+    BOOST_CHECK_CLOSE_FRACTION( maxValues[1], 0.1767, 0.001 );
 
 }
 

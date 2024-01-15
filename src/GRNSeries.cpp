@@ -5,16 +5,15 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
-
+#include <cmath>
 
 GRNSeries::GRNSeries() {
 
 }
 
-
 GRNSeries::GRNSeries(string filepath) {
     loadFromFile(filepath);
-    loadMaxValues();
+    loadMinMaxValues();
     initializeInitialValues();
 }
 
@@ -43,10 +42,9 @@ GRNSeries::GRNSeries(int numTimeSteps, int numVariables, double *vector, double 
       //  cout << endl;
     }
 
-    loadMaxValues();
+    loadMinMaxValues();
     initializeInitialValues();
 }
-
 
 GRNSeries::GRNSeries(GRNSeries &grnSeries, int start, int end, bool copyMaxValues) {
     int timeSteps = end - start + 1;
@@ -72,7 +70,7 @@ GRNSeries::GRNSeries(GRNSeries &grnSeries, int start, int end, bool copyMaxValue
         }
     }
     else{
-        loadMaxValues();
+        loadMinMaxValues();
     }
     initializeInitialValues();
 }
@@ -162,7 +160,7 @@ void GRNSeries::loadFromFile(string filepath)//(string path, int numVectors, dou
 
 double getMaxValue(double *values, int start, int end)
 {
-    double maxValue = 0;
+    double maxValue = values[0];
     for (int i = start; i <= end; i++)
     {
         if (values[i] > maxValue)
@@ -174,15 +172,31 @@ double getMaxValue(double *values, int start, int end)
     return maxValue;
 }
 
-void GRNSeries::loadMaxValues()
+double getMinValue(double *values, int start, int end)
+{
+    double minValue = values[0];
+    for (int i = start; i <= end; i++)
+    {
+        if (values[i] < minValue)
+        {
+            minValue = values[i];
+        }
+    }
+
+    return minValue;
+}
+
+void GRNSeries::loadMinMaxValues()
 {
     int start = 0;
     int end = this->numTimeSteps - 1;
     this->maxValues = new double[this->numColumns];
+    this->minValues = new double[this->numColumns];
 
     for (int i = 1; i < this->numColumns; i++)
     {
         this->maxValues[i - 1] = getMaxValue(this->vectors[i], start, end);
+        this->minValues[i - 1] = getMinValue(this->vectors[i], start, end);
     }
 }
 
@@ -198,11 +212,9 @@ int GRNSeries::getNumTimeSteps() const {
     return numTimeSteps;
 }
 
-
 int GRNSeries::getNumColumns() const {
     return numColumns;
 }
-
 
 bool GRNSeries::isMatrixInitialized() const {
     return matrixInitialized;
@@ -211,8 +223,6 @@ bool GRNSeries::isMatrixInitialized() const {
 void GRNSeries::setMatrixInitialized(bool matrixInitialized) {
     GRNSeries::matrixInitialized = matrixInitialized;
 }
-
-
 
 GRNSeries::~GRNSeries() {
     if(this->matrixInitialized){
@@ -226,9 +236,11 @@ GRNSeries::~GRNSeries() {
 
 }
 
-
 double *GRNSeries::getMaxValues() const {
     return maxValues;
+}
+double *GRNSeries::getMinValues() const {
+    return minValues;
 }
 
 int GRNSeries::getNumVariables() const {
@@ -259,6 +271,7 @@ double *GRNSeries::getInitialValues() const {
 void GRNSeries::loadMaxValuesFrom(GRNSeries &grnSeries) {
     for(int i=0; i<grnSeries.getNumVariables(); i++){
         this->maxValues[i] = grnSeries.getMaxValues()[i];
+        this->minValues[i] = grnSeries.getMinValues()[i];
     }
 }
 
@@ -274,7 +287,5 @@ string GRNSeries::toString() {
 
     return seriesString;
 }
-
-
 
 
