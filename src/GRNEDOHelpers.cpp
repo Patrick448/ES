@@ -674,12 +674,10 @@ double GRNEDOHelpers::differenceNormalized(double *actual, double **expected, in
     for (int i = 0; i < numVariables; i++) {
         for (int j = 0; j <= numElements; j++) {
             int index = granularity * j * numVariables + i;
-            double dif = fabs(actual[index] - expected[i][j]);
-            double normalizedDif = fabs((dif - minValues[i]) / (maxValues[i] - minValues[i]));
+            double dif = actual[index] - expected[i][j];
+            double normalizedDif = fabs(dif / (maxValues[i] - minValues[i]));
             difTotal += normalizedDif;
-            // cout << actual[index] << " ";
         }
-        //cout << endl;
     }
     if (isnan(difTotal)) {
         return DBL_MAX;
@@ -875,8 +873,6 @@ double GRNEDOHelpers::grnEvaluationLSODA(void *individual, void *context) {
                                        evalSeries->getMaxValues(), evalSeries->getMinValues());
 
     delete[] yout;
-
-
     return eval;
 
 }
