@@ -4,7 +4,7 @@ BUDGET=1050000
 INPUT_FILE="genesABCD_data.txt"
 MODEL="grn4ncyc"
 EXE_PATH="./build/ES"
-DIFF="norm"
+DIFF="norm2"
 EXP_NAME="$MODEL-$BUDGET-$DIFF"
 SET_DIV="-sd 0 97 98 140"
 
