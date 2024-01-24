@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BUDGET=105
+BUDGET=1050000
 INPUT_FILE="DadosZeEduardo_DATA.txt"
 MODEL="grn5ncyc"
 EXE_PATH="./build/ES"
