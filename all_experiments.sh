@@ -1,8 +1,8 @@
 #!/bin/bash
 
 BUDGET=1050000
-INPUT_FILE="DadosZeEduardo_DATA.txt"
-MODEL="grn5ncyc"
+INPUT_FILE="interpolated_train_genesABCD_data.txt"
+MODEL="grn4ncyc"
 EXE_PATH="./build/ES"
 DIFF="interp"
 EXP_NAME="$MODEL-$BUDGET-$DIFF"
