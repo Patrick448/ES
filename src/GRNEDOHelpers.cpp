@@ -685,6 +685,22 @@ double GRNEDOHelpers::differenceNormalized(double *actual, double **expected, in
     return difTotal;
 }
 
+double GRNEDOHelpers::differenceNormalized2(double *actual, double **expected, int numElements, int numVariables, int granularity, double* maxValues, double* minValues) {
+    double difTotal = 0.0;
+    for (int i = 0; i < numVariables; i++) {
+        for (int j = 0; j <= numElements; j++) {
+            int index = granularity * j * numVariables + i;
+            double dif = actual[index] - expected[i][j];
+            double normalizedDif = fabs(dif / maxValues[i]);
+            difTotal += normalizedDif;
+        }
+    }
+    if (isnan(difTotal)) {
+        return DBL_MAX;
+    }
+    return difTotal;
+}
+
 double GRNEDOHelpers::lsodaWrapper(int dydt(double t, double *y, double *ydot, void *data), double *tspan, double *y_0,
                                    int totalSteps, int nVariables, double *times, double *_yout, void *context) {
 
@@ -869,7 +885,7 @@ double GRNEDOHelpers::grnEvaluationLSODA(void *individual, void *context) {
 
     lsodaWrapperTest(ctx->description->modelFunction, tspan, y_0, totalSteps, nVariables, t, yout, ctx);
 
-    double eval = differenceNormalized(yout, expectedResult, evalSeries->getNumTimeSteps() - 1, nVariables, granularity,
+    double eval = differenceNormalized2(yout, expectedResult, evalSeries->getNumTimeSteps() - 1, nVariables, granularity,
                                        evalSeries->getMaxValues(), evalSeries->getMinValues());
 
     delete[] yout;
