@@ -1,13 +1,13 @@
 #!/bin/bash
 
 BUDGET=1050000
-INPUT_FILE="interpolated_train_genesABCD_data.txt"
+INPUT_FILE="genesABCD_data.txt"
 MODEL="grn4ncyc"
 EXE_PATH="./build/ES"
-DIFF="interp"
+DIFF="norm3"
 EXP_NAME="$MODEL-$BUDGET-$DIFF"
-SET_DIV=""
-TEST_SET="-ts test_genesABCD_data.txt"
+SET_DIV="-sd 0 97 98 140"
+TEST_SET=""
 
 mkdir $EXP_NAME
 ./batch_run.sh 4 30 "$EXE_PATH -i $INPUT_FILE $TEST_SET -m $MODEL -e lsoda -a cmaes -n $BUDGET -s \$i $SET_DIV >> $EXP_NAME/output-$MODEL-cmaes.txt"
