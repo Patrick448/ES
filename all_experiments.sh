@@ -1,12 +1,12 @@
 #!/bin/bash
 
 BUDGET=1050000
-INPUT_FILE="genesABCD_data.txt"
-MODEL="grn4ncyc"
+INPUT_FILE="DadosZeEduardo_DATA.txt"
+MODEL="grn5ncyc"
 EXE_PATH="./build/ES"
 DIFF="norm3"
 EXP_NAME="$MODEL-$BUDGET-$DIFF"
-SET_DIV="-sd 0 97 98 140"
+SET_DIV="-sd 0 113 114 161"
 TEST_SET=""
 
 mkdir $EXP_NAME
