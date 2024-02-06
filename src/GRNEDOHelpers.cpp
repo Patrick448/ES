@@ -775,8 +775,17 @@ double GRNEDOHelpers::lsodaWrapper(int dydt(double t, double *y, double *ydot, v
     return 0;
 }
 
-double
-GRNEDOHelpers::lsodaWrapperTest(int dydt(double t, double *y, double *ydot, void *data), double *tspan, double *y_0,
+string GRNEDOHelpers::vectorToString(double *vec, int start, int end) {
+    string s = "";
+    for (int i = start; i <= end; i++) {
+        s.append(to_string(vec[i]) + " ");
+    }
+    s.pop_back();
+
+    return s;
+}
+
+double GRNEDOHelpers::lsodaWrapperTest(int dydt(double t, double *y, double *ydot, void *data), double *tspan, double *y_0,
                                 int totalSteps, int nVariables, double *times, double *_yout, void *context) {
 
     // todo: tentar colocar essa alocação fora da função
@@ -824,6 +833,8 @@ GRNEDOHelpers::lsodaWrapperTest(int dydt(double t, double *y, double *ydot, void
             // outputToFile("problematicInds.txt", vectorToString(appCtx->individual, 0, appCtx->IND_SIZE-1) + "\n", true);
             //cout << vectorToString(appCtx->individual, 0, appCtx->IND_SIZE-1)<<endl;
             printf("error istate = %d\n", ctx.state);
+            appContext *appCtx = (appContext *) context;
+            printf("coefs: %s\n", vectorToString(appCtx->individual,0, appCtx->IND_SIZE-1).c_str());
             for (int i = 0; i < nVariables; i++) {
                 int outIndex = nVariables * iout + i;
                 _yout[outIndex] = INFINITY;
@@ -844,14 +855,6 @@ GRNEDOHelpers::lsodaWrapperTest(int dydt(double t, double *y, double *ydot, void
     return 0;
 }
 
-string GRNEDOHelpers::vectorToString(double *vec, int start, int end) {
-    string s = "";
-    for (int i = start; i <= end; i++) {
-        s.append(to_string(vec[i]) + " ");
-    }
-
-    return s;
-}
 
 void GRNEDOHelpers::printGRNVector(double **vec, int rows, int cols) {
     //todo: parece que rows e cols estão invertidos, ver se renomeio as variáveis na assinatura
