@@ -305,6 +305,7 @@ int main(int argc, char** argv)
 
    //todo: passar essas inicializações para dentro da classe Algorithm usando o objeto ctx
     // inicializa limites de tau, k e n
+
     int cont = 0;
     for (int i = 0; i < description.TAU_SIZE; i++)
     {
