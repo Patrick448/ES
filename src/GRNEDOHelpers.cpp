@@ -834,7 +834,7 @@ double GRNEDOHelpers::lsodaWrapperTest(int dydt(double t, double *y, double *ydo
             //cout << vectorToString(appCtx->individual, 0, appCtx->IND_SIZE-1)<<endl;
             printf("error istate = %d\n", ctx.state);
             appContext *appCtx = (appContext *) context;
-            printf("coefs: %s\n", vectorToString(appCtx->individual,0, appCtx->IND_SIZE-1).c_str());
+            printf("coefs: %s\n", vectorToString(appCtx->individual,0, appCtx->description->IND_SIZE-1).c_str());
             for (int i = 0; i < nVariables; i++) {
                 int outIndex = nVariables * iout + i;
                 _yout[outIndex] = INFINITY;
