@@ -23,6 +23,8 @@ int GRNEDOHelpers::grn5NCYCModel(double t, double *y, double *ydot, void *contex
     ProblemDescription *desc = ctx->description;
     double *individual = ctx->individual;
     double *maxValues = ((GRNSeries *) ctx->series)->getMaxValues();
+    //double x[] = {5.000000,5.000000,5.000000,0.100000,0.803348,0.100000,0.100000,1.000000,0.100000,0.100000,0.499194,0.100000,1.000000,1.000000,0.828747,0.181154,0.455022,0.100000,9.677138,4.894019,5.414821,20.363100,24.478013,18.839608,6.112694,8.810225,15.297329,16.423215,1.000000,13.097807,7.390248};
+    //individual = x;
     double *tau = &individual[0];
     double *k = &individual[desc->TAU_SIZE];
     double *n = &individual[desc->TAU_SIZE + desc->K_SIZE];
