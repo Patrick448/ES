@@ -890,8 +890,8 @@ double GRNEDOHelpers::grnEvaluationLSODA(void *individual, void *context) {
 
     lsodaWrapperTest(ctx->description->modelFunction, tspan, y_0, totalSteps, nVariables, t, yout, ctx);
 
-    double eval = differenceNormalized2(yout, expectedResult, evalSeries->getNumTimeSteps() - 1, nVariables, granularity,
-                                       evalSeries->getMaxValues(), evalSeries->getMinValues());
+    double eval = difference(yout, expectedResult, evalSeries->getNumTimeSteps() - 1, nVariables, granularity/*,
+                                       evalSeries->getMaxValues(), evalSeries->getMinValues()*/);
 
     delete[] yout;
     return eval;
