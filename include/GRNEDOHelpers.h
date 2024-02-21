@@ -31,7 +31,9 @@ namespace GRNEDOHelpers{
     int grn10NewModel(double t, double *y, double *ydot, void *data);
     int grn10New2Model(double t, double *y, double *ydot, void *context);
     int grn5NCYCModel(double t, double *y, double *ydot, void *context);
+    int trpEcoliModel(double t, double *y, double *ydot, void *context);
     int grn4NCYCModel(double t, double *y, double *ydot, void *context);
+    int abcdModel(double t, double *y, double *ydot, void *context);
     double difference(double *actual, double **expected, int numElements, int numVariables, int granularity);
     double differenceNormalized(double *actual, double **expected, int numElements, int numVariables, int granularity, double* maxValues, double* minValues);
     double differenceNormalized2(double *actual, double **expected, int numElements, int numVariables, int granularity, double* maxValues, double* minValues);

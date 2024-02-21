@@ -249,11 +249,19 @@ int main(int argc, char** argv)
     }
     else if(grnModelName == "grn5ncyc"){
         //Modelo do DadosZeEduardo.txt
-        description = {.IND_SIZE = 31, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
-                .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 13,.K_SIZE = 13, .modelFunction = GRNEDOHelpers::grn5NCYCModel};
+        cout << "Model name changed to trpEcoli"<< grnModelName << endl;
+        //description = {.IND_SIZE = 31, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+        //        .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 13,.K_SIZE = 13, .modelFunction = GRNEDOHelpers::grn5NCYCModel};
     }else if(grnModelName == "grn4ncyc"){
-        description = {.IND_SIZE = 26, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
-                .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 4,.N_SIZE = 11,.K_SIZE = 11, .modelFunction = GRNEDOHelpers::grn4NCYCModel};
+        cout << "Model name changed to abcd"<< grnModelName << endl;
+        //  description = {.IND_SIZE = 26, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+      //          .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 4,.N_SIZE = 11,.K_SIZE = 11, .modelFunction = GRNEDOHelpers::grn4NCYCModel};
+    }else if(grnModelName == "abcd"){
+        description = {.IND_SIZE = 22, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+                .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 4,.N_SIZE = 9,.K_SIZE = 9, .modelFunction = GRNEDOHelpers::abcdModel};
+    }else if(grnModelName == "trpEcoli"){
+        description = {.IND_SIZE = 35, .MIN_K = 0.1,.MAX_K = 1,.MIN_N = 1,.MAX_N = 25,.MIN_TAU = 0.1,.MAX_TAU = 5,
+                .MIN_STRATEGY = 0.1,.MAX_STRATEGY = 10,.TAU_SIZE = 5,.N_SIZE = 15,.K_SIZE = 15, .modelFunction = GRNEDOHelpers::trpEcoliModel};
     }else{
         cout << "Invalid GRN model: "<< grnModelName << endl;
     }

@@ -24,6 +24,7 @@ int GRNEDOHelpers::grn5NCYCModel(double t, double *y, double *ydot, void *contex
     double *individual = ctx->individual;
     double *maxValues = ((GRNSeries *) ctx->series)->getMaxValues();
     //double x[] = {5.000000,5.000000,5.000000,0.100000,0.803348,0.100000,0.100000,1.000000,0.100000,0.100000,0.499194,0.100000,1.000000,1.000000,0.828747,0.181154,0.455022,0.100000,9.677138,4.894019,5.414821,20.363100,24.478013,18.839608,6.112694,8.810225,15.297329,16.423215,1.000000,13.097807,7.390248};
+    //double x[] = {4.636501,3.102018,5.000000,5.000000,0.822826,0.102536,1.000000,0.100000,0.100000,0.100000,0.315191,0.100000,1.000000,0.805913,1.000000,0.100000,1.000000,0.100000,14.660026,20.930021,24.222950,25.000000,14.700812,8.484999,25.000000,16.278242,9.998234,16.486911,17.621338,4.534395,1.000000};
     //individual = x;
     double *tau = &individual[0];
     double *k = &individual[desc->TAU_SIZE];
@@ -105,6 +106,100 @@ int GRNEDOHelpers::grn5NCYCModel(double t, double *y, double *ydot, void *contex
                  (1 - ((pow(y[4] / maxValues[4], (int) n[12])) /
                        (pow(y[4] / maxValues[4], (int) n[12]) + pow(k[12], (int) n[12])))))) - (y[4] / maxValues[4])) /
               tau[4];
+
+    return 0;
+}
+
+//novo modelo grn5NCYCModel
+int GRNEDOHelpers::trpEcoliModel(double t, double *y, double *ydot, void *context) {
+    appContext *ctx = (appContext *) context;
+    ProblemDescription *desc = ctx->description;
+    double *individual = ctx->individual;
+    double *maxValues = ((GRNSeries *) ctx->series)->getMaxValues();
+    double *tau = &individual[0];
+    double *k = &individual[desc->TAU_SIZE];
+    double *n = &individual[desc->TAU_SIZE + desc->K_SIZE];
+
+    ydot[0] = ((((1 - ((pow(y[0] / maxValues[0], (int) n[0])) /
+                       (pow(y[0] / maxValues[0], (int) n[0]) + pow(k[0], (int) n[0]))))
+                 *
+                 (1 - ((pow(y[3] / maxValues[3], (int) n[2])) /
+                       (pow(y[3] / maxValues[3], (int) n[2]) + pow(k[2], (int) n[2]))))
+                 *
+                 (1 - ((pow(y[4] / maxValues[4], (int) n[3])) /
+                       (pow(y[4] / maxValues[4], (int) n[3]) + pow(k[3], (int) n[3])))))
+                +
+                ((1 - ((pow(y[0] / maxValues[0], (int) n[0])) /
+                       (pow(y[0] / maxValues[0], (int) n[0]) + pow(k[0], (int) n[0]))))
+                 *
+                 (1 - ((pow(y[2] / maxValues[2], (int) n[1])) /
+                       (pow(y[2] / maxValues[2], (int) n[1]) + pow(k[1], (int) n[1]))))
+                 *
+                 (((pow(y[4] / maxValues[4], (int) n[3])) /
+                   (pow(y[4] / maxValues[4], (int) n[3]) + pow(k[3], (int) n[3])))))
+                +
+                ((((pow(y[0] / maxValues[0], (int) n[0])) /
+                   (pow(y[0] / maxValues[0], (int) n[0]) + pow(k[0], (int) n[0]))))
+                 *
+                 (((pow(y[3] / maxValues[3], (int) n[2])) /
+                   (pow(y[3] / maxValues[3], (int) n[2]) + pow(k[2], (int) n[2]))))
+                 *
+                 (1 - ((pow(y[4] / maxValues[4], (int) n[3])) /
+                       (pow(y[4] / maxValues[4], (int) n[3]) + pow(k[3], (int) n[3])))))) - (y[0] / maxValues[0])) /
+              tau[0];
+
+
+    ydot[1] = ((((1 - ((pow(y[0] / maxValues[0], (int) n[4])) /
+                       (pow(y[0] / maxValues[0], (int) n[4]) + pow(k[4], (int) n[4]))))
+                 *
+                 (1 - ((pow(y[3] / maxValues[3], (int) n[6])) /
+                       (pow(y[3] / maxValues[3], (int) n[6]) + pow(k[6], (int) n[6]))))
+                 *
+                 (1 - ((pow(y[4] / maxValues[4], (int) n[7])) /
+                       (pow(y[4] / maxValues[4], (int) n[7]) + pow(k[7], (int) n[7])))))
+                +
+                ((1 - ((pow(y[0] / maxValues[0], (int) n[4])) /
+                       (pow(y[0] / maxValues[0], (int) n[4]) + pow(k[4], (int) n[4]))))
+                 *
+                 (1 - ((pow(y[2] / maxValues[2], (int) n[5])) /
+                       (pow(y[2] / maxValues[2], (int) n[5]) + pow(k[5], (int) n[5]))))
+                 *
+                 (((pow(y[4] / maxValues[4], (int) n[7])) /
+                   (pow(y[4] / maxValues[4], (int) n[7]) + pow(k[7], (int) n[7])))))
+                +
+                ((((pow(y[0] / maxValues[0], (int) n[4])) /
+                   (pow(y[0] / maxValues[0], (int) n[4]) + pow(k[4], (int) n[4]))))
+                 *
+                 (((pow(y[3] / maxValues[3], (int) n[6])) /
+                   (pow(y[3] / maxValues[3], (int) n[6]) + pow(k[6], (int) n[6]))))
+                 *
+                 (1 - ((pow(y[4] / maxValues[4], (int) n[7])) /
+                       (pow(y[4] / maxValues[4], (int) n[7]) + pow(k[7], (int) n[7])))))) - (y[0] / maxValues[1])) /
+              tau[1];
+
+
+    ydot[2] = (((((pow(y[3] / maxValues[3], (int) n[8])) /
+                  (pow(y[3] / maxValues[3], (int) n[8]) + pow(k[8], (int) n[8])))) *
+                (((pow(y[4] / maxValues[4], (int) n[9])) /
+                  (pow(y[4] / maxValues[4], (int) n[9]) + pow(k[9], (int) n[9]))))) - (y[2] / maxValues[2])) / tau[2];
+
+
+    ydot[3] = ((((pow(y[2] / maxValues[2], (int) n[10])) /
+                 (pow(y[2] / maxValues[2], (int) n[10]) + pow(k[10], (int) n[10])))) - (y[3] / maxValues[3])) / tau[3];
+
+
+    ydot[4] = (((((pow(y[0] / maxValues[0], (int) n[11])) /
+                  (pow(y[0] / maxValues[0], (int) n[11]) + pow(k[11], (int) n[11])))
+                 *
+                 ((pow(y[1] / maxValues[1], (int) n[12])) /
+                  (pow(y[1] / maxValues[1], (int) n[12]) + pow(k[12], (int) n[12])))
+                 *
+                 ((pow(y[2] / maxValues[2], (int) n[13])) /
+                  (pow(y[2] / maxValues[2], (int) n[13]) + pow(k[13], (int) n[13]))))
+                +
+                ((pow(y[4] / maxValues[4], (int) n[14])) /
+                 (pow(y[4] / maxValues[4], (int) n[14]) + pow(k[14], (int) n[14])))) - (y[4] / maxValues[4])) / tau[4];
+
 
     return 0;
 }
@@ -398,6 +493,66 @@ int GRNEDOHelpers::grn4NCYCModel(double t, double *y, double *ydot, void *contex
     return 0;
 }
 
+//novo modelo grn4NCYCModel
+int GRNEDOHelpers::abcdModel(double t, double *y, double *ydot, void *context) {
+    appContext *ctx = (appContext *) context;
+    ProblemDescription *desc = ctx->description;
+    double *individual = ctx->individual;
+    double *maxValues = ((GRNSeries *) ctx->series)->getMaxValues();
+    double *tau = &individual[0];
+    double *k = &individual[desc->TAU_SIZE];
+    double *n = &individual[desc->TAU_SIZE + desc->K_SIZE];
+
+
+    ydot[0] = ((((1 - ((pow(y[0] / maxValues[0], (int) n[0])) /
+                       (pow(y[0] / maxValues[0], (int) n[0]) + pow(k[0], (int) n[0]))))
+                 *
+                 (1 - ((pow(y[3] / maxValues[3], (int) n[2])) /
+                       (pow(y[3] / maxValues[3], (int) n[2]) + pow(k[2], (int) n[2])))))
+                +
+                ((((pow(y[1] / maxValues[1], (int) n[1])) /
+                   (pow(y[1] / maxValues[1], (int) n[1]) + pow(k[1], (int) n[1]))))
+                 *
+                 (1 - ((pow(y[3] / maxValues[3], (int) n[2])) /
+                       (pow(y[3] / maxValues[3], (int) n[2]) + pow(k[2], (int) n[2])))))
+                +
+                ((((pow(y[0] / maxValues[0], (int) n[0])) /
+                   (pow(y[0] / maxValues[0], (int) n[0]) + pow(k[0], (int) n[0]))))
+                 *
+                 (1 - ((pow(y[1] / maxValues[1], (int) n[1])) /
+                       (pow(y[1] / maxValues[1], (int) n[1]) + pow(k[1], (int) n[1]))))
+                 *
+                 (((pow(y[3] / maxValues[3], (int) n[2])) /
+                   (pow(y[3] / maxValues[3], (int) n[2]) + pow(k[2], (int) n[2]))))
+                )) - (y[0] / maxValues[0])) / tau[0];
+
+
+    ydot[1] = (((1 - ((pow(y[2] / maxValues[2], (int) n[3])) /
+                      (pow(y[2] / maxValues[2], (int) n[3]) + pow(k[3], (int) n[3]))))
+                +
+                (((pow(y[3] / maxValues[3], (int) n[4])) /
+                  (pow(y[3] / maxValues[3], (int) n[4]) + pow(k[4], (int) n[4]))))) - (y[1] / maxValues[1])) / tau[1];
+
+
+    ydot[2] = (((((pow(y[3] / maxValues[3], (int) n[6])) /
+                  (pow(y[3] / maxValues[3], (int) n[6]) + pow(k[6], (int) n[6]))))
+                +
+                (1 - ((pow(y[0] / maxValues[0], (int) n[5])) /
+                      (pow(y[0] / maxValues[0], (int) n[5]) + pow(k[5], (int) n[5]))))) - (y[2] / maxValues[2])) /
+              tau[2];
+
+
+    ydot[3] = (((1 - ((pow(y[0] / maxValues[0], (int) n[7])) /
+                      (pow(y[0] / maxValues[0], (int) n[7]) + pow(k[7], (int) n[7]))))
+                *
+                (1 - ((pow(y[3] / maxValues[3], (int) n[8])) /
+                      (pow(y[3] / maxValues[3], (int) n[8]) + pow(k[8], (int) n[8]))))) - (y[3] / maxValues[3])) /
+              tau[3];
+
+
+    return 0;
+}
+
 int GRNEDOHelpers::grn10NewModel(double t, double *y, double *ydot, void *context) {
 
     appContext *ctx = (appContext *) context;
@@ -654,7 +809,8 @@ int GRNEDOHelpers::grn10New2Model(double t, double *y, double *ydot, void *conte
 }
 
 //todo: melhorar vetores, padronizar o formato e melhorar os acessos
-double GRNEDOHelpers::difference(double *actual, double **expected, int numElements, int numVariables, int granularity) {
+double
+GRNEDOHelpers::difference(double *actual, double **expected, int numElements, int numVariables, int granularity) {
     double difTotal = 0.0;
     for (int i = 0; i < numVariables; i++) {
         for (int j = 0; j <= numElements; j++) {
@@ -671,7 +827,8 @@ double GRNEDOHelpers::difference(double *actual, double **expected, int numEleme
 }
 
 
-double GRNEDOHelpers::differenceNormalized(double *actual, double **expected, int numElements, int numVariables, int granularity, double* maxValues, double* minValues) {
+double GRNEDOHelpers::differenceNormalized(double *actual, double **expected, int numElements, int numVariables,
+                                           int granularity, double *maxValues, double *minValues) {
     double difTotal = 0.0;
     for (int i = 0; i < numVariables; i++) {
         for (int j = 0; j <= numElements; j++) {
@@ -687,7 +844,8 @@ double GRNEDOHelpers::differenceNormalized(double *actual, double **expected, in
     return difTotal;
 }
 
-double GRNEDOHelpers::differenceNormalized2(double *actual, double **expected, int numElements, int numVariables, int granularity, double* maxValues, double* minValues) {
+double GRNEDOHelpers::differenceNormalized2(double *actual, double **expected, int numElements, int numVariables,
+                                            int granularity, double *maxValues, double *minValues) {
     double difTotal = 0.0;
     for (int i = 0; i < numVariables; i++) {
         for (int j = 0; j <= numElements; j++) {
@@ -787,7 +945,8 @@ string GRNEDOHelpers::vectorToString(double *vec, int start, int end) {
     return s;
 }
 
-double GRNEDOHelpers::lsodaWrapperTest(int dydt(double t, double *y, double *ydot, void *data), double *tspan, double *y_0,
+double
+GRNEDOHelpers::lsodaWrapperTest(int dydt(double t, double *y, double *ydot, void *data), double *tspan, double *y_0,
                                 int totalSteps, int nVariables, double *times, double *_yout, void *context) {
 
     // todo: tentar colocar essa alocação fora da função
@@ -834,9 +993,9 @@ double GRNEDOHelpers::lsodaWrapperTest(int dydt(double t, double *y, double *ydo
             //todo: entender esse limite de passos e pq está sendo atingido mesmo com tamanho de passo pequeno
             // outputToFile("problematicInds.txt", vectorToString(appCtx->individual, 0, appCtx->IND_SIZE-1) + "\n", true);
             //cout << vectorToString(appCtx->individual, 0, appCtx->IND_SIZE-1)<<endl;
-            printf("error istate = %d\n", ctx.state);
+            //printf("error istate = %d\n", ctx.state);
             appContext *appCtx = (appContext *) context;
-            printf("coefs: %s\n", vectorToString(appCtx->individual,0, appCtx->description->IND_SIZE-1).c_str());
+           // printf("coefs: %s\n", vectorToString(appCtx->individual, 0, appCtx->description->IND_SIZE - 1).c_str());
             for (int i = 0; i < nVariables; i++) {
                 int outIndex = nVariables * iout + i;
                 _yout[outIndex] = INFINITY;
@@ -890,8 +1049,9 @@ double GRNEDOHelpers::grnEvaluationLSODA(void *individual, void *context) {
 
     lsodaWrapperTest(ctx->description->modelFunction, tspan, y_0, totalSteps, nVariables, t, yout, ctx);
 
-    double eval = difference(yout, expectedResult, evalSeries->getNumTimeSteps() - 1, nVariables, granularity/*,
-                                       evalSeries->getMaxValues(), evalSeries->getMinValues()*/);
+    double eval = differenceNormalized2(yout, expectedResult, evalSeries->getNumTimeSteps() - 1, nVariables,
+                                        granularity,
+                                        evalSeries->getMaxValues(), evalSeries->getMinValues());
 
     delete[] yout;
     return eval;
