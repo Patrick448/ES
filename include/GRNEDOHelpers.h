@@ -37,7 +37,7 @@ namespace GRNEDOHelpers{
     double difference(double *actual, double **expected, int numElements, int numVariables, int granularity);
     double differenceNormalized(double *actual, double **expected, int numElements, int numVariables, int granularity, double* maxValues, double* minValues);
     double differenceNormalized2(double *actual, double **expected, int numElements, int numVariables, int granularity, double* maxValues, double* minValues);
-
+    void outputToFile(string path, string text, bool append);
     /// todo: rename to something more descriptive, like LSODAIntegration
     /// @param dydt the model to be integrated.
     /// @param appCtx the context of the problem.

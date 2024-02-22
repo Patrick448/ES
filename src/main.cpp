@@ -33,9 +33,18 @@ using namespace GRNEDOHelpers;
 using namespace algModes;
 using namespace pagmo;
 
+string vectorToCSVString(vector<double> vec){
+    string result = "";
+    for(int i=0; i<vec.size(); i++){
+        result += to_string(vec[i]);
+        if(i < vec.size()-1){
+            result += ",";
+        }
+    }
+    return result;
+}
 
-
-void runExperimentRoundTest(Algorithm& algorithm, string algName, int maxEvals, int seed)
+void runExperimentRound(Algorithm& algorithm, string algName, int maxEvals, int seed, string resultOutputFile, string progressionOutputFile)
 {
     //string resultCsv = "seed,eval,time,numEvals,ind\n";
     string resultCsv = "";
@@ -63,12 +72,14 @@ void runExperimentRoundTest(Algorithm& algorithm, string algName, int maxEvals, 
     //todo: uma função que reavalia população segundo conjunto de teste
     //  esAlgorithm.evaluate(esAlgorithm.getBestIndividual(), test);
 
-    //GRNEDOHelpers::setMode(&ctx, TEST_MODE);
-    //esAlgorithm.evaluate(esAlgorithm.getBestIndividual());
+    if(!progressionOutputFile.empty()){
+        vector<double> evalsProgress = algorithm.getEvalsProgress();
+        string evalsProgressStr = to_string(seed)+",\"" +vectorToCSVString(evalsProgress) + "\"\n";
+        GRNEDOHelpers::outputToFile(progressionOutputFile, evalsProgressStr, true);
+    }
+
     algorithm.reevaluateBestIndividualUsingTestSet();
     bestInd = algorithm.getBestIndividual();
-    //GRNEDOHelpers::setMode(&ctx, TRAINING_MODE);
-
 
     //temporização
     auto end = chrono::high_resolution_clock::now();
@@ -76,13 +87,19 @@ void runExperimentRoundTest(Algorithm& algorithm, string algName, int maxEvals, 
     resultCsv += to_string(seed) + ","
                  + to_string(bestInd->getEvaluation()) + ","
                  + to_string(duration.count()) + ","
-                 + to_string(algorithm.getEvaluations()) + ",["
-                 + bestInd->toCSVString()+ "]";
+                 + to_string(algorithm.getEvaluations()) + ","
+                 + bestInd->toCSVString()+ "";
 
-    cout << resultCsv << endl;
+   // cout << resultCsv << endl;
 
-    //clearContext2Test(&ctx);
+    if(!resultOutputFile.empty()){
+        GRNEDOHelpers::outputToFile(resultOutputFile, resultCsv+"\n", true);
+    }else{
+        cout << resultCsv << endl;
+    }
+
 }
+
 
 
 string findArg(int argc, char** argv, string argName){
@@ -157,6 +174,8 @@ std::map<string, string> parseArgs(int argc, char** argv){
         string seed = findArg(argc, argv, "-s");
         string individual = findArg(argc, argv, "-ind");
         string outputFile = findArg(argc, argv, "-o");
+        string resultOutputFile = findArg(argc, argv, "-ro");
+        string progressionOutputFile = findArg(argc, argv, "-po");
 
         if(argExists(argc, argv, "-ts")){
             args["testSet"] = findArg(argc, argv, "-ts");
@@ -169,6 +188,8 @@ std::map<string, string> parseArgs(int argc, char** argv){
             args["testEnd"] = setIntervals[3];
         }
 
+        args["progressionOutputFile"] = progressionOutputFile;
+        args["resultOutputFile"] = resultOutputFile;
         args["inputFile"] = inputFile;
         args["grnModel"] = grnModel;
         args["evalMode"] = evalMode;
@@ -216,6 +237,9 @@ int main(int argc, char** argv)
     string inputFile = args["inputFile"];
     string individual = args["individual"];
     string outputFile = args["outputFile"];
+    string resultOutputFile = args["resultOutputFile"];
+    string progressionOutputFile = args["progressionOutputFile"];
+
     int seed;
     int maxEvals;
     double (*func)(void*,void*);
@@ -333,7 +357,7 @@ int main(int argc, char** argv)
         cont = i;
     }
 
-    runExperimentRoundTest(algorithm, algName, maxEvals, seed);
+    runExperimentRound(algorithm, algName, maxEvals, seed, resultOutputFile, progressionOutputFile);
 
     delete inputSeries;
     delete trainingSeries;

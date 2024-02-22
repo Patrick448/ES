@@ -19,6 +19,7 @@ private:
     vector<double> lowerBounds;
     vector<int> upperBoundTypes;
     vector<int> lowerBoundTypes;
+    vector<double> evalsProgress;
     int numDimensions;
     double (*evaluationFunction)(void*, void*);
     int algorithmType;
@@ -77,6 +78,7 @@ public:
     Individual* getBestIndividual();
     double evaluationIncrementCounterWrapper(void *ind, void * context);
     void reevaluateBestIndividualUsingTestSet();
+    vector<double> getEvalsProgress();
 
 
 

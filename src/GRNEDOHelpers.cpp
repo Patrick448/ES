@@ -1087,7 +1087,7 @@ double GRNEDOHelpers::grnEvaluationRK4(void *individual, void *context) {
 }
 
 /// helper for outputting text to file
-void outputToFile(string path, string text, bool append) {
+void GRNEDOHelpers::outputToFile(string path, string text, bool append) {
     ofstream outputf;
 
     if (append) {

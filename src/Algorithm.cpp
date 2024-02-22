@@ -273,9 +273,11 @@ void Algorithm::run1Plus1ES(int seed, double initialSigma, double c, int n, int 
             successHistory.push_back(1);
             this->population.push_back(newInd);
             this->bestIndividual = newInd;
+            this->evalsProgress.push_back(newInd->getEvaluation());
 
         }else{
             successHistory.push_back(0);
+            this->evalsProgress.push_back(ind->getEvaluation());
             delete newInd;
         }
 
@@ -381,6 +383,8 @@ void Algorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, int 
 
         sort(this->population.begin(), this->population.end(), compareIndividuals);
         deleteIndividuals(this->population, numParents, this->population.size()-1);
+
+        this->evalsProgress.push_back(this->population[0]->getEvaluation());
     }
 
     this->bestIndividual = this->population[0];
@@ -452,6 +456,9 @@ void Algorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation, i
 
         sort(this->population.begin(), this->population.end(), compareIndividuals);
         deleteIndividuals(this->population, numParents, this->population.size()-1);
+
+        this->evalsProgress.push_back(this->population[0]->getEvaluation());
+
     }
 
     this->bestIndividual = this->population[0];
@@ -466,7 +473,7 @@ void Algorithm::runCMAES(int seed, int maxEvals, int populationSize){
     int maxGenerations, newSeed;
     srand(seed);
     appContext evaluationContext = appContext{.series = this->trainingSeries, .description = this->modelDescription};
-
+    //vector<double> evalProgression;
     while(this->evaluationsCounter < maxEvals){
         newSeed = rand();
         maxGenerations = (maxEvals - this->evaluationsCounter - populationSize)/populationSize;
@@ -474,16 +481,16 @@ void Algorithm::runCMAES(int seed, int maxEvals, int populationSize){
         problem.setEvaluationFunction(this->evaluationFunction);
         pagmo::population pop = pagmo::population(problem, populationSize, newSeed);
         cmaes alg = cmaes(maxGenerations, -1, -1, -1, -1, 0.5, 1e-6, 1e-6, false, true, newSeed);
-        //alg.set_verbosity(20);
+        alg.set_verbosity(1);
         pagmo::population newPop = alg.evolve(pop);
 
 
-        this->evaluationsCounter += pop.get_problem().get_fevals() + newPop.get_problem().get_fevals();
-        //cout<< "Generations left: " << (maxEvals - this->evaluationsCounter)/populationSize << endl;
-       // cout << "Best fitness: " << newPop.champion_f()[0]<< endl;
-       // cout << "Evaluations: " << this->evaluationsCounter << endl;
-       // cout << "Seed: " << newSeed << endl;
+        auto logs = alg.get_log();
+        for(int i=0; i<logs.size(); i++){
+            this->evalsProgress.push_back(get<2>(logs[i]));
+        }
 
+        this->evaluationsCounter += pop.get_problem().get_fevals() + newPop.get_problem().get_fevals();
         //todo: ver o que fazer com esse vazamento de memória
         Individual *newIndividual = new Individual(this->numDimensions, newPop.champion_x().data());
         this->evaluate(newIndividual);
@@ -492,6 +499,7 @@ void Algorithm::runCMAES(int seed, int maxEvals, int populationSize){
             delete this->bestIndividual;
             this->bestIndividual = newIndividual;
         }
+
     }
 }
 
@@ -512,16 +520,16 @@ void Algorithm::runDE(int seed, int maxEvals, int populationSize){
         problem.setEvaluationFunction(this->evaluationFunction);
         pagmo::population pop = pagmo::population(problem, populationSize, newSeed);
         pagmo::de alg = pagmo::de(maxGenerations, 0.8, 0.9, 2u, 1e-6, 1e-6, newSeed);
-        //alg.set_verbosity(20);
+        alg.set_verbosity(1);
         pagmo::population newPop = alg.evolve(pop);
+
+        auto logs = alg.get_log();
+        for(int i=0; i<logs.size(); i++){
+            this->evalsProgress.push_back(get<2>(logs[i]));
+        }
 
 
         this->evaluationsCounter += pop.get_problem().get_fevals() + newPop.get_problem().get_fevals();
-        //cout<< "Generations left: " << (maxEvals - this->evaluationsCounter)/populationSize << endl;
-        // cout << "Best fitness: " << newPop.champion_f()[0]<< endl;
-        // cout << "Evaluations: " << this->evaluationsCounter << endl;
-        // cout << "Seed: " << newSeed << endl;
-
         //todo: ver o que fazer com esse vazamento de memória
         Individual *newIndividual = new Individual(this->numDimensions, newPop.champion_x().data());
         this->evaluate(newIndividual);
@@ -547,12 +555,17 @@ void Algorithm::runSADE(int seed, int maxEvals, int populationSize){
         GRNCoefProblem problem = GRNCoefProblem(&ctx);
         problem.setEvaluationFunction(this->evaluationFunction);
         pagmo::population pop = pagmo::population(problem, populationSize, newSeed);
-
         // Standard parameters from documentation:
         // sade(unsigned gen = 1u, unsigned variant = 2u, unsigned variant_adptv = 1u, double ftol = 1e-6, double xtol = 1e-6, bool memory = false, unsigned seed = pagmo::random_device::next())
         pagmo::sade alg = pagmo::sade(maxGenerations, 2u, 1u, 1e-6, 1e-6, false, newSeed);
-        //alg.set_verbosity(20);
+        alg.set_verbosity(1);
         pagmo::population newPop = alg.evolve(pop);
+
+        auto logs = alg.get_log();
+        for(int i=0; i<logs.size(); i++){
+            this->evalsProgress.push_back(get<2>(logs[i]));
+        }
+
 
         this->evaluationsCounter += pop.get_problem().get_fevals() + newPop.get_problem().get_fevals();
         //cout<< "Generations left: " << (maxEvals - this->evaluationsCounter)/populationSize << endl;
@@ -590,5 +603,9 @@ void Algorithm::reevaluateBestIndividualUsingTestSet() {
     double eval =this->evaluationFunction(this->bestIndividual->getParameters(), &ctx);
     this->bestIndividual->setEvaluation(eval);
     //return eval;
+}
+
+vector<double> Algorithm::getEvalsProgress() {
+    return this->evalsProgress;
 }
 
