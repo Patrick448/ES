@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BUDGET=1050
+BUDGET=1050000
 INPUT_FILE="Dados_abcd_TRAIN.txt"
 MODEL="abcd"
 EXE_PATH="./build/ES"
