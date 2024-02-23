@@ -1,4 +1,4 @@
-# ES
+# GRN-EDO-Coefficients-Adjustment
 C++ implementation of Evolution Strategies
 
 ## Requirements
