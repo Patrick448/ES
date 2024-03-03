@@ -85,23 +85,28 @@ void Algorithm::addIndividual(Individual* individual){
 }
 
 double Algorithm::evaluate(Individual* ind){
-    appContext ctx{.series = this->trainingSeries, .description = this->modelDescription};
-    double eval =this->evaluationFunction(ind->getParameters(), &ctx);
-    ind->setEvaluation(eval);
+    appContext trainCtx{.series = this->trainingSeries, .description = this->modelDescription};
+    //appContext testCtx{.series = this->testSeries, .description = this->modelDescription};
+
+    double fitnessTrain =this->evaluationFunction(ind->getParameters(), &trainCtx);
+   // double testEval =this->evaluationFunction(ind->getParameters(), &testCtx);
+
+    ind->setFitnessTrain(fitnessTrain);
+   // ind->setFitnessTest(testEval);
+    ind->setRelativeFitnessTrain(fitnessTrain / this->trainingSeries->getNumTimeSteps());
+   // ind->setRelativeFitnessTest(testEval);
     this->evaluationsCounter++;
-    return eval;
+    return fitnessTrain;
 }
 
-
-
 bool compareIndividuals(Individual* a, Individual* b){
-    return a->getEvaluation() < b->getEvaluation();
+    return a->getFitnessTrain() < b->getFitnessTrain();
 }
 
 void Algorithm::reevaluateAllNoCounter(){
     for(Individual* ind: this->population){
         double eval =this->evaluationFunction(ind->getParameters(), this->context);
-        ind->setEvaluation(eval);
+        ind->setFitnessTrain(eval);
     }
     sort(this->population.begin(), this->population.end(), compareIndividuals);
 
@@ -268,16 +273,17 @@ void Algorithm::run1Plus1ES(int seed, double initialSigma, double c, int n, int 
         this->evaluate(newInd);
         //cout << newInd->toString() + "\n";
 
-        if(newInd->getEvaluation() < ind->getEvaluation()){
+        if(newInd->getFitnessTrain() < ind->getFitnessTrain()){
             ind = newInd;
             successHistory.push_back(1);
             this->population.push_back(newInd);
             this->bestIndividual = newInd;
-            this->evalsProgress.push_back(newInd->getEvaluation());
-
+           // this->fitnessTrainHistory.push_back(newInd->getFitnessTrain());
+            this->record(newInd);
         }else{
             successHistory.push_back(0);
-            this->evalsProgress.push_back(ind->getEvaluation());
+            //this->fitnessTrainHistory.push_back(ind->getFitnessTrain());
+            this->record(ind);
             delete newInd;
         }
 
@@ -384,7 +390,8 @@ void Algorithm::runPopulationalIsotropicES(int seed, double sigmaVariation, int 
         sort(this->population.begin(), this->population.end(), compareIndividuals);
         deleteIndividuals(this->population, numParents, this->population.size()-1);
 
-        this->evalsProgress.push_back(this->population[0]->getEvaluation());
+        //this->fitnessTrainHistory.push_back(this->population[0]->getFitnessTrain());
+        this->record(this->population[0]);
     }
 
     this->bestIndividual = this->population[0];
@@ -457,8 +464,8 @@ void Algorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation, i
         sort(this->population.begin(), this->population.end(), compareIndividuals);
         deleteIndividuals(this->population, numParents, this->population.size()-1);
 
-        this->evalsProgress.push_back(this->population[0]->getEvaluation());
-
+        //this->fitnessTrainHistory.push_back(this->population[0]->getFitnessTrain());
+        this->record(this->population[0]);
     }
 
     this->bestIndividual = this->population[0];
@@ -469,7 +476,7 @@ void Algorithm::runPopulationalNonIsotropicES(int seed, double sigmaVariation, i
 void Algorithm::runCMAES(int seed, int maxEvals, int populationSize){
     this->clear();
     this->bestIndividual = new Individual(this->numDimensions);
-    this->bestIndividual->setEvaluation(DBL_MAX);
+    this->bestIndividual->setFitnessTrain(DBL_MAX);
     int maxGenerations, newSeed;
     srand(seed);
     appContext evaluationContext = appContext{.series = this->trainingSeries, .description = this->modelDescription};
@@ -487,7 +494,7 @@ void Algorithm::runCMAES(int seed, int maxEvals, int populationSize){
 
         auto logs = alg.get_log();
         for(int i=0; i<logs.size(); i++){
-            this->evalsProgress.push_back(get<2>(logs[i]));
+            this->fitnessTrainHistory.push_back(get<2>(logs[i]));
         }
 
         this->evaluationsCounter += pop.get_problem().get_fevals() + newPop.get_problem().get_fevals();
@@ -495,7 +502,7 @@ void Algorithm::runCMAES(int seed, int maxEvals, int populationSize){
         Individual *newIndividual = new Individual(this->numDimensions, newPop.champion_x().data());
         this->evaluate(newIndividual);
 
-        if(newIndividual->getEvaluation() < this->bestIndividual->getEvaluation()){
+        if(newIndividual->getFitnessTrain() < this->bestIndividual->getFitnessTrain()){
             delete this->bestIndividual;
             this->bestIndividual = newIndividual;
         }
@@ -507,7 +514,7 @@ void Algorithm::runCMAES(int seed, int maxEvals, int populationSize){
 void Algorithm::runDE(int seed, int maxEvals, int populationSize){
     this->clear();
     this->bestIndividual = new Individual(this->numDimensions);
-    this->bestIndividual->setEvaluation(DBL_MAX);
+    this->bestIndividual->setFitnessTrain(DBL_MAX);
     int maxGenerations, newSeed;
     srand(seed);
     appContext evaluationContext = appContext{.series = this->trainingSeries, .description = this->modelDescription};
@@ -525,7 +532,7 @@ void Algorithm::runDE(int seed, int maxEvals, int populationSize){
 
         auto logs = alg.get_log();
         for(int i=0; i<logs.size(); i++){
-            this->evalsProgress.push_back(get<2>(logs[i]));
+            this->fitnessTrainHistory.push_back(get<2>(logs[i]));
         }
 
 
@@ -534,7 +541,7 @@ void Algorithm::runDE(int seed, int maxEvals, int populationSize){
         Individual *newIndividual = new Individual(this->numDimensions, newPop.champion_x().data());
         this->evaluate(newIndividual);
 
-        if(newIndividual->getEvaluation() < this->bestIndividual->getEvaluation()){
+        if(newIndividual->getFitnessTrain() < this->bestIndividual->getFitnessTrain()){
             delete this->bestIndividual;
             this->bestIndividual = newIndividual;
         }
@@ -543,7 +550,7 @@ void Algorithm::runDE(int seed, int maxEvals, int populationSize){
 void Algorithm::runSADE(int seed, int maxEvals, int populationSize){
     this->clear();
     this->bestIndividual = new Individual(this->numDimensions);
-    this->bestIndividual->setEvaluation(DBL_MAX);
+    this->bestIndividual->setFitnessTrain(DBL_MAX);
     int maxGenerations, newSeed;
     srand(seed);
     appContext ctx = appContext{.series = this->trainingSeries, .description = this->modelDescription};
@@ -563,7 +570,7 @@ void Algorithm::runSADE(int seed, int maxEvals, int populationSize){
 
         auto logs = alg.get_log();
         for(int i=0; i<logs.size(); i++){
-            this->evalsProgress.push_back(get<2>(logs[i]));
+            this->fitnessTrainHistory.push_back(get<2>(logs[i]));
         }
 
 
@@ -577,7 +584,7 @@ void Algorithm::runSADE(int seed, int maxEvals, int populationSize){
         Individual *newIndividual = new Individual(this->numDimensions, newPop.champion_x().data());
         this->evaluate(newIndividual);
 
-        if(newIndividual->getEvaluation() < this->bestIndividual->getEvaluation()){
+        if(newIndividual->getFitnessTrain() < this->bestIndividual->getFitnessTrain()){
             delete this->bestIndividual;
             this->bestIndividual = newIndividual;
         }
@@ -601,11 +608,16 @@ string Algorithm::populationToCSVString(){
 void Algorithm::reevaluateBestIndividualUsingTestSet() {
     appContext ctx{.series = this->testSeries, .description = this->modelDescription};
     double eval =this->evaluationFunction(this->bestIndividual->getParameters(), &ctx);
-    this->bestIndividual->setEvaluation(eval);
+    this->bestIndividual->setFitnessTrain(eval);
     //return eval;
 }
 
 vector<double> Algorithm::getEvalsProgress() {
-    return this->evalsProgress;
+    return this->fitnessTrainHistory;
+}
+
+void Algorithm::record(Individual *ind) {
+    this->fitnessTrainHistory.push_back(ind->getFitnessTrain());
+    //this->fitnessTestHistory.push_back(ind->getFitnessTest());
 }
 

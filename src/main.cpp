@@ -78,14 +78,17 @@ void runExperimentRound(Algorithm& algorithm, string algName, int maxEvals, int 
         GRNEDOHelpers::outputToFile(progressionOutputFile, evalsProgressStr, true);
     }
 
+    double bestFitnessTrain = algorithm.getBestIndividual()->getFitnessTrain();
     algorithm.reevaluateBestIndividualUsingTestSet();
-    bestInd = algorithm.getBestIndividual();
+    double bestFitnessTest = algorithm.getBestIndividual()->getFitnessTest();
 
+    bestInd = algorithm.getBestIndividual();
     //temporização
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<std::chrono::seconds>(end - beg);
     resultCsv += to_string(seed) + ","
-                 + to_string(bestInd->getEvaluation()) + ","
+                 + to_string(bestFitnessTrain) + ","
+                    + to_string(bestFitnessTest) + ","
                  + to_string(duration.count()) + ","
                  + to_string(algorithm.getEvaluations()) + ","
                  + bestInd->toCSVString()+ "";

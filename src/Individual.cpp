@@ -26,12 +26,20 @@ Individual::~Individual() {
     delete [] this->sigmas;
 }
 
-void Individual::setEvaluation(double val) {
-    this->evaluation = val;
+void Individual::setFitnessTrain(double val) {
+    this->fitnessTrain = val;
 }
 
-double Individual::getEvaluation() {
-    return this->evaluation;
+double Individual::getFitnessTrain() {
+    return this->fitnessTrain;
+}
+
+void Individual::setFitnessTest(double val) {
+    this->fitnessTest = val;
+}
+
+double Individual::getFitnessTest() {
+    return this->fitnessTest;
 }
 
 void Individual::setParameter(int index, double val){
@@ -83,7 +91,7 @@ string Individual::toCSVString(){
         indString+= doubleToString(this->parameters[i], 15) + ",";
     }
 
-    indString+= doubleToString(this->evaluation, 15);
+    indString+= doubleToString(this->fitnessTrain, 15);
     return indString;
 }
 
@@ -107,6 +115,22 @@ double *Individual::getFullParameters() const {
 
 
     return nullptr;
+}
+
+void Individual::setRelativeFitnessTrain(double val) {
+    this->relativeFitnessTrain = val;
+}
+
+double Individual::getRelativeFitnessTrain() {
+    return this->relativeFitnessTrain;
+}
+
+void Individual::setRelativeFitnessTest(double val) {
+    this->relativeFitnessTest = val;
+}
+
+double Individual::getRelativeFitnessTest() {
+    return this->relativeFitnessTest;
 }
 
 

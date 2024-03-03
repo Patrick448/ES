@@ -19,7 +19,8 @@ private:
     vector<double> lowerBounds;
     vector<int> upperBoundTypes;
     vector<int> lowerBoundTypes;
-    vector<double> evalsProgress;
+    vector<double> fitnessTrainHistory;
+    vector<double> fitnessTestHistory;
     int numDimensions;
     double (*evaluationFunction)(void*, void*);
     int algorithmType;
@@ -79,6 +80,7 @@ public:
     double evaluationIncrementCounterWrapper(void *ind, void * context);
     void reevaluateBestIndividualUsingTestSet();
     vector<double> getEvalsProgress();
+    void record(Individual* ind);
 
 
 

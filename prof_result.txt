@@ -330,8 +330,8 @@ Index by function name
   [37] readGRNFileToVectors(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, double**) [45] ESAlgorithm::evaluate(Individual*) [52] GRNCoefProblem::GRNCoefProblem(appContext*)
   [25] Individual::toCSVString[abi:cxx11]() [46] ESAlgorithm::runCMAES(int, int, int) [31] pagmo::detail::prob_inner<GRNCoefProblem>::~prob_inner()
   [28] Individual::getParameters() [24] ESAlgorithm::setBounds(int, double, double, int, int) [32] GRNCoefProblem::get_bounds() const
-  [26] Individual::getEvaluation() [47] ESAlgorithm::ESAlgorithm(int) [20] GRNCoefProblem::fitness(std::vector<double, std::allocator<double> > const&) const
-  [27] Individual::setEvaluation(double) [48] ESAlgorithm::~ESAlgorithm() [33] std::vector<double, std::allocator<double> >::_M_default_append(unsigned long)
+  [26] Individual::getFitnessTrain() [47] ESAlgorithm::ESAlgorithm(int) [20] GRNCoefProblem::fitness(std::vector<double, std::allocator<double> > const&) const
+  [27] Individual::setFitnessTrain(double) [48] ESAlgorithm::~ESAlgorithm() [33] std::vector<double, std::allocator<double> >::_M_default_append(unsigned long)
   [38] Individual::Individual(int) [49] GRNEDOHelpers::clearContext(appContext*) [21] void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&)
   [39] Individual::Individual(int, double*) [18] GRNEDOHelpers::lsodaWrapper(int (*)(double, double*, double*, void*), appContext*, double*) [34] std::vector<int, std::allocator<int> >::_M_default_append(unsigned long)
   [40] Individual::~Individual() [1] GRNEDOHelpers::twoBody5VarLSODA(double, double*, double*, void*) [35] std::__cxx11::to_string(int)

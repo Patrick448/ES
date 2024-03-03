@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16.3)
-project(ES)
+project(GRN-EDO-Coefficient-Adjustment)
 
 set(CMAKE_CXX_STANDARD 14)
 #SET(CMAKE_CXX_FLAGS "-O3")
@@ -32,7 +32,7 @@ set_target_properties(liblsoda
     IMPORTED_IMPLIB ${CMAKE_SOURCE_DIR}/liblsoda/src/liblsoda.so
     INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/liblsoda/src)
 
-add_executable(ES ${source_cpp} ${source_c} src/GRNEDOHelpers.cpp)
+add_executable(ES ${source_cpp} ${source_c})
 target_link_libraries(ES PUBLIC liblsoda Pagmo::pagmo)
 
 add_executable(test
