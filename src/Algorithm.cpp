@@ -488,7 +488,7 @@ void Algorithm::runCMAES(int seed, int maxEvals, int populationSize){
         problem.setEvaluationFunction(this->evaluationFunction);
         pagmo::population pop = pagmo::population(problem, populationSize, newSeed);
         cmaes alg = cmaes(maxGenerations, -1, -1, -1, -1, 0.5, 1e-6, 1e-6, false, true, newSeed);
-        alg.set_verbosity(1);
+        alg.set_verbosity(0);
         pagmo::population newPop = alg.evolve(pop);
 
 
@@ -527,7 +527,7 @@ void Algorithm::runDE(int seed, int maxEvals, int populationSize){
         problem.setEvaluationFunction(this->evaluationFunction);
         pagmo::population pop = pagmo::population(problem, populationSize, newSeed);
         pagmo::de alg = pagmo::de(maxGenerations, 0.8, 0.9, 2u, 1e-6, 1e-6, newSeed);
-        alg.set_verbosity(1);
+        alg.set_verbosity(0);
         pagmo::population newPop = alg.evolve(pop);
 
         auto logs = alg.get_log();
@@ -565,7 +565,7 @@ void Algorithm::runSADE(int seed, int maxEvals, int populationSize){
         // Standard parameters from documentation:
         // sade(unsigned gen = 1u, unsigned variant = 2u, unsigned variant_adptv = 1u, double ftol = 1e-6, double xtol = 1e-6, bool memory = false, unsigned seed = pagmo::random_device::next())
         pagmo::sade alg = pagmo::sade(maxGenerations, 2u, 1u, 1e-6, 1e-6, false, newSeed);
-        alg.set_verbosity(1);
+        alg.set_verbosity(0);
         pagmo::population newPop = alg.evolve(pop);
 
         auto logs = alg.get_log();
