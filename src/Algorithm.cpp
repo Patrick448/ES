@@ -608,7 +608,7 @@ string Algorithm::populationToCSVString(){
 void Algorithm::reevaluateBestIndividualUsingTestSet() {
     appContext ctx{.series = this->testSeries, .description = this->modelDescription};
     double eval =this->evaluationFunction(this->bestIndividual->getParameters(), &ctx);
-    this->bestIndividual->setFitnessTrain(eval);
+    this->bestIndividual->setFitnessTest(eval);
     //return eval;
 }
 

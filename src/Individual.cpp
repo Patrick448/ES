@@ -19,6 +19,8 @@ Individual::Individual(int numDimensions, double *parameters) {
     for(int i=0; i< numDimensions; i++){
         this->parameters[i] = parameters[i];
     }
+
+    this->sigmas = new double[numDimensions];
 }
 
 Individual::~Individual() {

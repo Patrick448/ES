@@ -87,11 +87,11 @@ void runExperimentRound(Algorithm& algorithm, string algName, int maxEvals, int 
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<std::chrono::seconds>(end - beg);
     resultCsv += to_string(seed) + ","
-                 + to_string(bestFitnessTrain) + ","
-                    + to_string(bestFitnessTest) + ","
+                 + to_string(bestFitnessTrain) +","
+                 + to_string(bestFitnessTest) + ","
                  + to_string(duration.count()) + ","
                  + to_string(algorithm.getEvaluations()) + ","
-                 + bestInd->toCSVString()+ "";
+                 + bestInd->toCSVString() + "";
 
    // cout << resultCsv << endl;
 
